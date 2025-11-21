@@ -5,6 +5,13 @@
     <div class="header-inner">
       <!-- 왼쪽 영역 (로고/타이틀 등) -->
       <div class="header-left">
+        <!-- 아이콘 -->
+        <img
+            :src="foldingIcon.src"
+            :alt="foldingIcon.name"
+            class="folding-img"
+        />
+        <!-- 로고 텍스트 -->
         <span class="logo-text">AD-HELL</span>
       </div>
 
@@ -18,8 +25,14 @@
   </el-header>
 </template>
 
-<script setup>
-// 로직 필요 없으면 비워둬도 됨
+<script setup lang="ts">
+import { ref,reactive } from "vue";
+import foldingIconSrc from '@/assets/icon/icon-folding.svg';
+
+const foldingIcon = reactive({
+  src : 'foldingIconSrc',
+  name : 'foldingIcon'
+    });
 </script>
 
 <style scoped>
@@ -31,10 +44,14 @@
   display: flex;
   justify-content: center;       /* 가운데에 1280 컨테이너 정렬 */
 }
-
+.folding-img{
+  margin-right:8px;
+  width: 40px;
+  height: 40px;
+}
 /* 실제 규격: 1280 x 56 + 좌우 패딩 30 */
 .header-inner {
-  width: 1280px;
+  width: 100%;
   height: 56px;
   padding: 0 30px;               /* 좌우 패딩 30 */
   box-sizing: border-box;
@@ -50,7 +67,13 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: 0;                        /* 버튼 간격도 0 기준 */
+  gap: 24px;                        /* 버튼 간격도 0 기준 */
+}
+
+/* 로고 아이콘 스타일 */
+.logo-icon {
+  margin-right:8px;   /* 아이콘과 텍스트 사이 간격 */
+  font-size: 40px;     /* 아이콘 크기 */
 }
 
 /* 로고 텍스트 예시 스타일 */
@@ -66,4 +89,5 @@
   margin-left: 0;
 }
 */
+
 </style>
