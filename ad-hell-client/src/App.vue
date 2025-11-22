@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup>
+import UserMypageNav from "@/components/common/UserMypageNav.vue";
+</script>
 
 <template>
   <h1>You did it!</h1>
