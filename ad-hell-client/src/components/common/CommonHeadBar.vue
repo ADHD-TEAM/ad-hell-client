@@ -1,3 +1,15 @@
+<script setup>
+
+import {useRouter} from "vue-router";
+import LoginView from "@/pages/account/LoginView.vue";
+
+const router = useRouter();
+
+const goLogin = () => {
+  router.push({name : 'UserLoginView'});
+}
+
+</script>
 <template>
   <!-- Element Plus 헤더 컴포넌트 -->
   <el-header class="app-header">
@@ -12,15 +24,11 @@
       <div class="header-right">
         <!-- Element Plus 버튼들 예시 -->
         <el-button type="text">알림</el-button>
-        <el-button type="primary">로그인</el-button>
+        <el-button type="primary" @click="goLogin">로그인</el-button>
       </div>
     </div>
   </el-header>
 </template>
-
-<script setup>
-// 로직 필요 없으면 비워둬도 됨
-</script>
 
 <style scoped>
 /* el-header 기본 높이가 60px이라 56px로 맞춰줌 */
