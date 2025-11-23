@@ -1,105 +1,130 @@
+<!--버튼 컴포넌트-->
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+  type: {
+    type: String,
+    required: true,
+  },
+  width: {
+    type: [String, Number],
+    default: '50px',
+  },
+  height: {
+    type: [String, Number],
+    default: '40px',
+  },
+  active: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+// 버튼 라벨
+const labels = {
+  search: '검색',
+  delete: '삭제',
+  write: '글쓰기',
+  register: '등록',
+  update: '수정',
+  save: '저장',
+  cancel: '취소',
+  reset: '초기화',
+}
+
+const label = computed(() => labels[props.type] ?? props.type)
+
+// 색상 타입
+const variant = computed(() => {
+  const soft = ['search', 'delete']
+  const primary = ['write', 'register', 'update', 'save']
+  const outline = ['cancel', 'reset']
+
+  if (soft.includes(props.type)) return 'soft'
+  if (primary.includes(props.type)) return 'primary'
+  if (outline.includes(props.type)) return 'outline'
+  return 'default'
+})
+
+// 실제 크기
+const sizeStyle = computed(() => ({
+  width: typeof props.width === 'number' ? props.width + 'px' : props.width,
+  height: typeof props.height === 'number' ? props.height + 'px' : props.height,
+}))
+</script>
+
 <template>
   <button
       class="common-btn"
-      :class="[type]"
-      @click="$emit('click')"
-  >
-    <slot></slot>
-  </button>
-</template>
-
-<script setup>
-defineProps({
-  type: {
-    type: String,
-    default: 'default', // default, search, reset, write
-  },
-})
-</script>
-
-<style scoped>
-.common-btn {
-  min-width: 72px;
-  height: 40px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid transparent;
-}
-
-/* 검색 버튼 */
-.search {
-  background: #ffe2e0;
-  border-color: #ffb3b3;
-  color: #ff0000;
-}
-
-/* 초기화 버튼 */
-.reset {
-  border-color: #e2e2e2;
-  color: #333;
-  background: white;
-}
-
-/* 글쓰기 버튼 */
-.write {
-  border-radius: 20px;
-  min-width: 90px;
-  background: #ff0000;
-  color: white;
-  border: none;
-}
-
-/* 기본 버튼 */
-.default {
-  background: white;
-  border-color: #ccc;
-}
-</style>
-
-
-<!--pagenation-->
-<template>
-  <button
-      class="page-btn"
-      :class="{ active, nav }"
+      :class="[`common-btn--${variant}`, { 'is-active': active }]"
+      :style="sizeStyle"
       :disabled="disabled"
-      @click="$emit('click')"
   >
-    <slot></slot>
+    {{ label }}
   </button>
 </template>
 
-<script setup>
-defineProps({
-  active: Boolean,
-  disabled: Boolean,
-  nav: Boolean, // 이전/다음 버튼이면 nav=true
-})
-</script>
+<style scoped lang="scss">
+.common-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-<style scoped>
-.page-btn {
-  min-width: 32px;
-  height: 32px;
-  padding: 0 10px;
-  border-radius: 999px;
-  border: 1px solid #ffb3b3;
-  background: #fff;
-  color: #ff0000;
-  font-size: 14px;
+  /* 🔥 width/height 그대로 쓰도록 padding 제거 */
+  padding: 0 4px;
+
+  border-radius: 6px;
+
+  font-size: 13px; /* 글자 너무 커지지 않게 */
+  font-weight: 600;
+
+  border: 1px solid transparent;
   cursor: pointer;
+  transition: 0.15s;
+
+  /* 🔥 글 내용이 길면 자동 줄임 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.page-btn.active {
+/* soft */
+.common-btn--soft {
+  background: #ffe2e0;
+  color: #ff0000;
+}
+.common-btn--soft:hover,
+.common-btn--soft.is-active {
   background: #ffe2e0;
   border-color: #ff0000;
-  color: #000; /* active는 검정 */
 }
 
-.page-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+/* primary */
+.common-btn--primary {
+  background: #ff0000;
+  color: #ffffff;
+}
+.common-btn--primary:hover,
+.common-btn--primary.is-active {
+  background: #ffe2e0;
+  border-color: #ff0000;
+  color: #ff0000;
+}
+
+/* outline */
+.common-btn--outline {
+  background: #fff;
+  border-color: #ff0000;
+  color: #ff0000;
+}
+.common-btn--outline:hover,
+.common-btn--outline.is-active {
+  background: #ffe2e0;
+  border-color: #ff0000;
 }
 </style>

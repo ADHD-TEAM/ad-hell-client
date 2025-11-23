@@ -97,7 +97,7 @@ const go = (item) => {
 <style scoped lang="scss">
 .user-sidebar {
   width: 244px;
-  height: 1080px;
+  height: 100%;
   background: #f6f7f9;
   display: flex;
   flex-direction: column;
