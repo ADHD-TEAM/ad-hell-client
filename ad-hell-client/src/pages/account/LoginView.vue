@@ -1,8 +1,6 @@
 <script setup>
 import {reactive, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import { ElMessage } from 'element-plus';
-import { loginApi } from '@/api/authApi.js'
 import {useAuthStore} from "@/stores/authStore.js";
 
 const labelPosition = ref('top');
@@ -40,10 +38,10 @@ const login = async () => {
     }
 
     if (mode.value === 'user') {
-      router.push({name : 'MainPage'});
+      await router.push({name : 'MainPage'});
 
     } else if (mode.value === 'admin') {
-      router.push({name : 'AdminMainPage'});
+      await router.push({name : 'AdminMainPage'});
     }
   } catch (e) {
     console.log(e);

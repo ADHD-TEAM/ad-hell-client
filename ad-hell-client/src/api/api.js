@@ -9,6 +9,8 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
+      if(config.skipAuth) return config;
+
       const authStore = useAuthStore();
       if(authStore.accessToken && !config.headers.Authorization) {
         config.headers.Authorization = `Bearer ${authStore.accessToken}`
