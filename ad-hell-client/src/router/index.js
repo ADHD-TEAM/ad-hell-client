@@ -93,6 +93,13 @@ const routes = [
                 component: () => import('@/pages/notification/admin/AlarmTemplateCreate.vue'),
             },
 
+            // 템플릿 수정 페이지
+            {
+                path: 'alarms/:templateId/edit',
+                name: 'AdminAlarmTemplateEdit',
+                component: () => import('@/pages/notification/admin/AlarmTemplateEdit.vue'),
+            },
+
             //  템플릿 상세 조회 페이지
             {
                 path: 'alarms/:templateId',

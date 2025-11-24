@@ -52,3 +52,21 @@ export async function createAdminNotificationTemplate({
 
     return res.data?.data
 }
+
+/**
+ * 관리자 템플릿 수정
+ * PUT /api/admin/notifications/templates/{templateId}
+ */
+export async function updateAdminNotificationTemplate(templateId, {
+    templateKind = 'NORMAL',
+    templateTitle,
+    templateBody,
+}) {
+    const res = await apiClient.put(`/admin/notifications/templates/${templateId}`, {
+        templateKind,
+        templateTitle,
+        templateBody,
+    })
+
+    return res.data?.data
+}

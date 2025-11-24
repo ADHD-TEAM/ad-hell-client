@@ -112,8 +112,17 @@ const loadTemplateIfNeeded = async () => {
 onMounted(loadTemplateIfNeeded)
 
 // TODO: 이후 수정/삭제 기능 붙일 때 여기에 로직 추가
+// 수정 버튼 클릭 시: 수정 페이지로 이동
 const onEdit = () => {
-  console.log('수정 클릭:', template.id)
+  router.push({
+    name: 'AdminAlarmTemplateEdit',
+    params: { templateId: template.id },
+    query: {
+      title: template.title,
+      body: template.body,
+      createdAt: template.createdAt,
+    },
+  })
 }
 
 const onDelete = () => {
