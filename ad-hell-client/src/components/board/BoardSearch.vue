@@ -1,7 +1,7 @@
+<!-- src/components/board/BoardSearch.vue -->
 <script setup>
 import CommonButton from '@/components/common/CommonButton.vue'
 
-// 부모에서 전달받는 검색 데이터
 const props = defineProps({
   searchForm: {
     type: Object,
@@ -9,73 +9,80 @@ const props = defineProps({
   },
 })
 
-// 검색 이벤트만 사용
 const emit = defineEmits(['search'])
+const { searchForm } = props
 </script>
 
 <template>
   <div class="board-search-box">
     <div class="search-inner">
-      <!-- 입력 필드 4개 -->
-      <div class="search-grid">
-        <div class="search-field">
-          <label class="search-label">제목</label>
-          <input
-              v-model="searchForm.title"
-              class="search-input"
-              type="text"
-              placeholder="제목 또는 내용"
-          />
-        </div>
 
-        <div class="search-field">
-          <label class="search-label">작성자</label>
-          <input
-              v-model="searchForm.writer"
-              class="search-input"
-              type="text"
-              placeholder="작성자"
-          />
-        </div>
+      <el-form
+          :model="searchForm"
+          label-position="top"
+          class="search-form"
+      >
+        <div class="search-grid">
 
-        <div class="search-field">
-          <label class="search-label">시작일</label>
-          <input
-              v-model="searchForm.fromDate"
-              class="search-input"
-              type="date"
-          />
-        </div>
+          <el-form-item label="제목">
+            <el-input
+                v-model="searchForm.title"
+                placeholder="제목 또는 내용"
+                clearable
+            />
+          </el-form-item>
 
-        <div class="search-field">
-          <label class="search-label">종료일</label>
-          <input
-              v-model="searchForm.toDate"
-              class="search-input"
-              type="date"
-          />
-        </div>
-      </div>
+          <el-form-item label="작성자">
+            <el-input
+                v-model="searchForm.writer"
+                placeholder="작성자"
+                clearable
+            />
+          </el-form-item>
 
-      <!-- 검색 버튼 -->
+          <el-form-item label="시작일">
+            <el-date-picker
+                v-model="searchForm.fromDate"
+                type="date"
+                value-format="YYYY-MM-DD"
+                placeholder="시작일"
+                clearable
+                class="search-date"
+            />
+          </el-form-item>
+
+          <el-form-item label="종료일">
+            <el-date-picker
+                v-model="searchForm.toDate"
+                type="date"
+                value-format="YYYY-MM-DD"
+                placeholder="종료일"
+                clearable
+                class="search-date"
+            />
+          </el-form-item>
+
+        </div>
+      </el-form>
+
       <div class="search-actions">
         <CommonButton type="search" @click="emit('search')" />
       </div>
+
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-/* 검색 박스: 메인 영역 전체 사용 */
 .board-search-box {
   width: 100%;
-  margin: 0 0 38px 0;
+  margin-bottom: 38px;
   background: #f7f5f5;
   border-radius: 10px;
   padding: 20px 24px;
+  box-sizing: border-box;
 }
 
-/* 전체 정렬 + 반응형 wrap */
 .search-inner {
   display: flex;
   flex-wrap: wrap;
@@ -83,50 +90,56 @@ const emit = defineEmits(['search'])
   gap: 24px;
 }
 
-/* 입력칸을 2열 grid로 구성 */
-.search-grid {
+.search-form {
   flex: 1 1 0;
   min-width: 260px;
+}
+
+.search-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: 120px;
   row-gap: 16px;
 }
 
-.search-field {
-  display: flex;
-  flex-direction: column;
+/* form-item 아래쪽 기본 마진 제거 */
+:deep(.el-form-item) {
+  margin-bottom: 0;
 }
 
-.search-label {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #555;
-}
-
-.search-input {
-  width: 100%;
+/* 날짜 입력 전체 높이 통일 */
+:deep(.el-date-editor) {
   height: 40px;
-  padding: 0 12px;
-  border-radius: 10px;
-  border: 1px solid #e2e2e2;
-  background: #fff;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-.search-input::placeholder {
-  color: #9e9e9e;
+/* 일반 input도 높이 동일하게 */
+:deep(.el-input__wrapper) {
+  height: 40px;
+  box-sizing: border-box;
 }
 
-/* 검색 버튼 영역 */
+/* 검색 버튼도 40px 맞춤 */
+.search-actions :deep(button) {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
 .search-actions {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: flex-end;
   margin-left: 8px;
 }
 
-/* 화면 좁아지면 1열 + 버튼 가로 정렬 */
+:deep(.el-form-item__label) {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #555;
+}
+
 @media (max-width: 900px) {
   .search-inner {
     flex-direction: column;
@@ -139,8 +152,9 @@ const emit = defineEmits(['search'])
   }
 
   .search-actions {
-    flex-direction: row;
     justify-content: flex-end;
+    margin-left: 0;
+    margin-top: 8px;
   }
 }
 </style>

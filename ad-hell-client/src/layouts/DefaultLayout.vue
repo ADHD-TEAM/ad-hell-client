@@ -1,6 +1,5 @@
 <template>
   <div class="layout">
-
     <!-- 공통 헤더 -->
     <CommonUserHeadBar class="layout-header" />
     <!-- 헤더 아래 본문 (좌측 사이드바 + 우측 콘텐츠) -->
@@ -11,7 +10,6 @@
         <router-view />
       </main>
     </div>
-
   </div>
 </template>
 
@@ -25,42 +23,48 @@ import UserSidebar from '@/layouts/sidebar/UserSidebar.vue'
 
 const route = useRoute()
 
+// 라우트 메타에 따라 관리자 / 사용자 사이드바 선택
 const currentSidebar = computed(() => {
   return route.meta.role === 'admin' ? AdminSidebar : UserSidebar
 })
 </script>
 
 <style scoped>
+/* 페이지 전체 레이아웃: 헤더 + 본문 */
 .layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
 }
 
+/* 상단 헤더 높이 고정 */
 .layout-header {
   flex: 0 0 56px;
 }
 
+/* 헤더 아래 본문 영역: 좌측 사이드바 + 우측 메인 */
 .layout-body {
   flex: 1;
   display: flex;
   width: 100%;
-  height: calc(100vh - 56px);
+  min-height: 0; /* 자식 요소에서 스크롤 가능하도록 설정 */
 }
 
+/* 좌측 사이드바 래퍼 */
 .layout-sidebar {
   flex-shrink: 0;
   width: 260px;
-  height: 100%;
+  overflow-y: auto; /* 사이드바 내용이 길어질 때 자체 스크롤 */
 }
 
+/* 우측 메인 콘텐츠 영역 */
 .layout-main {
   flex: 1;
+  min-width: 0;
   background: #ffffff;
-  height: 100%;
   padding: 0;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: auto; /* 메인 영역 스크롤 */
 }
 </style>

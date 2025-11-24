@@ -1,84 +1,106 @@
-<template>
-  <section class="page">
-    <!-- 제목 영역 -->
-    <header class="page-header">
-      <h2 class="page-title">{{ inquiry.title }}</h2>
-    </header>
-
-    <!-- 작성자 / 작성일 -->
-    <div class="meta-row">
-      <div class="meta-item">
-        <span class="meta-label">작성자 :</span>
-        <span class="meta-value">{{ inquiry.writer }}</span>
-      </div>
-      <div class="meta-item right">
-        <span class="meta-label">작성일 :</span>
-        <span class="meta-value highlight">{{ inquiry.createdAt }}</span>
-      </div>
-    </div>
-
-    <!-- 답변 내용 -->
-    <div class="content-box">
-      <div class="content-header">문의 답변 내용</div>
-      <div class="content-body">
-        <p v-if="inquiry.answer" class="text">
-          {{ inquiry.answer }}
-        </p>
-        <p v-else class="text empty">
-          아직 등록된 답변이 없습니다.
-        </p>
-      </div>
-    </div>
-
-    <!-- 버튼 영역 -->
-    <footer class="page-footer">
-      <button class="btn-outline-red" @click="goBack">뒤로 가기</button>
-    </footer>
-  </section>
-</template>
-
+<!-- src/pages/inquiry/user/InquiryDetail.vue -->
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import CommonButton from '@/components/common/CommonButton.vue'
 
 const route = useRoute()
 const router = useRouter()
+const inquiryId = Number(route.params.id)
 
-// TODO: 추후 API 연동 (현재는 mock data)
+const loading = ref(false)
 const inquiry = ref({
-  id: route.params.id,
-  title: '포인트 미지급 문의 입니다.',
-  writer: '운영자',
-  createdAt: '2025-11-17',
+  id: inquiryId,
+  title: '',
+  writerName: '',
+  createdAt: '',
+  question: '',
   answer: '',
 })
 
-const goBack = () => {
+const loadDetail = async () => {
+  loading.value = true
+  try {
+    // TODO: API 연동
+    inquiry.value = {
+      id: inquiryId,
+      title: '포인트 미지급 문의 입니다.',
+      writerName: '운영자',
+      createdAt: '2025-11-17',
+      question: '문의 내용 예시입니다.',
+      answer: '문의 답변 내용',
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+const goList = () => {
   router.push('/inquiries')
 }
+
+onMounted(loadDetail)
 </script>
 
-<style scoped>
-.page {
-  padding: 24px 32px;
+<template>
+  <section class="inquiry-detail-page" v-loading="loading">
+    <!-- 제목 -->
+    <h2 class="detail-title">{{ inquiry.title }}</h2>
+
+    <!-- 작성자 / 작성일 -->
+    <div class="detail-meta">
+      <div class="meta-item">
+        <span class="meta-label">작성자:</span>
+        <span class="meta-value">{{ inquiry.writerName }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">작성일:</span>
+        <span class="meta-value">{{ inquiry.createdAt }}</span>
+      </div>
+    </div>
+
+    <div class="divider" />
+
+
+      <!-- 답변 -->
+      <!-- element plus 폼으로 감싸서 label을 위에 배치함   -->
+    <el-form label-position="top" class="detail-form">
+      <el-form-item label="문의 답변 내용">
+        <div class="content-box content-box--large">
+          <p class="content-text">
+            {{ inquiry.answer }}
+          </p>
+        </div>
+      </el-form-item>
+    </el-form>
+
+    <!-- 하단 버튼 -->
+    <div class="detail-actions">
+      <!-- TODO: CommonButton에서 cancel 라벨을 '이전'으로 바꾸면 Figma와 동일 -->
+      <CommonButton type="cancel" @click="goList" />
+    </div>
+  </section>
+</template>
+
+<style scoped lang="scss">
+.inquiry-detail-page {
+  padding: 24px 32px 40px;
 }
 
-.page-header {
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 8px;
-  margin-bottom: 16px;
-}
-
-.page-title {
+/* 제목 */
+.detail-title {
   font-size: 22px;
   font-weight: 700;
+  margin-bottom: 12px;
 }
 
-.meta-row {
+/* 작성자 / 작성일 */
+.detail-meta {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
   font-size: 14px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .meta-item {
@@ -86,74 +108,65 @@ const goBack = () => {
   gap: 4px;
 }
 
-.meta-item.right {
-  justify-content: flex-end;
-}
-
 .meta-label {
-  color: #6b7280;
+  font-weight: 600;
 }
 
 .meta-value {
-  font-weight: 600;
+  color: #ff0000;
 }
 
-.highlight {
-  color: #ff0000;
+/* 구분선 */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: #ededed;
+  margin: 8px 0 16px;
+}
+
+/* 문의/답변 */
+.detail-form {
+  width: 100%;
+}
+
+:deep(.el-form-item__label) {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
 }
 
 .content-box {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border: 1px solid #efefef;
+  border-radius: 10px;
   background: #fff;
-  overflow: hidden;
-  min-height: 350px;
+  min-height: 120px;
+}
+
+/* 답변 박스 */
+.content-box--large {
+
+  min-height: 500px;
+  width: 100%;
   display: flex;
-  flex-direction: column;
+  padding: 20px 24px;
+  margin-left: auto;
+  margin-right: auto;
+
+
+
 }
 
-.content-header {
-  padding: 10px 16px;
-  border-bottom: 1px solid #e5e7eb;
+.content-text {
   font-size: 14px;
-  font-weight: 600;
-  background: #f9fafb;
+  line-height: 1.6;
+  white-space: pre-wrap;
 }
 
-.content-body {
-  padding: 16px;
-  flex: 1;
-}
-
-.text {
-  font-size: 14px;
-  line-height: 1.5;
-  white-space: pre-line;
-}
-
-.text.empty {
-  color: #9ca3af;
-}
-
-.page-footer {
+/* 하단 버튼 */
+.detail-actions {
+  margin-top: 16px;
   display: flex;
   justify-content: flex-end;
-  margin-top: 12px;
-}
-
-.btn-outline-red {
-  min-width: 96px;
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 6px;
-  border: 1px solid #ff0000;
-  background: #fff;
-  color: #ff0000;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.btn-outline-red:hover {
-  background: #fff5f5;
 }
 </style>
