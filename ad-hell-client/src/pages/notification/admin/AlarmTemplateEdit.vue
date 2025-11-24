@@ -253,6 +253,12 @@ const handleCancel = () => {
   font-weight: 700;
 }
 
+.submit-btn {
+  background: #ff0000;
+  border-color: #ff0000;
+  color: #ffffff;
+}
+
 /* 취소 버튼은 테두리만 빨간색 */
 .cancel-btn {
   border-color: #ff4d4f;

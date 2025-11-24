@@ -2,56 +2,80 @@
 <template>
   <div class="template-detail-page">
     <div class="detail-container">
-    <!-- 제목 -->
-    <header class="detail-header">
-      <h1>{{ template.title || '알림 템플릿 제목' }}</h1>
-    </header>
+      <!-- 제목 -->
+      <header class="detail-header">
+        <h1>{{ template.title || '알림 템플릿 제목' }}</h1>
+      </header>
 
-    <!-- 작성자 / 작성일 -->
-    <section class="meta-bar">
-      <div class="meta-left">
-        <span class="meta-label">작성자:</span>
-        <span class="meta-author">운영자</span>
-      </div>
-      <div class="meta-right" v-if="formattedCreatedAt">
-        <span class="meta-label">작성일:</span>
-        <span class="meta-date">{{ formattedCreatedAt }}</span>
-      </div>
-    </section>
+      <!-- 작성자 / 작성일 -->
+      <section class="meta-bar">
+        <div class="meta-left">
+          <span class="meta-label">작성자:</span>
+          <span class="meta-author">운영자</span>
+        </div>
+        <div class="meta-right" v-if="formattedCreatedAt">
+          <span class="meta-label">작성일:</span>
+          <span class="meta-date">{{ formattedCreatedAt }}</span>
+        </div>
+      </section>
 
-    <!-- 내용 + 버튼 -->
-    <section class="content-card">
-      <el-input
-          v-model="template.body"
-          type="textarea"
-          class="content-input"
-          :rows="18"
-          placeholder="공지사항 내용"
-          readonly
+      <!-- 내용 + 버튼 -->
+      <section class="content-card">
+        <el-input
+            v-model="template.body"
+            type="textarea"
+            class="content-input"
+            :rows="18"
+            placeholder="공지사항 내용"
+            readonly
+        />
+
+        <div class="button-row">
+          <!-- 진한 빨간 버튼: 수정 -->
+          <el-button
+              type="danger"
+              class="btn primary-btn"
+              @click="onEdit"
+          >
+            수정
+          </el-button>
+
+          <!-- 연한 빨간 배경 버튼: 삭제 -->
+          <el-button
+              class="btn soft-danger-btn"
+              @click="onDelete"
+          >
+            삭제
+          </el-button>
+
+          <!-- 흰 배경 + 빨간 테두리: 취소 -->
+          <el-button
+              class="btn outline-btn"
+              @click="onCancel"
+          >
+            취소
+          </el-button>
+        </div>
+      </section>
+
+      <!-- 삭제 확인 모달 (예 / 아니오) -->
+      <CommonModal
+          v-model="confirmVisible"
+          mode="confirm"
+          message="해당 템플릿을 삭제하시겠습니까?"
+          confirm-text="예"
+          cancel-text="아니오"
+          @confirm="confirmDelete"
       />
 
-      <div class="button-row">
-        <el-button
-            type="danger"
-            class="btn primary-btn"
-            @click="onEdit"
-        >
-          수정
-        </el-button>
-        <el-button
-            class="btn outline-btn"
-            @click="onDelete"
-        >
-          삭제
-        </el-button>
-        <el-button
-            class="btn outline-btn"
-            @click="onCancel"
-        >
-          취소
-        </el-button>
-      </div>
-    </section>
+      <!-- 알림 모달 (확인만) -->
+      <CommonModal
+          v-model="alertVisible"
+          mode="alert"
+          :message="alertMessage"
+          confirm-text="확인"
+          @confirm="handleAlertConfirm"
+      />
     </div>
   </div>
 </template>
@@ -59,7 +83,11 @@
 <script setup>
 import { reactive, ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchAdminNotificationTemplates } from '@/api/notificationTemplateApi.js'
+import CommonModal from '@/components/common/CommonModal.vue'
+import {
+  fetchAdminNotificationTemplates,
+  deleteAdminNotificationTemplate,
+} from '@/api/notificationTemplateApi.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -75,10 +103,28 @@ const template = reactive({
 
 const loading = ref(false)
 
+// 모달 상태
+const confirmVisible = ref(false) // "정말 삭제?" 모달
+const alertVisible = ref(false)   // "삭제되었습니다" / 에러 모달
+const alertMessage = ref('')
+const alertConfirmAction = ref(null)
+
+const openAlert = (message, onConfirm = null) => {
+  alertMessage.value = message
+  alertConfirmAction.value = onConfirm
+  alertVisible.value = true
+}
+
+const handleAlertConfirm = () => {
+  if (typeof alertConfirmAction.value === 'function') {
+    alertConfirmAction.value()
+  }
+}
+
 // 작성일: createdAt -> YYYY-MM-DD
 const formattedCreatedAt = computed(() => {
   if (!template.createdAt) return ''
-  const [date] = String(template.createdAt).split('T') // "2025-11-14T..." -> "2025-11-14"
+  const [date] = String(template.createdAt).split('T')
   return date
 })
 
@@ -111,7 +157,6 @@ const loadTemplateIfNeeded = async () => {
 
 onMounted(loadTemplateIfNeeded)
 
-// TODO: 이후 수정/삭제 기능 붙일 때 여기에 로직 추가
 // 수정 버튼 클릭 시: 수정 페이지로 이동
 const onEdit = () => {
   router.push({
@@ -125,8 +170,27 @@ const onEdit = () => {
   })
 }
 
+// 삭제 버튼 클릭 시: 먼저 확인 모달 띄우기
 const onDelete = () => {
-  console.log('삭제 클릭:', template.id)
+  confirmVisible.value = true
+}
+
+// 확인 모달에서 "예" 눌렀을 때 실제 삭제 호출
+const confirmDelete = async () => {
+  try {
+    loading.value = true
+    await deleteAdminNotificationTemplate(template.id)
+
+    // 삭제 완료 알림 → 확인 누르면 목록으로 이동
+    openAlert('템플릿이 삭제되었습니다.', () => {
+      router.push({ name: 'AdminAlarmTemplates' })
+    })
+  } catch (err) {
+    console.error('템플릿 삭제 실패:', err)
+    openAlert('템플릿 삭제에 실패했습니다. 다시 시도해주세요.')
+  } finally {
+    loading.value = false
+  }
 }
 
 const onCancel = () => {
@@ -142,7 +206,7 @@ const onCancel = () => {
 }
 
 .detail-container {
-  max-width: 900px;   /* 여기 숫자 조절하면 폭 바뀜 (예: 960, 1024 등) */
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -212,18 +276,25 @@ const onCancel = () => {
   font-weight: 700;
 }
 
-/* 빨간 배경 버튼 (수정) */
+/* 수정: 진한 빨강 */
 .primary-btn {
-  background: #ff4d4f;
-  border-color: #ff4d4f;
+  background: #ff0000;
+  border-color: #ff0000;
   color: #ffffff;
 }
 
-/* 흰 배경 + 빨간 테두리 버튼 (삭제/취소) */
+/* 삭제: 연한 빨강 배경 */
+.soft-danger-btn {
+  background: #ffecec;
+  border-color: #ffecec;
+  color: #ff0000;
+}
+
+/* 취소: 흰 배경 + 빨간 테두리 */
 .outline-btn {
   background: #ffffff;
-  color: #ff4d4f;
-  border-color: #ff4d4f;
+  color: #ff0000;
+  border-color: #ff0000;
 }
 
 @media (max-width: 1080px) {

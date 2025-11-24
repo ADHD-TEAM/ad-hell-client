@@ -70,3 +70,15 @@ export async function updateAdminNotificationTemplate(templateId, {
 
     return res.data?.data
 }
+
+/**
+ * 관리자 템플릿 삭제
+ * DELETE /api/admin/notifications/templates/{templateId}
+ */
+export async function deleteAdminNotificationTemplate(templateId) {
+    const res = await apiClient.delete(
+        `/admin/notifications/templates/${templateId}`,
+    )
+
+    return res.data
+}

@@ -251,12 +251,6 @@ const goCreate = () => {
   height: 42px;
 }
 
-.search-button {
-  height: 42px;
-  border-radius: 10px;
-  font-weight: 700;
-}
-
 .table-card {
   padding: 20px 20px 16px;
   display: flex;
@@ -357,13 +351,6 @@ const goCreate = () => {
   color: #ffffff;
 }
 
-.create-button {
-  border-radius: 10px;
-  font-weight: 700;
-  padding: 0 18px;
-  height: 40px;
-}
-
 @media (max-width: 1080px) {
   .template-page {
     padding: 20px 16px;
@@ -392,5 +379,31 @@ const goCreate = () => {
 .table-row:hover {
   background: #fff5f5;
 }
+
+.search-button.el-button,
+.create-button.el-button {
+  height: 42px;
+  border-radius: 10px;
+  font-weight: 700;
+
+  /* 진한 빨강 스타일 */
+  background-color: #ff0000;
+  border-color: #ff0000;
+  color: #ffffff;
+}
+
+/* 등록하기 버튼은 높이만 다르게 */
+.create-button.el-button {
+  height: 40px;
+  padding: 0 18px;
+}
+
+/* hover 시 살짝 어두운 빨강 */
+.search-button.el-button:hover:not(.is-disabled),
+.create-button.el-button:hover:not(.is-disabled) {
+  background-color: #e60000;
+  border-color: #e60000;
+}
+
 
 </style>
