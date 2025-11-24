@@ -3,6 +3,8 @@ import {reactive, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import { ElMessage } from 'element-plus';
 import { loginApi } from '@/api/authApi.js'
+import {useAuthStore} from "@/stores/authStore.js";
+
 const labelPosition = ref('top');
 const route = useRoute();
 const router = useRouter();
@@ -10,6 +12,7 @@ const mode = ref('user');
 const modeId = ref('아이디');
 const submitting = ref(false);
 const errorMessage = ref('');
+const authStore = useAuthStore();
 
 // route로 user, admin 인지 구분
 watchEffect(() => {
@@ -18,7 +21,7 @@ watchEffect(() => {
 });
 
 const loginForm = reactive({
-  loginId : ''
+  userLoginId : ''
   , password : ''
 });
 
@@ -29,8 +32,12 @@ const login = async () => {
   errorMessage.value = '';
 
   try {
-    const result = await loginApi(loginForm);
-    ElMessage.success('로그인 되었습니다.');
+    const result = await authStore.login(loginForm);
+
+    if(!result.success) {
+      errorMessage.value = result.message;
+      return;
+    }
 
     if (mode.value === 'user') {
       router.push({name : 'MainPage'});
@@ -66,7 +73,7 @@ const login = async () => {
         <el-form-item :label="modeId" class="input-form-label">
           <div class="input-vertical">
             <el-input
-                v-model="loginForm.loginId"
+                v-model="loginForm.userLoginId"
                 class="input-size-large"
                 placeholder="아이디를 입력해주세요."
             />
