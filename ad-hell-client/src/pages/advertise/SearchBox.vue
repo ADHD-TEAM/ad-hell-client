@@ -105,6 +105,7 @@ const handleSearch = () => {
   padding: 20px 24px;
   background: #f7f5f5;
   border-radius: 10px;
+  box-sizing: border-box;
 }
 
 .ad-search-inner {
