@@ -2,24 +2,37 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080', // 필요하면 proxy 쓰면 '/api' 만 써도 됨
+    baseURL: 'http://localhost:8080',
 })
 
-/** 게시판 목록 조회 (검색 + 페이징) */
-export async function fetchBoards({ page = 1, size = 20, keyword = '' } = {}) {
+// 목록 조회
+export async function fetchBoards(params = {}) {
     const res = await api.get('/api/boards', {
-        params: {
-            page,
-            size,
-            keyword: keyword || undefined,
-        },
+        // params 예시:
+        // { page, size, title, writer, fromDate, toDate }
+        params,
     })
-
     return res.data.data
 }
 
-/** 게시판 상세 조회 (조회수 증가 포함) */
+// 상세 조회
 export async function fetchBoardDetail(boardId) {
     const res = await api.get(`/api/boards/${boardId}`)
+    return res.data.data
+}
+
+// 게시글 등록
+export async function createBoard(formData) {
+    const res = await api.post('/api/boards', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return res.data.data
+}
+
+// 게시글 수정
+export async function updateBoard(boardId, formData) {
+    const res = await api.put(`/api/boards/${boardId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    })
     return res.data.data
 }

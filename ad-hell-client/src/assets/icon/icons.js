@@ -24,6 +24,9 @@ import iconQnaHover from '@/assets/icon/icon-QNA-hover.svg'
 import iconNotice from '@/assets/icon/icon-notice.svg'
 import iconNoticeHover from '@/assets/icon/icon-notice-hover.svg'
 
+import iconFavorite from '@/assets/icon/icon-favorite.svg'
+import iconFavoriteHover from '@/assets/icon/icon-favorite-hover.svg'
+
 // category 공통
 import iconCategory from '@/assets/icon/icon-category.svg'
 import iconCategoryHover from '@/assets/icon/icon-category-hover.svg'
@@ -71,6 +74,7 @@ export const icons = {
     notice: { default: iconNotice, hover: iconNoticeHover },
 
     category: { default: iconCategory, hover: iconCategoryHover },
+    favorite: { default: iconFavorite, hover: iconFavoriteHover},
 
     music: { default: iconMusic, hover: iconMusicHover },
     movie: { default: iconMovie, hover: iconMovieHover },

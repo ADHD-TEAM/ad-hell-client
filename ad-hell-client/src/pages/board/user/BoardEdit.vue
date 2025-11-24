@@ -1,59 +1,81 @@
-  <script setup>
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+<script setup>
+import { reactive, ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import CommonButton from '@/components/common/CommonButton.vue'
+import { useBoardStore } from '@/stores/boardStore'
 
+// 라우터
 const router = useRouter()
+const route = useRoute()
+const boardId = route.params.id
 
-// 게시글 작성 폼 데이터
+// store
+const boardStore = useBoardStore()
+
+// 수정 폼
 const form = reactive({
   title: '',
   content: '',
-  files: [], // 업로드한 파일 목록 (UI용)
+  files: [],
 })
 
-// 파일 input ref
+// 파일 선택용 ref
 const fileInputRef = ref(null)
 
-// 파일 선택 클릭
+// 파일 선택 창 열기
 const onClickUpload = () => {
   fileInputRef.value?.click()
 }
 
-// 파일 선택 시
+// 파일 선택 시 목록 저장
 const onFileChange = (event) => {
   const files = Array.from(event.target.files || [])
   form.files = files
 }
 
-// 등록 버튼 (나중에 API 연동 시 여기서 FormData 만들어 전송)
-const onSubmit = () => {
-  console.log('등록 요청 데이터', {
+// 수정 요청
+const onSubmit = async () => {
+  console.log('수정 요청 데이터', {
+    id: boardId,
     title: form.title,
     content: form.content,
     files: form.files,
   })
-  // TODO: boardCreate API 호출 후 /boards 로 이동
-  // router.push('/boards')
+
+  // API 연동 시 사용
+  // const formData = new FormData()
+  // formData.append('title', form.title)
+  // formData.append('content', form.content)
+  // form.files.forEach(f => formData.append('files', f))
+  // await boardStore.updateBoardAction(boardId, formData)
+
+  // router.push(`/boards/${boardId}`)
 }
 
-// 취소 버튼
+// 취소 → 이전 페이지
 const onCancel = () => {
-  router.push('/boards')
+  router.back()
 }
+
+// 기존 게시글 상세 데이터 로드
+onMounted(async () => {
+  // const data = await boardStore.loadBoardDetail(boardId)
+  // form.title = data.title
+  // form.content = data.content
+
+  // 임시 값
+  form.title = '기존 제목 예시입니다.'
+  form.content = '기존 내용 예시입니다.\nAPI 연동 시 서버 데이터로 교체하세요.'
+})
 </script>
 
 <template>
-  <section class="board-create-page">
+  <section class="board-edit-page">
     <h2 class="page-title">게시판</h2>
 
     <div class="form-wrapper">
-      <el-form
-          :model="form"
-          label-position="top"
-          class="board-form"
-      >
-        <!-- 제목 -->
+      <el-form :model="form" label-position="top" class="board-form">
+
         <el-form-item label="제목">
           <el-input
               v-model="form.title"
@@ -62,7 +84,6 @@ const onCancel = () => {
           />
         </el-form-item>
 
-        <!-- 내용 -->
         <el-form-item label="내용">
           <el-input
               v-model="form.content"
@@ -73,12 +94,11 @@ const onCancel = () => {
           />
         </el-form-item>
 
-        <!-- 이미지 / 파일 업로드 박스 -->
         <el-form-item>
           <div class="upload-box" @click="onClickUpload">
             <div class="upload-inner">
               <div class="upload-icon">⬆</div>
-              <div class="upload-text">이미지 / 파일 업로드 하세요</div>
+              <div class="upload-text">이미지 / 파일 업로드 해보세요</div>
 
               <div v-if="form.files.length" class="upload-files">
                 <span
@@ -91,7 +111,6 @@ const onCancel = () => {
               </div>
             </div>
 
-            <!-- 실제 파일 입력 (숨김) -->
             <input
                 ref="fileInputRef"
                 type="file"
@@ -101,11 +120,11 @@ const onCancel = () => {
             />
           </div>
         </el-form-item>
+
       </el-form>
 
-      <!-- 하단 버튼 (오른쪽 정렬) -->
       <div class="form-footer">
-        <CommonButton type="register" @click="onSubmit" />
+        <CommonButton type="update" @click="onSubmit" />
         <CommonButton type="cancel" @click="onCancel" />
       </div>
     </div>
@@ -113,7 +132,7 @@ const onCancel = () => {
 </template>
 
 <style scoped lang="scss">
-.board-create-page {
+.board-edit-page {
   padding: 24px 40px;
 }
 
@@ -123,30 +142,25 @@ const onCancel = () => {
   margin-bottom: 16px;
 }
 
-/* 가운데 폼 영역 */
 .form-wrapper {
   width: 100%;
 }
 
-/* Element Plus form 전체 폭 */
 .board-form {
   width: 100%;
 }
 
-/* 제목/내용 label 스타일 */
 :deep(.el-form-item__label) {
   font-size: 14px;
   font-weight: 600;
-  color: #555;
+  color: #333;
 }
 
-/* input / textarea 높이 조정 */
 :deep(.el-input__wrapper) {
   height: 40px;
   box-sizing: border-box;
 }
 
-/* textarea는 큰 박스로 */
 .content-textarea {
   :deep(textarea) {
     min-height: 260px;
@@ -154,11 +168,10 @@ const onCancel = () => {
   }
 }
 
-/* 업로드 박스 */
 .upload-box {
   width: 100%;
   min-height: 140px;
-  border: 1px dashed #e0e0e0;
+  border: 1px solid #ececec;
   border-radius: 10px;
   background: #fafafa;
   cursor: pointer;
@@ -169,7 +182,7 @@ const onCancel = () => {
 
 .upload-inner {
   text-align: center;
-  color: #999;
+  color: #b3b3b3;
 }
 
 .upload-icon {
@@ -178,10 +191,9 @@ const onCancel = () => {
 }
 
 .upload-text {
-  font-size: 13px;
+  font-size: 12px;
 }
 
-/* 선택된 파일 목록 */
 .upload-files {
   margin-top: 12px;
   display: flex;
@@ -199,12 +211,10 @@ const onCancel = () => {
   background: #fff;
 }
 
-/* 실제 input은 숨김 */
 .file-input-hidden {
   display: none;
 }
 
-/* 하단 버튼 오른쪽 정렬 */
 .form-footer {
   margin-top: 16px;
   display: flex;
