@@ -2,7 +2,9 @@
 import { ref ,reactive } from "vue";
 import foldingIconSrc from '@/assets/icon/icon-folding.svg';
 import {useRouter} from "vue-router";
-import LoginView from "@/pages/account/LoginView.vue";
+import HeadBarIconSrc from '@/assets/icon/icon-logo.svg'
+import AlertIconSrc from '@/assets/icon/icon-headbar-alert.svg'
+import MypageIconSrc from '@/assets/icon/icon-headbar-mypage.svg'
 
 const router = useRouter();
 
@@ -13,6 +15,15 @@ const foldingIcon = reactive({
   src : foldingIconSrc,
   name : 'foldingIcon'
 });
+const HeadBarIcon = ref(
+    { src : HeadBarIconSrc }
+)
+const MypageIcon = ref(
+    {src : MypageIconSrc}
+)
+const AlertIcon = ref(
+    {src : AlertIconSrc}
+)
 </script>
 
 <template>
@@ -29,13 +40,14 @@ const foldingIcon = reactive({
             class="folding-img"
         />
         <!-- 로고 텍스트 -->
-        <span class="logo-text">AD-HELL</span>
+        <img :src = "HeadBarIcon.src"/>
       </div>
 
       <!-- 오른쪽 영역 (메뉴, 버튼 등) -->
       <div class="header-right">
         <!-- Element Plus 버튼들 예시 -->
-        <el-button type="text">알림</el-button>
+        <img :src = "AlertIcon.src"/>
+        <img :src = "MypageIcon.src"/>
         <el-button type="primary" @click="goLogin">로그인</el-button>
       </div>
     </div>
