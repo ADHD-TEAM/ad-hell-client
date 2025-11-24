@@ -2,6 +2,8 @@
 import { ref ,reactive } from "vue";
 import foldingIconSrc from '@/assets/icon/icon-folding.svg';
 import {useRouter} from "vue-router";
+import LoginView from "@/pages/account/LoginView.vue";
+import NotificationBell from "@/components/notification/NotificationBell.vue";
 import HeadBarIconSrc from '@/assets/icon/icon-logo.svg'
 import AlertIconSrc from '@/assets/icon/icon-headbar-alert.svg'
 import MypageIconSrc from '@/assets/icon/icon-headbar-mypage.svg'
@@ -48,6 +50,7 @@ const AlertIcon = ref(
         <!-- Element Plus 버튼들 예시 -->
         <img :src = "AlertIcon.src"/>
         <img :src = "MypageIcon.src"/>
+        <NotificationBell />
         <el-button type="primary" @click="goLogin">로그인</el-button>
       </div>
     </div>
