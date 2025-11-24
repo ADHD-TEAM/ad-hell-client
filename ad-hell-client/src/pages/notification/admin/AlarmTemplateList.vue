@@ -1,5 +1,6 @@
 <template>
   <div class="template-page">
+    <div class="template-container">
     <header class="page-header">
       <h1>알림 템플릿 목록 조회</h1>
     </header>
@@ -36,6 +37,7 @@
               v-for="item in filteredTemplates"
               :key="item.id"
               class="table-row"
+              @click="goDetail(item)"
           >
             <div class="col id">{{ item.id }}</div>
             <div class="col title">{{ item.title }}</div>
@@ -85,7 +87,7 @@
         </el-button>
       </div>
     </section>
-
+    </div>
   </div>
 </template>
 
@@ -137,9 +139,8 @@ const loadTemplates = async (page = 0) => {
       id: t.templateId,
       title: t.templateTitle,
       body: t.templateBody,
-      // 필요하면 kind/createdAt도 같이 보낼 수 있음
+      createdAt: t.createdAt,
       // kind: t.templateKind,
-      // createdAt: t.createdAt,
     }))
 
   } catch (err) {
@@ -154,6 +155,20 @@ const loadTemplates = async (page = 0) => {
 // 검색 버튼 -> 0페이지부터 다시 조회
 const handleSearch = () => {
   loadTemplates(0)
+}
+
+// 상세 페이지로 이동
+const goDetail = (item) => {
+  router.push({
+    name: 'AdminAlarmTemplateDetail',
+    params: { templateId: item.id },
+    // 리스트에서 이미 받은 데이터는 쿼리로 같이 넘겨서 재사용
+    query: {
+      title: item.title,
+      body: item.body,
+      createdAt: item.createdAt,
+    },
+  })
 }
 
 // 지금은 서버 페이징을 쓰니까, 프론트 필터는 단순 통과
@@ -189,6 +204,11 @@ const goCreate = () => {
   padding: 24px 32px 40px;
   background: #f9fbfd;
   min-height: 100%;
+}
+
+.template-container {
+  max-width: 900px;   /* 여기 숫자 조절하면 폭 바뀜 (예: 960, 1024 등) */
+  margin: 0 auto;
 }
 
 .page-header {
@@ -363,6 +383,14 @@ const goCreate = () => {
   color: #dc2626;
   font-weight: 600;
   margin-bottom: 8px;
+}
+
+.table-row {
+  cursor: pointer;
+}
+
+.table-row:hover {
+  background: #fff5f5;
 }
 
 </style>

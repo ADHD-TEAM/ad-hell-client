@@ -1,6 +1,7 @@
 <!-- src/pages/admin/AlarmTemplateCreate.vue -->
 <template>
   <div class="template-create-page">
+    <div class="create-container">
     <header class="page-header">
       <h1>알림 템플릿 등록</h1>
     </header>
@@ -55,6 +56,7 @@
         :message="alertMessage"
         @confirm="handleAlertConfirm"
     />
+    </div>
   </div>
 </template>
 
@@ -143,6 +145,11 @@ const handleCancel = () => {
   padding: 24px 32px 40px;
   background: #f9fbfd;
   min-height: 100%;
+}
+
+.create-container {
+  max-width: 900px;   /* 여기 숫자 조절하면 폭 바뀜 (예: 960, 1024 등) */
+  margin: 0 auto;
 }
 
 .page-header {

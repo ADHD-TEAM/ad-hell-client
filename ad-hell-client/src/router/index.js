@@ -79,15 +79,25 @@ const routes = [
         component: DefaultLayout,
         meta: { role: 'admin' },
         children: [
+            //  템플릿 목록 조회 페이지
             {
                 path: 'alarms',
                 name: 'AdminAlarmTemplates',
                 component: () => import('@/pages/notification/admin/AlarmTemplateList.vue'),
             },
+
+            //  템플릿 생성 페이지
             {
                 path: 'alarms/new',
                 name: 'AdminAlarmTemplateCreate',
                 component: () => import('@/pages/notification/admin/AlarmTemplateCreate.vue'),
+            },
+
+            //  템플릿 상세 조회 페이지
+            {
+                path: 'alarms/:templateId',
+                name: 'AdminAlarmTemplateDetail',
+                component: () => import('@/pages/notification/admin/AlarmTemplateDetail.vue'),
             },
         ],
     },
