@@ -75,19 +75,17 @@ const sizeStyle = computed(() => ({
   align-items: center;
   justify-content: center;
 
-  /* 🔥 width/height 그대로 쓰도록 padding 제거 */
   padding: 0 4px;
 
   border-radius: 6px;
 
-  font-size: 13px; /* 글자 너무 커지지 않게 */
+  font-size: 13px;
   font-weight: 600;
 
   border: 1px solid transparent;
   cursor: pointer;
   transition: 0.15s;
 
-  /* 🔥 글 내용이 길면 자동 줄임 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
