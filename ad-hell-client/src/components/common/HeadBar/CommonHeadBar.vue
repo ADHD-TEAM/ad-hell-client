@@ -1,3 +1,15 @@
+<script setup>
+
+import {useRouter} from "vue-router";
+import LoginView from "@/pages/account/LoginView.vue";
+
+const router = useRouter();
+
+const goLogin = () => {
+  router.push({name : 'UserLoginView'});
+}
+
+</script>
 <template>
   <!-- Element Plus 헤더 컴포넌트 -->
   <el-header class="app-header">
@@ -19,7 +31,7 @@
       <div class="header-right">
         <!-- Element Plus 버튼들 예시 -->
         <el-button type="text">알림</el-button>
-        <el-button type="primary">로그인</el-button>
+        <el-button type="primary" @click="goLogin">로그인</el-button>
       </div>
     </div>
   </el-header>
@@ -89,5 +101,4 @@ const foldingIcon = reactive({
   margin-left: 0;
 }
 */
-
 </style>

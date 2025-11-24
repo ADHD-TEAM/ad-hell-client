@@ -1,7 +1,8 @@
 import api from './api.js';
 
-export function loginApi(username, password) {
-    return api.post('/api/v1/auth/login', { username, password })
+export async function loginApi(username, password) {
+    console.log("로그인 시작");
+    return api.post('/api/v1/auth/login', { username, password})
 }
 
 export function refreshApi() {

@@ -50,10 +50,10 @@ src/
  │    ├─ usePagination.js
  │    └─ useForm.js
  │
- ├─ services/                   # API 호출 계층
- │    ├─ userService.js
- │    ├─ boardService.js
- │    └─ authService.js
+ ├─ api/                   # API 호출 계층
+ │    ├─ userApi.js
+ │    ├─ boardApi.js
+ │    └─ authApi.js
  │
  ├─ router/
  │    └─ index.js

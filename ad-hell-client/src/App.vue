@@ -1,15 +1,19 @@
 <script setup>
-  import HeadBar from '@/components/common/HeadBar/CommonHeadBar.vue';
+import HeadBar from '@/components/common/HeadBar/CommonHeadBar.vue';
+
+import {useRoute} from "vue-router";
+
+const route = useRoute();
+
 </script>
 
 <template>
   <HeadBar />
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
   <router-view />
+  <LoginView />
+  <component :is="route.meta.layout === 'none' ? 'router-view' : DefaultLayout">
+    <router-view v-if="route.meta.layout === 'none'" />
+  </component>
 </template>
 
 <style scoped></style>
