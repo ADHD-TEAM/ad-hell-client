@@ -84,6 +84,11 @@ const routes = [
                 name: 'AdminAlarmTemplates',
                 component: () => import('@/pages/notification/admin/AlarmTemplateList.vue'),
             },
+            {
+                path: 'alarms/new',
+                name: 'AdminAlarmTemplateCreate',
+                component: () => import('@/pages/notification/admin/AlarmTemplateCreate.vue'),
+            },
         ],
     },
 

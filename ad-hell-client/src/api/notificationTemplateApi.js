@@ -15,6 +15,9 @@ apiClient.interceptors.request.use((config) => {
     return config
 })
 
+/**
+ * 관리자 템플릿 목록/검색 조회
+ */
 export async function fetchAdminNotificationTemplates({
                                                           keyword = '',
                                                           page = 0,
@@ -26,6 +29,25 @@ export async function fetchAdminNotificationTemplates({
             page,
             size,
         },
+    })
+
+    return res.data?.data
+}
+
+/**
+ * 관리자 템플릿 생성
+ * 백엔드: POST /api/admin/notifications/templates
+ * Body: { templateKind, templateTitle, templateBody }
+ */
+export async function createAdminNotificationTemplate({
+                                                          templateKind = 'NORMAL',   // 일단 기본값 NORMAL
+                                                          templateTitle,
+                                                          templateBody,
+                                                      }) {
+    const res = await apiClient.post('/admin/notifications/templates', {
+        templateKind,
+        templateTitle,
+        templateBody,
     })
 
     return res.data?.data

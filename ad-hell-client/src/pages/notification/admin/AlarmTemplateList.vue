@@ -80,7 +80,7 @@
           </button>
         </div>
 
-        <el-button type="danger" class="create-button">
+        <el-button type="danger" class="create-button" @click="goCreate">
           등록하기
         </el-button>
       </div>
@@ -92,6 +92,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { fetchAdminNotificationTemplates } from '@/api/notificationTemplateApi.js'
+import {useRouter} from "vue-router";
+
+const router = useRouter()
 
 const searchQuery = ref('')
 const templates = ref([])
@@ -166,6 +169,13 @@ const goPage = (page) => {
 onMounted(() => {
   loadTemplates(0)
 })
+
+const goCreate = () => {
+  // 라우트 이름으로 이동
+  router.push({ name: 'AdminAlarmTemplateCreate' })
+  // 또는 경로로 직접:
+  // router.push('/admin/alarms/new')
+}
 </script>
 
 
