@@ -19,7 +19,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-import CommonUserHeadBar from '@/components/common/HeadBar/CommonUserHeadBar.vue'
+import CommonUserHeadBar from '@/components/common/CommonUserHeadBar.vue'
 import AdminSidebar from '@/layouts/sidebar/AdminSidebar.vue'
 import UserSidebar from '@/layouts/sidebar/UserSidebar.vue'
 
