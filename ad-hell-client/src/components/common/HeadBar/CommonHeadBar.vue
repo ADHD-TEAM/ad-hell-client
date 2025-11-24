@@ -1,5 +1,5 @@
 <script setup>
-import { ref,reactive } from "vue";
+import { ref ,reactive } from "vue";
 import foldingIconSrc from '@/assets/icon/icon-folding.svg';
 import {useRouter} from "vue-router";
 import LoginView from "@/pages/account/LoginView.vue";
@@ -10,7 +10,7 @@ const goLogin = () => {
   router.push({name : 'UserLoginView'});
 }
 const foldingIcon = reactive({
-  src : 'foldingIconSrc',
+  src : foldingIconSrc,
   name : 'foldingIcon'
 });
 </script>
@@ -53,8 +53,8 @@ const foldingIcon = reactive({
 }
 .folding-img{
   margin-right:8px;
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
 }
 /* 실제 규격: 1280 x 56 + 좌우 패딩 30 */
 .header-inner {
