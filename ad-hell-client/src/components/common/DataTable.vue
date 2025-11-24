@@ -1,7 +1,8 @@
-<!-- src/components/board/BoardTable.vue -->
+<!-- src/components/common/DataTable.vue -->
 <script setup>
 const props = defineProps({
-  boards: {
+  // 테이블에 뿌릴 데이터 (게시판/공지/문의 등 공통)
+  data: {
     type: Array,
     required: true,
   },
@@ -16,47 +17,22 @@ const handleRowClick = (row) => {
 </script>
 
 <template>
-  <div class="board-table-wrapper">
+  <div class="data-table-wrapper">
     <el-table
-        :data="boards"
-        class="board-table"
+        :data="data"
+        class="data-table"
         @row-click="handleRowClick"
         :highlight-current-row="true"
         empty-text="No Data"
     >
-      <el-table-column
-          prop="id"
-          label="ID"
-          width="80"
-      />
-      <el-table-column
-          prop="title"
-          label="제목"
-          min-width="300"
-          show-overflow-tooltip
-      />
-      <el-table-column
-          prop="writerName"
-          label="작성자"
-          width="140"
-      />
-      <el-table-column
-          prop="createdAt"
-          label="작성일"
-          width="160"
-      />
-      <el-table-column
-          prop="viewCount"
-          label="조회수"
-          width="100"
-          align="center"
-      />
+      <!-- 각 화면(게시판/공지/문의)에서 el-table-column 넣는 자리 -->
+      <slot />
     </el-table>
   </div>
 </template>
 
 <style scoped lang="scss">
-.board-table-wrapper {
+.data-table-wrapper {
   width: 100%;
   border-radius: 10px;
   border: 1px solid #f0f0f0;
@@ -71,10 +47,10 @@ const handleRowClick = (row) => {
   font-size: 14px;
 }
 
-/* 헤더 배경, 라인 스타일 */
+/* 헤더 스타일 */
 :deep(.el-table__header-wrapper th) {
   font-weight: 700;
-  color: #000000
+  color: #000000;
 }
 
 /* 바닥줄 색 */

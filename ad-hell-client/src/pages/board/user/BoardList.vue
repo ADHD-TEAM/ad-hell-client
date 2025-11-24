@@ -4,9 +4,10 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBoardStore } from '@/stores/boardStore.js'
 
-import BoardSearch from '@/components/board/BoardSearch.vue'
-import BoardTable from '@/components/board/BoardTable.vue'
-import BoardPagination from '@/components/board/BoardPagination.vue'
+import SearchForm from '@/components/common/SearchForm.vue'
+// ✅ BoardTable 대신 공통 DataTable 사용
+import DataTable from '@/components/common/DataTable.vue'
+import Pagination from '@/components/common/Pagination.vue'
 import CommonButton from '@/components/common/CommonButton.vue'
 
 const router = useRouter()
@@ -41,7 +42,7 @@ onMounted(() => {
 
     <div class="board-content">
       <!-- 검색 -->
-      <BoardSearch
+      <SearchForm
           :search-form="searchForm"
           @search="search"
       />
@@ -49,16 +50,44 @@ onMounted(() => {
       <!-- 목록 타이틀 -->
       <h3 class="board-subtitle">게시판 목록</h3>
 
-      <!-- Element Plus 테이블 기반 -->
-      <BoardTable
-          :boards="boards"
+      <!-- ✅ 공통 DataTable + 게시판 전용 컬럼 -->
+      <DataTable
+          :data="boards"
           @select="goDetail"
-      />
+      >
+        <el-table-column
+            prop="id"
+            label="ID"
+            width="80"
+        />
+        <el-table-column
+            prop="title"
+            label="제목"
+            min-width="300"
+            show-overflow-tooltip
+        />
+        <el-table-column
+            prop="writerName"
+            label="작성자"
+            width="140"
+        />
+        <el-table-column
+            prop="createdAt"
+            label="작성일"
+            width="160"
+        />
+        <el-table-column
+            prop="viewCount"
+            label="조회수"
+            width="100"
+            align="center"
+        />
+      </DataTable>
 
-      <!-- Element Plus 페이지네이션 + 글쓰기 버튼 -->
+      <!-- 페이지네이션 + 글쓰기 버튼 -->
       <div class="board-bottom-row">
         <div class="bottom-left">
-          <BoardPagination
+          <Pagination
               :page="page"
               :total-pages="totalPages"
               @change-page="changePage"
@@ -75,7 +104,7 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .board-page {
-  padding: 24px 32px 40px;   /* flex:1 제거 */
+  padding: 24px 32px 40px;
   box-sizing: border-box;
 }
 
@@ -87,7 +116,7 @@ onMounted(() => {
 
 .board-content {
   width: 100%;
-  margin: 0;     /* auto 필요 없음 */
+  margin: 0;
 }
 
 .board-subtitle {
@@ -104,7 +133,6 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
 }
-
 
 .bottom-left {
   flex: 1;

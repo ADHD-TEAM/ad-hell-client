@@ -81,10 +81,10 @@ onMounted(() => {
 <template>
   <section class="board-detail-page" v-loading="loading">
 
-    <!-- ★ 제목만 -->
+    <!--  제목만 -->
     <h2 class="detail-title">{{ board.title }}</h2>
 
-    <!-- ★ 작성자 / 작성일 / 조회수 + 구분선 -->
+    <!--  작성자 / 작성일 / 조회수 + 구분선 -->
     <div class="detail-meta">
       <div class="meta-item">
         <span class="meta-label">작성자:</span>
@@ -102,7 +102,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- ★ 구분선 -->
+    <!--  구분선 -->
     <div class="divider"></div>
 
     <!-- 내용 박스 -->
@@ -112,7 +112,7 @@ onMounted(() => {
       </p>
     </div>
 
-    <!-- ★ 수정/삭제 버튼 -->
+    <!--   수정/삭제 버튼 -->
     <div class="detail-actions">
       <CommonButton type="update" @click="onClickUpdate" />
       <CommonButton type="delete" @click="onClickDelete" />
