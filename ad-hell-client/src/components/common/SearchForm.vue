@@ -1,4 +1,4 @@
-<!-- src/components/board/BoardSearch.vue -->
+<!-- src/components/board/SearchForm.vue -->
 <script setup>
 import CommonButton from '@/components/common/CommonButton.vue'
 
@@ -88,6 +88,7 @@ const { searchForm } = props
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 24px;
+
 }
 
 .search-form {

@@ -66,17 +66,17 @@ const routes = [
             },
 
             //  공지사항 (유저)
-            // {
-            //     path: 'announcements',
-            //     name: 'AnnouncementList',
-            //     component: () => import('@/pages/announcement/user/AnnouncementList.vue'),
-            // },
-            // {
-            //     path: 'announcements/:id',
-            //     name: 'AnnouncementDetail',
-            //     component: () => import('@/pages/announcement/user/AnnouncementDetail.vue'),
-            //     props: true,
-            // },
+            {
+                path: 'announcements',
+            name: 'AnnouncementList',
+            component: () => import('@/pages/announcement/user/AnnouncementList.vue'),
+            },
+            {
+                path: 'announcements/:id',
+                name: 'AnnouncementDetail',
+                component: () => import('@/pages/announcement/user/AnnouncementDetail.vue'),
+                props: true,
+            },
 
             // 어드민 광고 등록 페이지
             {

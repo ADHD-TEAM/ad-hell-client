@@ -1,4 +1,6 @@
+<!-- src/components/board/Pagination.vue -->
 <script setup>
+import { computed } from 'vue'
 import PageButton from '@/components/common/PageButton.vue'
 
 const props = defineProps({
@@ -15,6 +17,32 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['change-page'])
+
+/**
+ * 최대 5개의 페이지만 보이도록 계산
+ * 예)
+ *  - 1페이지: 1 2 3 4 5
+ *  - 4페이지: 2 3 4 5 6
+ *  - 마지막(예: 10페이지): 6 7 8 9 10
+ */
+const visiblePages = computed(() => {
+  const pages = []
+
+  // 기본 범위: 현재 페이지 기준 -2 ~ +2
+  let start = Math.max(1, props.page - 2)
+  let end = Math.min(props.totalPages, start + 4)
+
+  // 전체 개수가 5개 안되면 보정
+  if (end - start < 4) {
+    start = Math.max(1, end - 4)
+  }
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+
+  return pages
+})
 </script>
 
 <template>
@@ -28,9 +56,9 @@ const emit = defineEmits(['change-page'])
       이전
     </PageButton>
 
-    <!-- 숫자 버튼 -->
+    <!-- 숫자 버튼(최대 5개) -->
     <PageButton
-        v-for="p in totalPages"
+        v-for="p in visiblePages"
         :key="p"
         type="number"
         :active="p === page"
@@ -51,7 +79,6 @@ const emit = defineEmits(['change-page'])
 </template>
 
 <style scoped lang="scss">
-/* 부모가 위치를 잡고, 안에서는 버튼만 나열 */
 .pagination {
   display: flex;
   gap: 8px;
