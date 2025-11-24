@@ -2,6 +2,7 @@
 
 import {useRouter} from "vue-router";
 import LoginView from "@/pages/account/LoginView.vue";
+import NotificationBell from "@/components/notification/NotificationBell.vue";
 
 const router = useRouter();
 
@@ -23,7 +24,7 @@ const goLogin = () => {
       <!-- 오른쪽 영역 (메뉴, 버튼 등) -->
       <div class="header-right">
         <!-- Element Plus 버튼들 예시 -->
-        <el-button type="text">알림</el-button>
+        <NotificationBell />
         <el-button type="primary" @click="goLogin">로그인</el-button>
       </div>
     </div>
