@@ -2,8 +2,7 @@
   <div class="layout">
 
     <!-- 공통 헤더 -->
-    <CommonHeadBar class="layout-header" />
-
+    <CommonUserHeadBar class="layout-header" />
     <!-- 헤더 아래 본문 (좌측 사이드바 + 우측 콘텐츠) -->
     <div class="layout-body">
       <component :is="currentSidebar" class="layout-sidebar" />
@@ -20,7 +19,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-import CommonHeadBar from '@/components/common/CommonHeadBar.vue'
+import CommonUserHeadBar from '@/components/common/HeadBar/CommonUserHeadBar.vue'
 import AdminSidebar from '@/layouts/sidebar/AdminSidebar.vue'
 import UserSidebar from '@/layouts/sidebar/UserSidebar.vue'
 
