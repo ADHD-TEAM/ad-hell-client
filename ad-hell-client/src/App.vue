@@ -8,7 +8,6 @@ const route = useRoute();
 </script>
 
 <template>
-  <HeadBar />
   <router-view />
   <LoginView />
   <component :is="route.meta.layout === 'none' ? 'router-view' : DefaultLayout">

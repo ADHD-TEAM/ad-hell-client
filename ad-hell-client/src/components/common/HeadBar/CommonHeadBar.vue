@@ -1,5 +1,6 @@
 <script setup>
-
+import { ref,reactive } from "vue";
+import foldingIconSrc from '@/assets/icon/icon-folding.svg';
 import {useRouter} from "vue-router";
 import LoginView from "@/pages/account/LoginView.vue";
 
@@ -8,8 +9,12 @@ const router = useRouter();
 const goLogin = () => {
   router.push({name : 'UserLoginView'});
 }
-
+const foldingIcon = reactive({
+  src : 'foldingIconSrc',
+  name : 'foldingIcon'
+});
 </script>
+
 <template>
   <!-- Element Plus 헤더 컴포넌트 -->
   <el-header class="app-header">
@@ -36,16 +41,6 @@ const goLogin = () => {
     </div>
   </el-header>
 </template>
-
-<script setup lang="ts">
-import { ref,reactive } from "vue";
-import foldingIconSrc from '@/assets/icon/icon-folding.svg';
-
-const foldingIcon = reactive({
-  src : 'foldingIconSrc',
-  name : 'foldingIcon'
-    });
-</script>
 
 <style scoped>
 /* el-header 기본 높이가 60px이라 56px로 맞춰줌 */
