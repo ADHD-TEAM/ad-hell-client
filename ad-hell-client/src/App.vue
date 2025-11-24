@@ -1,5 +1,5 @@
 <script setup>
-  import HeadBar from '@/components/common/CommonHeadBar.vue';
+  import HeadBar from '@/components/common/HeadBar/CommonHeadBar.vue';
 </script>
 
 <template>
