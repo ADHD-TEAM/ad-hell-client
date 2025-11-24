@@ -1,5 +1,4 @@
 <script setup>
-import CommonUserHeadBar from '@/components/common/CommonUserHeadBar.vue';
 
 import {useRoute} from "vue-router";
 

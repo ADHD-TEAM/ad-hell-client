@@ -78,6 +78,13 @@ const routes = [
             //     props: true,
             // },
 
+            // 어드민 광고 등록 페이지
+            {
+                path: 'admanageview',
+                name: 'AdManageView',
+                component: () => import('@/pages/advertise/AdManageView.vue'),
+            },
+
         ],
     },
 
