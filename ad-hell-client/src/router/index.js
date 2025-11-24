@@ -71,6 +71,22 @@ const routes = [
         ],
     },
 
+    /**
+     * 관리자 영역 (AdminSidebar)
+     */
+    {
+        path: '/admin',
+        component: DefaultLayout,
+        meta: { role: 'admin' },
+        children: [
+            {
+                path: 'alarms',
+                name: 'AdminAlarmTemplates',
+                component: () => import('@/pages/notification/admin/AlarmTemplateList.vue'),
+            },
+        ],
+    },
+
 
 
 ]
