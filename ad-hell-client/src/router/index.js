@@ -139,6 +139,7 @@ const routes = [
               path: 'admin/home',
               name: 'AdminHome',
               component: () => import('@/pages/admin/Home.vue'),
+              meta: { role: 'admin' }
             },
 
             // 어드민 신고 목록 페이지
@@ -146,23 +147,27 @@ const routes = [
               path: 'admin/reports',
               name: 'ReportList',
               component: () => import('@/pages/report/ReportList.vue'),
+              meta: { role: 'admin' }
             },
 
             /* 관리자 카테고리 관리 */
             {
               path: 'admin/categories',
               name: 'AdminCategoryList',
-              component: () => import('@/pages/category/CategoryCreate.vue'),
+              component: () => import('@/pages/category/CategoryList.vue'),
+              meta: { role: 'admin' }
             },
             {
               path: 'admin/categories/create',
               name: 'AdminCategoryCreate',
-              component: () => import('@/pages/category/CategoryList.vue'),
+              component: () => import('@/pages/category/CategoryCreate.vue'),
+              meta: { role: 'admin' }
             },
             {
               path: 'admin/categories/:id/edit',
               name: 'AdminCategoryEdit',
               component: () => import('@/pages/category/CategoryEdit.vue'),
+              meta: { role: 'admin' }
             },
 
             /* 관리자 경품 관리 */
@@ -175,16 +180,19 @@ const routes = [
               path: 'admin/rewards/create',
               name: 'AdminRewardCreate',
               component: () => import('@/pages/reward/RewardCreate.vue'),
+              meta: { role: 'admin' }
             },
             {
               path: 'admin/rewards/:id/edit',
               name: 'AdminRewardEdit',
               component: () => import('@/pages/reward/RewardEdit.vue'),
+              meta: { role: 'admin' }
             },
             {
               path: 'admin/rewards/:id/stock',
               name: 'AdminRewardStockCreate',
               component: () => import('@/pages/reward/RewardStockCreate.vue'),
+              meta: { role: 'admin' }
             },
 
             /* 관리자 신고 관리 */
@@ -192,6 +200,7 @@ const routes = [
               path: 'admin/reports',
               name: 'AdminReportList',
               component: () => import('@/pages/report/ReportList.vue'),
+              meta: { role: 'admin' }
             },
         ],
     },
