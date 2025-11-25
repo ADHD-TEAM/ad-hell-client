@@ -5,8 +5,6 @@ import {useAuthStore} from "@/stores/authStore.js";
 
 
 const routes = [
-
-
     {path: '/login' , name : 'UserLoginView' , component: () => import('@/pages/account/LoginView.vue') , meta: { layout: 'none' } },
     {path: '/admin/login' , name : 'AdminLoginView' , component: () => import('@/pages/account/LoginView.vue'), meta: { layout: 'none' } },
     {path: '/signUp' , name : 'SignUpView' , component: () => import('@/pages/account/SignUpView.vue'), meta: { layout: 'none' } },
@@ -14,6 +12,7 @@ const routes = [
     {path: '/find/password' , name : 'FindPasswordView' , component: () => import('@/pages/account/FindAccountView.vue'), meta: { layout: 'none' } },
     {path: '/lookup/id' , name : 'LookupIdView' , component: () => import('@/pages/account/LookupAccountView.vue'), meta: { layout: 'none' } },
     {path: '/lookup/password' , name : 'LookupPasswordView' , component: () => import('@/pages/account/LookupAccountView.vue'), meta: { layout: 'none' } },
+
     // 유저 영역 (UserSidebar)
     {
         path: '/',
@@ -80,6 +79,26 @@ const routes = [
                 component: () => import('@/pages/announcement/user/AnnouncementDetail.vue'),
                 props: true,
             },
+            {
+                path: 'mypage',
+                name: 'Mypage',
+                component: () => import('@/pages/mypage/Mypage.vue'),
+                props: true,
+                children: [
+                    {
+                        path: 'profile/update',
+                        name: 'MyProfileUpdate',
+                        component: () => import('@/pages/mypage/MyProfileUpdate.vue'),
+                        props: true,
+                    },
+                    {
+                        path: 'password/update',
+                        name: 'MyPasswordUpdate',
+                        component: () => import('@/pages/mypage/PasswordUpdate.vue'),
+                        props: true,
+                    }
+                ]
+            },
 
             // 광고 페이지
             {
@@ -105,39 +124,6 @@ const routes = [
 
         ],
     },
-
-// 어드민 광고 등록 페이지
-
-         /*관리자 영역 (AdminSidebar)*/
-    // {
-    //     path: '/admin',
-    //     component: DefaultLayout,
-    //     meta: { role: 'admin' },
-    //     children: [
-    //         // 📌 문의 관리 (목록 / 상세)
-    //         {
-    //             path: 'inquiries',
-    //             name: 'AdminInquiryList',
-    //             component: () => import('@/pages/inquiry/admin/AdminInquiryList.vue'),
-    //             meta: { role: 'admin' },
-    //         },
-    //         {
-    //             path: 'inquiries/:id',
-    //             name: 'AdminInquiryDetail',
-    //             component: () => import('@/pages/inquiry/admin/AdminInquiryDetail.vue'),
-    //             props: true,
-    //             meta: { role: 'admin' },
-    //         },
-    //
-    //         // 📌 (나중에) 공지사항 관리, 게시판 관리 등 추가
-    //         // {
-    //         //   path: 'announcements',
-    //         //   name: 'AdminAnnouncementList',
-    //         //   component: () => import('@/pages/announcement/admin/AdminAnnouncementList.vue'),
-    //         //   meta: { role: 'admin' },
-    //         // },
-    //     ],
-    // },
 ]
 
 const router = createRouter({
