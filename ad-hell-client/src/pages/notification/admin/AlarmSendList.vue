@@ -84,10 +84,13 @@
                 {{ item.body }}
               </div>
               <div class="col status">
-                <span class="status-pill status-success">
-                  <span class="dot" />
-                  <span>발송완료</span>
-                </span>
+  <span
+      class="status-pill"
+      :class="item.sent ? 'status-success' : 'status-pending'"
+  >
+    <span class="dot" />
+    <span>{{ item.sent ? '발송완료' : '발송대기' }}</span>
+  </span>
               </div>
               <div class="col created-at">
                 {{ formatDateTime(item.createdAt) }}
@@ -200,7 +203,7 @@ const loadNotifications = async (page = 0) => {
       userId: n.userId,
       title: n.notificationTitle,
       body: n.notificationBody,
-      read: n.read,
+      sent: n.read,
       createdAt: n.createdAt,
     }))
   } catch (err) {
@@ -409,17 +412,32 @@ onMounted(() => {
   font-weight: 700;
 }
 
-.status-success {
-  background: #e6f6ed;
-  color: #15803d;
-}
-
 .status-pill .dot {
   width: 6px;
   height: 6px;
   border-radius: 999px;
   background: #22c55e;
 }
+
+/* 초록: 발송완료 */
+.status-success {
+  background: #e6f6ed;
+  color: #15803d;
+}
+.status-success .dot {
+  background: #22c55e;
+}
+
+/* 주황: 발송대기 */
+.status-pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+.status-pending .dot {
+  background: #f59e0b;
+}
+
+
 
 /* 비어 있을 때 */
 .empty-state {
