@@ -62,6 +62,7 @@ const sizeStyle = computed(() => ({
 <template>
   <button
       class="common-btn"
+      type="button"
       :class="[`common-btn--${variant}`, { 'is-active': active }]"
       :style="sizeStyle"
       :disabled="disabled"
