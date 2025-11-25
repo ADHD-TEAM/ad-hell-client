@@ -100,11 +100,26 @@ const routes = [
                 ]
             },
 
-            // 어드민 광고 등록 페이지
+            // 광고 페이지
             {
-                path: 'admanageview',
+                path: 'adManageView',
                 name: 'AdManageView',
                 component: () => import('@/pages/advertise/AdManageView.vue'),
+            },
+            {
+                path: 'adCreate',
+                name: 'AdCreate',
+                component: () => import('@/pages/advertise/AdCreate.vue'),
+            },
+            {
+                path: 'adDetail/:id',
+                name: 'AdDetail',
+                component: () => import('@/pages/advertise/AdDetail.vue'),
+            },
+            {
+                path: 'adMain/:id',
+                name: 'AdMain',
+                component: () => import('@/pages/advertise/AdMain.vue'),
             },
 
         ],
