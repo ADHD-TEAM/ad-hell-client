@@ -106,6 +106,20 @@ const routes = [
                 name: 'AdminAlarmTemplateDetail',
                 component: () => import('@/pages/notification/admin/AlarmTemplateDetail.vue'),
             },
+
+            //  발송 알림 조회 페이지
+            {
+                path: 'alarms/send',
+                name: 'AdminAlarmSendList',
+                component: () => import ('@/pages/notification/admin/AlarmSendList.vue')
+            },
+
+            // 알림 발송 생성 페이지
+            {
+                path: '/admin/alarms/send/create',
+                name: 'AdminAlarmSendCreate',
+                component: () => import('@/pages/notification/admin/AlarmSendCreate.vue'),
+            },
         ],
     },
 

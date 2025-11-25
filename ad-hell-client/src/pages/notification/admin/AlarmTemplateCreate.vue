@@ -64,7 +64,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import CommonModal from '@/components/common/CommonModal.vue'
-import {createAdminNotificationTemplate} from "@/api/notificationTemplateApi.js";
+import {createAdminNotificationTemplate} from "@/api/notificationApi.js";
 
 // 필요하면 나중에 실제 등록 API 모듈 import
 // import { createAdminNotificationTemplate } from '@/api/notificationTemplateApi'

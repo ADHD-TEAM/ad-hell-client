@@ -87,7 +87,7 @@ import CommonModal from '@/components/common/CommonModal.vue'
 import {
   fetchAdminNotificationTemplates,
   deleteAdminNotificationTemplate,
-} from '@/api/notificationTemplateApi.js'
+} from '@/api/notificationApi.js'
 
 const route = useRoute()
 const router = useRouter()

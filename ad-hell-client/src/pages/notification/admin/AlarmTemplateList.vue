@@ -93,7 +93,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { fetchAdminNotificationTemplates } from '@/api/notificationTemplateApi.js'
+import { fetchAdminNotificationTemplates } from '@/api/notificationApi.js'
 import {useRouter} from "vue-router";
 
 const router = useRouter()
