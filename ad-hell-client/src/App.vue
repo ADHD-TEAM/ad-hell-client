@@ -1,4 +1,5 @@
 <script setup>
+
 import {useRoute} from "vue-router";
 
 const route = useRoute();
@@ -8,7 +9,6 @@ const route = useRoute();
 <template>
   <router-view />
   <LoginView />
-
   <component :is="route.meta.layout === 'none' ? 'router-view' : DefaultLayout">
     <router-view v-if="route.meta.layout === 'none'" />
   </component>

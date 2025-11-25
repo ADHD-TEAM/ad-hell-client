@@ -1,8 +1,8 @@
 <script setup>
 import {reactive, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import { ElMessage } from 'element-plus';
-import { loginApi } from '@/api/authApi.js'
+import {useAuthStore} from "@/stores/authStore.js";
+import LogoView from "@/components/features/account/LogoView.vue";
 const labelPosition = ref('top');
 const route = useRoute();
 const router = useRouter();
@@ -10,6 +10,7 @@ const mode = ref('user');
 const modeId = ref('아이디');
 const submitting = ref(false);
 const errorMessage = ref('');
+const authStore = useAuthStore();
 
 // route로 user, admin 인지 구분
 watchEffect(() => {
@@ -18,7 +19,7 @@ watchEffect(() => {
 });
 
 const loginForm = reactive({
-  loginId : ''
+  userLoginId : ''
   , password : ''
 });
 
@@ -29,14 +30,18 @@ const login = async () => {
   errorMessage.value = '';
 
   try {
-    const result = await loginApi(loginForm);
-    ElMessage.success('로그인 되었습니다.');
+    const result = await authStore.login(loginForm);
+
+    if(!result.success) {
+      errorMessage.value = result.message;
+      return;
+    }
 
     if (mode.value === 'user') {
-      router.push({name : 'MainPage'});
+      await router.push({name : 'MainPage'});
 
     } else if (mode.value === 'admin') {
-      router.push({name : 'AdminMainPage'});
+      await router.push({name : 'AdminMainPage'});
     }
   } catch (e) {
     console.log(e);
@@ -50,13 +55,11 @@ const login = async () => {
 </script>
 <template>
   <div class="block">
-    <router-link :to="{ name: 'MainPage' }">
-      <div class="logo">
-        <span class="logo-text">ADHD</span>
-        <span >:광고당했대</span>
-      </div>
-    </router-link>
 
+    <LogoView />
+    <div class="text-div">
+      <span><strong>로그인</strong></span>
+    </div>
     <el-form :label-position="labelPosition"
              label-width="100px"
              :model="loginForm"
@@ -66,7 +69,7 @@ const login = async () => {
         <el-form-item :label="modeId" class="input-form-label">
           <div class="input-vertical">
             <el-input
-                v-model="loginForm.loginId"
+                v-model="loginForm.userLoginId"
                 class="input-size-large"
                 placeholder="아이디를 입력해주세요."
             />
@@ -102,9 +105,9 @@ const login = async () => {
     <div>
       <div class="text-div" v-if="mode === 'user'">
         <div>
-          <router-link :to="{ name: 'RecoverAccountView' }"><span class="font-small-red">아이디 찾기</span></router-link>
+          <router-link :to="{ name: 'FindIdView'}"><span class="font-small-red">아이디 찾기</span></router-link>
           <span class="font-small-red">/</span>
-          <router-link :to="{ name: 'RecoverAccountView' }"><span class="font-small-red">비밀번호 찾기</span></router-link>
+          <router-link :to="{ name: 'FindPasswordView'}"><span class="font-small-red">비밀번호 찾기</span></router-link>
         </div>
         <router-link :to="{ name: 'SignUpView' }"><span class="font-small-red">회원가입</span></router-link>
       </div>

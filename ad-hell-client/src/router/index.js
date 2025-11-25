@@ -1,18 +1,19 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
-import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import { useAuthStore } from '@/stores/authStore'
+import DefaultLayout from "@/layouts/DefaultLayout.vue";
+import {useAuthStore} from "@/stores/authStore.js";
+
 
 const routes = [
-
-    // 유저 영역 (UserSidebar)
     {path: '/login' , name : 'UserLoginView' , component: () => import('@/pages/account/LoginView.vue') , meta: { layout: 'none' } },
     {path: '/admin/login' , name : 'AdminLoginView' , component: () => import('@/pages/account/LoginView.vue'), meta: { layout: 'none' } },
     {path: '/signUp' , name : 'SignUpView' , component: () => import('@/pages/account/SignUpView.vue'), meta: { layout: 'none' } },
-    {path: '/find' , name : 'RecoverAccountView' , component: () => import('@/pages/account/RecoverAccountView.vue'), meta: { layout: 'none' } },
-    /**
-     * 유저 영역 (UserSidebar)
-     */
+    {path: '/find/id' , name : 'FindIdView' , component: () => import('@/pages/account/FindAccountView.vue'), meta: { layout: 'none' } },
+    {path: '/find/password' , name : 'FindPasswordView' , component: () => import('@/pages/account/FindAccountView.vue'), meta: { layout: 'none' } },
+    {path: '/lookup/id' , name : 'LookupIdView' , component: () => import('@/pages/account/LookupAccountView.vue'), meta: { layout: 'none' } },
+    {path: '/lookup/password' , name : 'LookupPasswordView' , component: () => import('@/pages/account/LookupAccountView.vue'), meta: { layout: 'none' } },
+
+    // 유저 영역 (UserSidebar)
     {
         path: '/',
         component: DefaultLayout,
@@ -21,12 +22,6 @@ const routes = [
                 path: '',
                 name: 'MainPage',
                 component: () => import('@/pages/MainPage.vue'),
-            },
-
-            {
-                path: 'categories',
-                name: 'CategoryList',
-                component: () => import('@/pages/CategoryList.vue'),
             },
 
             // 게시판
@@ -41,6 +36,17 @@ const routes = [
                 component: () => import('@/pages/board/user/BoardDetail.vue'),
                 props: true,
             },
+            {
+                path: 'boards/create',
+                name: 'boardCreate',
+                component: () => import('@/pages/board/user/BoardCreate.vue'),
+            },
+            {
+                path: 'boards/:id/edit',
+                name: 'boardEdit',
+                component: () => import('@/pages/board/user/BoardEdit.vue'),
+            },
+
 
             //  문의 (유저)
             {
@@ -56,20 +62,149 @@ const routes = [
             },
 
             //  공지사항 (유저)
-            // {
-            //     path: 'announcements',
-            //     name: 'AnnouncementList',
-            //     component: () => import('@/pages/announcement/user/AnnouncementList.vue'),
-            // },
-            // {
-            //     path: 'announcements/:id',
-            //     name: 'AnnouncementDetail',
-            //     component: () => import('@/pages/announcement/user/AnnouncementDetail.vue'),
-            //     props: true,
-            // },
+            {
+                path: 'announcements',
+            name: 'AnnouncementList',
+            component: () => import('@/pages/announcement/user/AnnouncementList.vue'),
+            },
+            {
+                path: 'announcements/:id',
+                name: 'AnnouncementDetail',
+                component: () => import('@/pages/announcement/user/AnnouncementDetail.vue'),
+                props: true,
+            },
+            {
+                path: 'mypage',
+                name: 'Mypage',
+                component: () => import('@/pages/mypage/Mypage.vue'),
+                props: true,
+                children: [
+                    {
+                        path: 'profile/update',
+                        name: 'MyProfileUpdate',
+                        component: () => import('@/pages/mypage/MyProfileUpdate.vue'),
+                        props: true,
+                    },
+                    {
+                        path: 'password/update',
+                        name: 'MyPasswordUpdate',
+                        component: () => import('@/pages/mypage/PasswordUpdate.vue'),
+                        props: true,
+                    },
+                    {
+                        path: 'account/delete',
+                        name: 'AccountDelete',
+                        component: () => import('@/pages/mypage/AccountDelete.vue'),
+                        props: true,
+                    }
+                ]
+            },
 
+            /* 회원 경품 */
+            {
+              path: 'rewards',
+              name: 'RewardList',
+              component: () => import('@/pages/reward/user/RewardList.vue'),
+            },
+
+            {
+              path: 'rewards/:id',
+              name: 'RewardDetail',
+              component: () => import('@/pages/reward/user/RewardDetail.vue'),
+            },
+
+            // 광고 페이지
+            {
+                path: 'adManageView',
+                name: 'AdManageView',
+                component: () => import('@/pages/advertise/AdManageView.vue'),
+            },
+            {
+                path: 'adCreate',
+                name: 'AdCreate',
+                component: () => import('@/pages/advertise/AdCreate.vue'),
+            },
+            {
+                path: 'adDetail/:id',
+                name: 'AdDetail',
+                component: () => import('@/pages/advertise/AdDetail.vue'),
+            },
+            {
+                path: 'adMain/:id',
+                name: 'AdMain',
+                component: () => import('@/pages/advertise/AdMain.vue'),
+            },
+
+            {
+              path: 'admin/home',
+              name: 'AdminHome',
+              component: () => import('@/pages/admin/Home.vue'),
+              meta: { role: 'admin' }
+            },
+
+            // 어드민 신고 목록 페이지
+            {
+              path: 'admin/reports',
+              name: 'ReportList',
+              component: () => import('@/pages/report/ReportList.vue'),
+              meta: { role: 'admin' }
+            },
+
+            /* 관리자 카테고리 관리 */
+            {
+              path: 'admin/categories',
+              name: 'AdminCategoryList',
+              component: () => import('@/pages/category/CategoryList.vue'),
+              meta: { role: 'admin' }
+            },
+            {
+              path: 'admin/categories/create',
+              name: 'AdminCategoryCreate',
+              component: () => import('@/pages/category/CategoryCreate.vue'),
+              meta: { role: 'admin' }
+            },
+            {
+              path: 'admin/categories/:id/edit',
+              name: 'AdminCategoryEdit',
+              component: () => import('@/pages/category/CategoryEdit.vue'),
+              meta: { role: 'admin' }
+            },
+
+            /* 관리자 경품 관리 */
+            {
+              path: 'admin/rewards',
+              name: 'AdminRewardList',
+              component: () => import('@/pages/reward/RewardList.vue'),
+            },
+            {
+              path: 'admin/rewards/create',
+              name: 'AdminRewardCreate',
+              component: () => import('@/pages/reward/RewardCreate.vue'),
+              meta: { role: 'admin' }
+            },
+            {
+              path: 'admin/rewards/:id/edit',
+              name: 'AdminRewardEdit',
+              component: () => import('@/pages/reward/RewardEdit.vue'),
+              meta: { role: 'admin' }
+            },
+            {
+              path: 'admin/rewards/:id/stock',
+              name: 'AdminRewardStockCreate',
+              component: () => import('@/pages/reward/RewardStockCreate.vue'),
+              meta: { role: 'admin' }
+            },
+
+            /* 관리자 신고 관리 */
+            {
+              path: 'admin/reports',
+              name: 'AdminReportList',
+              component: () => import('@/pages/report/ReportList.vue'),
+              meta: { role: 'admin' }
+            },
         ],
     },
+<<<<<<< HEAD
 
     /**
      * 관리자 영역 (AdminSidebar)
@@ -125,6 +260,8 @@ const routes = [
 
 
 
+=======
+>>>>>>> develop
 ]
 
 const router = createRouter({
@@ -134,7 +271,6 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
     const authStore = useAuthStore();
-
 }) ;
 
 export default router

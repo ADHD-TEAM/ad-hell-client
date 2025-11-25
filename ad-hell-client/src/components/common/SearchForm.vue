@@ -1,0 +1,161 @@
+<!-- src/components/board/SearchForm.vue -->
+<script setup>
+import CommonButton from '@/components/common/CommonButton.vue'
+
+const props = defineProps({
+  searchForm: {
+    type: Object,
+    required: true,
+  },
+})
+
+const emit = defineEmits(['search'])
+const { searchForm } = props
+</script>
+
+<template>
+  <div class="board-search-box">
+    <div class="search-inner">
+
+      <el-form
+          :model="searchForm"
+          label-position="top"
+          class="search-form"
+      >
+        <div class="search-grid">
+
+          <el-form-item label="제목">
+            <el-input
+                v-model="searchForm.title"
+                placeholder="제목 또는 내용"
+                clearable
+            />
+          </el-form-item>
+
+          <el-form-item label="작성자">
+            <el-input
+                v-model="searchForm.writer"
+                placeholder="작성자"
+                clearable
+            />
+          </el-form-item>
+
+          <el-form-item label="시작일">
+            <el-date-picker
+                v-model="searchForm.fromDate"
+                type="date"
+                value-format="YYYY-MM-DD"
+                placeholder="시작일"
+                clearable
+                class="search-date"
+            />
+          </el-form-item>
+
+          <el-form-item label="종료일">
+            <el-date-picker
+                v-model="searchForm.toDate"
+                type="date"
+                value-format="YYYY-MM-DD"
+                placeholder="종료일"
+                clearable
+                class="search-date"
+            />
+          </el-form-item>
+
+        </div>
+      </el-form>
+
+      <div class="search-actions">
+        <CommonButton type="search" @click="emit('search')" />
+      </div>
+
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.board-search-box {
+  width: 100%;
+  margin-bottom: 38px;
+  background: #f7f5f5;
+  border-radius: 10px;
+  padding: 20px 24px;
+  box-sizing: border-box;
+}
+
+.search-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 24px;
+
+}
+
+.search-form {
+  flex: 1 1 0;
+  min-width: 260px;
+}
+
+.search-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 120px;
+  row-gap: 16px;
+}
+
+/* form-item 아래쪽 기본 마진 제거 */
+:deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+/* 날짜 입력 전체 높이 통일 */
+:deep(.el-date-editor) {
+  height: 40px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* 일반 input도 높이 동일하게 */
+:deep(.el-input__wrapper) {
+  height: 40px;
+  box-sizing: border-box;
+}
+
+/* 검색 버튼도 40px 맞춤 */
+.search-actions :deep(button) {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.search-actions {
+  display: flex;
+  align-items: flex-end;
+  margin-left: 8px;
+}
+
+:deep(.el-form-item__label) {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #555;
+}
+
+@media (max-width: 900px) {
+  .search-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-grid {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+  }
+
+  .search-actions {
+    justify-content: flex-end;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+}
+</style>
