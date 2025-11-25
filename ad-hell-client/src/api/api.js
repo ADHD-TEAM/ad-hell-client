@@ -45,7 +45,11 @@ api.interceptors.response.use(
       if(url.includes('/api/v1/auth/')) return Promise.reject(error);
 
       // access token이 없는 상황도 그대로 throw
-      if(!authStore.accessToken) return Promise.reject(error);
+      if(!authStore.accessToken) {
+        authStore.clearAuthState();
+        router.replace('/login');
+        return Promise.reject(error);
+      }
 
       // 이미 재시도한 요청이면 그대로 실패
       if(originalRequest._retry) return Promise.reject(error);

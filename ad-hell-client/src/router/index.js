@@ -24,12 +24,6 @@ const routes = [
                 component: () => import('@/pages/MainPage.vue'),
             },
 
-            {
-                path: 'categories',
-                name: 'CategoryList',
-                component: () => import('@/pages/CategoryList.vue'),
-            },
-
             // 게시판
             {
                 path: 'boards',
@@ -100,6 +94,19 @@ const routes = [
                 ]
             },
 
+            /* 회원 경품 */
+            {
+              path: 'rewards',
+              name: 'RewardList',
+              component: () => import('@/pages/reward/user/RewardList.vue'),
+            },
+
+            {
+              path: 'rewards/:id',
+              name: 'RewardDetail',
+              component: () => import('@/pages/reward/user/RewardDetail.vue'),
+            },
+
             // 광고 페이지
             {
                 path: 'adManageView',
@@ -122,6 +129,58 @@ const routes = [
                 component: () => import('@/pages/advertise/AdMain.vue'),
             },
 
+            // 어드민 신고 목록 페이지
+            {
+              path: 'admin/reports',
+              name: 'ReportList',
+              component: () => import('@/pages/report/ReportList.vue'),
+            },
+
+            /* 관리자 카테고리 관리 */
+            {
+              path: 'admin/categories',
+              name: 'AdminCategoryList',
+              component: () => import('@/pages/category/CategoryCreate.vue'),
+            },
+            {
+              path: 'admin/categories/create',
+              name: 'AdminCategoryCreate',
+              component: () => import('@/pages/category/CategoryList.vue'),
+            },
+            {
+              path: 'admin/categories/:id/edit',
+              name: 'AdminCategoryEdit',
+              component: () => import('@/pages/category/CategoryEdit.vue'),
+            },
+
+            /* 관리자 경품 관리 */
+            {
+              path: 'admin/rewards',
+              name: 'AdminRewardList',
+              component: () => import('@/pages/reward/RewardList.vue'),
+            },
+            {
+              path: 'admin/rewards/create',
+              name: 'AdminRewardCreate',
+              component: () => import('@/pages/reward/RewardCreate.vue'),
+            },
+            {
+              path: 'admin/rewards/:id/edit',
+              name: 'AdminRewardEdit',
+              component: () => import('@/pages/reward/RewardEdit.vue'),
+            },
+            {
+              path: 'admin/rewards/:id/stock',
+              name: 'AdminRewardStockCreate',
+              component: () => import('@/pages/reward/RewardStockCreate.vue'),
+            },
+
+            /* 관리자 신고 관리 */
+            {
+              path: 'admin/reports',
+              name: 'AdminReportList',
+              component: () => import('@/pages/report/ReportList.vue'),
+            },
         ],
     },
 ]
