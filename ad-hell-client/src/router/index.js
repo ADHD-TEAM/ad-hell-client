@@ -90,6 +90,12 @@ const routes = [
                         name: 'MyPasswordUpdate',
                         component: () => import('@/pages/mypage/PasswordUpdate.vue'),
                         props: true,
+                    },
+                    {
+                        path: 'account/delete',
+                        name: 'AccountDelete',
+                        component: () => import('@/pages/mypage/AccountDelete.vue'),
+                        props: true,
                     }
                 ]
             },
