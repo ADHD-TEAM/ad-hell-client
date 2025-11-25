@@ -129,6 +129,12 @@ const routes = [
                 component: () => import('@/pages/advertise/AdMain.vue'),
             },
 
+            {
+              path: 'admin/home',
+              name: 'AdminHome',
+              component: () => import('@/pages/admin/Home.vue'),
+            },
+
             // 어드민 신고 목록 페이지
             {
               path: 'admin/reports',
