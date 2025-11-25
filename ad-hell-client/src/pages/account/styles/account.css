@@ -12,12 +12,12 @@ a {
 .block {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    height: 97vh;
-    box-sizing: border-box;
-    gap: 20px;
-    overflow: hidden;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+    overflow: visible;
+    padding: 20px 0;
 }
 
 /* 로고 */
@@ -46,13 +46,21 @@ a {
     display: flex;
     flex-direction: column;
     align-items: center;
+
 }
 
 .input-vertical {
     display: flex;
     flex-direction: column;
-    gap: 5px;
     align-items: flex-start;
+}
+.input-vertical-center {
+    width: 350px;
+    display: flex;
+}
+
+.input-div-margin {
+    margin-top: 10px;
 }
 
 .font-small-red {
@@ -60,22 +68,42 @@ a {
     color : red;
 }
 
+.font-small-blue {
+    font-size: 12px;
+    color : dodgerblue;
+}
 .btn-xxlage-red {
     width: 350px;
-    height: 40px;
     background-color: red;
     color : white;
     font-weight: 700;
 }
 .btn-xxlage-red:hover {
     width: 350px;
-    height: 40px;
     background-color: #FFE2E0;
     border-color: red;
     color : red;
     font-weight: 700;
 }
 
+.btn-xxlage-red:disabled {
+    background-color: darkgray;
+    color: white;
+    cursor: not-allowed;   /* 커서 바꾸기 */
+}
+.btn-xxlage-red:disabled:hover {
+    background-color: darkgray;
+    color: white;
+    cursor: not-allowed;   /* 커서 바꾸기 */
+    border-color: darkgray;
+}
+
+.btn-medium {
+    width: 100px;
+    background-color: red;
+    color : white;
+    font-weight: 700;
+}
 .text-div {
     display: flex;
     flex-direction: column;
@@ -83,8 +111,37 @@ a {
     gap: 5px;
 }
 
-
 .text-div a:hover {
     font-weight: 700;
 }
 
+.text-left {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    width: 100%;
+}
+
+.from-div {
+    width: 100%;
+    max-width: 350px;
+}
+
+/*lookup*/
+.lookup-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    font-size: 13px;
+    gap : 5px;
+}
+
+.lookup-div .lookup-id-div {
+    width: 350px;
+    height: 50px;
+    background-color: #cccccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
