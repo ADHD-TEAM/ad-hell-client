@@ -204,7 +204,6 @@ const routes = [
             },
         ],
     },
-<<<<<<< HEAD
 
     /**
      * 관리자 영역 (AdminSidebar)
@@ -258,10 +257,6 @@ const routes = [
         ],
     },
 
-
-
-=======
->>>>>>> develop
 ]
 
 const router = createRouter({
