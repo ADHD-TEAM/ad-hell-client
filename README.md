@@ -1,6 +1,6 @@
-# 📦 ad-hell-noti-client
+# 📦 ad-hell-client
 
-`ad-hell-noti` 프로젝트의 클라이언트 레포지토리입니다.  
+`ad-hell` 프로젝트의 클라이언트 레포지토리입니다.  
 Vue 3 + Vite + Element Plus
 
 ---

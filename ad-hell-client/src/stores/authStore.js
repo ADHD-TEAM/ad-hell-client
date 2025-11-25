@@ -142,11 +142,11 @@ export const useAuthStore = defineStore('auth', () => {
     - 실패 시:
         errorMessage 를 반환하여 화면에서 표시할 수 있게 한다.
   */
-  const login = async ({ username, password }) => {
+  const login = async ({ userLoginId, password }) => {
     loading.value = true;
 
     try {
-      const res = await loginApi(username, password)
+      const res = await loginApi(userLoginId, password)
       const { success, data, message } = res.data;
       if(!success) {
         return {

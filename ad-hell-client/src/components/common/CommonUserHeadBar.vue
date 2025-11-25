@@ -1,15 +1,33 @@
 <script setup>
-
+import { ref ,reactive } from "vue";
+import foldingIconSrc from '@/assets/icon/icon-folding.svg';
 import {useRouter} from "vue-router";
 import LoginView from "@/pages/account/LoginView.vue";
+import NotificationBell from "@/components/notification/NotificationBell.vue";
+import HeadBarIconSrc from '@/assets/icon/icon-logo.svg'
+import AlertIconSrc from '@/assets/icon/icon-headbar-alert.svg'
+import MypageIconSrc from '@/assets/icon/icon-headbar-mypage.svg'
 
 const router = useRouter();
 
 const goLogin = () => {
   router.push({name : 'UserLoginView'});
 }
-
+const foldingIcon = reactive({
+  src : foldingIconSrc,
+  name : 'foldingIcon'
+});
+const HeadBarIcon = ref(
+    { src : HeadBarIconSrc }
+)
+const MypageIcon = ref(
+    {src : MypageIconSrc}
+)
+const AlertIcon = ref(
+    {src : AlertIconSrc}
+)
 </script>
+
 <template>
   <!-- Element Plus 헤더 컴포넌트 -->
   <el-header class="app-header">
@@ -17,13 +35,22 @@ const goLogin = () => {
     <div class="header-inner">
       <!-- 왼쪽 영역 (로고/타이틀 등) -->
       <div class="header-left">
-        <span class="logo-text">AD-HELL</span>
+        <!-- 아이콘 -->
+        <img
+            :src="foldingIcon.src"
+            :alt="foldingIcon.name"
+            class="folding-img"
+        />
+        <!-- 로고 텍스트 -->
+        <img :src = "HeadBarIcon.src"/>
       </div>
 
       <!-- 오른쪽 영역 (메뉴, 버튼 등) -->
       <div class="header-right">
         <!-- Element Plus 버튼들 예시 -->
-        <el-button type="text">알림</el-button>
+        <img :src = "AlertIcon.src"/>
+        <img :src = "MypageIcon.src"/>
+        <NotificationBell />
         <el-button type="primary" @click="goLogin">로그인</el-button>
       </div>
     </div>
@@ -39,10 +66,14 @@ const goLogin = () => {
   display: flex;
   justify-content: center;       /* 가운데에 1280 컨테이너 정렬 */
 }
-
+.folding-img{
+  margin-right:8px;
+  width: 24px;
+  height: 24px;
+}
 /* 실제 규격: 1280 x 56 + 좌우 패딩 30 */
 .header-inner {
-  width: 1280px;
+  width: 100%;
   height: 56px;
   padding: 0 30px;               /* 좌우 패딩 30 */
   box-sizing: border-box;
@@ -58,7 +89,13 @@ const goLogin = () => {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 0;                        /* 버튼 간격도 0 기준 */
+  gap: 24px;                        /* 버튼 간격도 0 기준 */
+}
+
+/* 로고 아이콘 스타일 */
+.logo-icon {
+  margin-right:8px;   /* 아이콘과 텍스트 사이 간격 */
+  font-size: 40px;     /* 아이콘 크기 */
 }
 
 /* 로고 텍스트 예시 스타일 */

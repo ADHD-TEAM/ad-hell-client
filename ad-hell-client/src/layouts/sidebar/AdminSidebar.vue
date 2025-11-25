@@ -7,7 +7,7 @@ import { icons } from '@/assets/icon/icons.js'
 const router = useRouter()
 const route = useRoute()
 
-// 🔹 관리자 사이드바 메뉴 (요청에 맞게 수정 완료)
+  // 관리자 사이드바 메뉴 (요청에 맞게 수정 완료)
 const menus = [
   // 홈
   { id: 'home', label: '홈', path: '/', iconId: 'home' },
