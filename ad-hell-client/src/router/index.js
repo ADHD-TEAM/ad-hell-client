@@ -14,6 +14,7 @@ const routes = [
     {path: '/find/password' , name : 'FindPasswordView' , component: () => import('@/pages/account/FindAccountView.vue'), meta: { layout: 'none' } },
     {path: '/lookup/id' , name : 'LookupIdView' , component: () => import('@/pages/account/LookupAccountView.vue'), meta: { layout: 'none' } },
     {path: '/lookup/password' , name : 'LookupPasswordView' , component: () => import('@/pages/account/LookupAccountView.vue'), meta: { layout: 'none' } },
+
     // 유저 영역 (UserSidebar)
     {
         path: '/',
@@ -97,39 +98,6 @@ const routes = [
 
         ],
     },
-
-// 어드민 광고 등록 페이지
-
-         /*관리자 영역 (AdminSidebar)*/
-    // {
-    //     path: '/admin',
-    //     component: DefaultLayout,
-    //     meta: { role: 'admin' },
-    //     children: [
-    //         // 📌 문의 관리 (목록 / 상세)
-    //         {
-    //             path: 'inquiries',
-    //             name: 'AdminInquiryList',
-    //             component: () => import('@/pages/inquiry/admin/AdminInquiryList.vue'),
-    //             meta: { role: 'admin' },
-    //         },
-    //         {
-    //             path: 'inquiries/:id',
-    //             name: 'AdminInquiryDetail',
-    //             component: () => import('@/pages/inquiry/admin/AdminInquiryDetail.vue'),
-    //             props: true,
-    //             meta: { role: 'admin' },
-    //         },
-    //
-    //         // 📌 (나중에) 공지사항 관리, 게시판 관리 등 추가
-    //         // {
-    //         //   path: 'announcements',
-    //         //   name: 'AdminAnnouncementList',
-    //         //   component: () => import('@/pages/announcement/admin/AdminAnnouncementList.vue'),
-    //         //   meta: { role: 'admin' },
-    //         // },
-    //     ],
-    // },
 ]
 
 const router = createRouter({
@@ -139,7 +107,6 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
     const authStore = useAuthStore();
-
 }) ;
 
 export default router
