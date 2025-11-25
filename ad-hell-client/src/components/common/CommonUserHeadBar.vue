@@ -49,7 +49,9 @@ const AlertIcon = ref(
       <div class="header-right">
         <!-- Element Plus 버튼들 예시 -->
         <img :src = "AlertIcon.src"/>
-        <img :src = "MypageIcon.src"/>
+        <router-link :to="{ name: 'MyProfileUpdate' }">
+          <img :src = "MypageIcon.src"/>
+        </router-link>
         <NotificationBell />
         <el-button type="primary" @click="goLogin">로그인</el-button>
       </div>

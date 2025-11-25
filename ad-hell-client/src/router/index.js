@@ -5,8 +5,6 @@ import {useAuthStore} from "@/stores/authStore.js";
 
 
 const routes = [
-
-
     {path: '/login' , name : 'UserLoginView' , component: () => import('@/pages/account/LoginView.vue') , meta: { layout: 'none' } },
     {path: '/admin/login' , name : 'AdminLoginView' , component: () => import('@/pages/account/LoginView.vue'), meta: { layout: 'none' } },
     {path: '/signUp' , name : 'SignUpView' , component: () => import('@/pages/account/SignUpView.vue'), meta: { layout: 'none' } },
@@ -80,6 +78,26 @@ const routes = [
                 name: 'AnnouncementDetail',
                 component: () => import('@/pages/announcement/user/AnnouncementDetail.vue'),
                 props: true,
+            },
+            {
+                path: 'mypage',
+                name: 'Mypage',
+                component: () => import('@/pages/mypage/Mypage.vue'),
+                props: true,
+                children: [
+                    {
+                        path: 'profile/update',
+                        name: 'MyProfileUpdate',
+                        component: () => import('@/pages/mypage/MyProfileUpdate.vue'),
+                        props: true,
+                    },
+                    {
+                        path: 'password/update',
+                        name: 'MyPasswordUpdate',
+                        component: () => import('@/pages/mypage/PasswordUpdate.vue'),
+                        props: true,
+                    }
+                ]
             },
 
             // 어드민 광고 등록 페이지
