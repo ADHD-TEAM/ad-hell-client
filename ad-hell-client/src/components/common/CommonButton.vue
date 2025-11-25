@@ -35,6 +35,7 @@ const labels = {
   save: '저장',
   cancel: '취소',
   reset: '초기화',
+  change: '교환'
 }
 
 const label = computed(() => labels[props.type] ?? props.type)
@@ -42,7 +43,7 @@ const label = computed(() => labels[props.type] ?? props.type)
 // 색상 타입
 const variant = computed(() => {
   const soft = ['search', 'delete']
-  const primary = ['write', 'register', 'update', 'save']
+  const primary = ['write', 'register', 'update', 'save', 'change']
   const outline = ['cancel', 'reset']
 
   if (soft.includes(props.type)) return 'soft'

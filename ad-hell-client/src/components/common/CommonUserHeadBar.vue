@@ -1,14 +1,27 @@
 <script setup>
-import { ref ,reactive } from "vue";
+import {ref, reactive, computed} from "vue";
 import foldingIconSrc from '@/assets/icon/icon-folding.svg';
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import LoginView from "@/pages/account/LoginView.vue";
 import NotificationBell from "@/components/notification/NotificationBell.vue";
 import HeadBarIconSrc from '@/assets/icon/icon-logo.svg'
 import AlertIconSrc from '@/assets/icon/icon-headbar-alert.svg'
 import MypageIconSrc from '@/assets/icon/icon-headbar-mypage.svg'
+import { useAuthStore } from "@/stores/authStore.js";
 
+const authStore = useAuthStore();
+const isAdmin = computed(() => authStore?.user?.role === 'ADMIN');
 const router = useRouter();
+const route = useRoute();
+const isAdminPage = computed(() => route.path.startsWith('/admin'));
+
+const goAdminHome = () => {
+  router.push({ name: 'AdminHome' });
+};
+
+const goUserHome = () => {
+  router.push({ name: 'MainPage' })
+}
 
 const goLogin = () => {
   router.push({name : 'UserLoginView'});
@@ -47,6 +60,22 @@ const AlertIcon = ref(
 
       <!-- 오른쪽 영역 (메뉴, 버튼 등) -->
       <div class="header-right">
+        <el-button
+            v-if="isAdmin && !isAdminPage"
+            class="admin-btn"
+            @click="goAdminHome"
+        >
+          관리자 페이지
+        </el-button>
+
+        <el-button
+            v-if="isAdmin && isAdminPage"
+            class="user-btn"
+            @click="goUserHome"
+        >
+          사용자 페이지
+        </el-button>
+
         <!-- Element Plus 버튼들 예시 -->
         <img :src = "AlertIcon.src"/>
         <router-link :to="{ name: 'MyProfileUpdate' }">
@@ -113,4 +142,25 @@ const AlertIcon = ref(
   margin-left: 0;
 }
 */
+
+.admin-btn {
+  background: #ff0000 !important;
+  color: white !important;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 8px 16px;
+}
+.admin-btn:hover {
+  background: #cc0000 !important;
+}
+
+.user-btn {
+  background: #00aaff !important;
+  color: white !important;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.user-btn:hover {
+  background: #0088cc !important;
+}
 </style>

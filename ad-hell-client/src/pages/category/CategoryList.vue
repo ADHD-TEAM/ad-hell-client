@@ -2,7 +2,7 @@
   <div>
     <h2>카테고리 목록</h2>
 
-    <el-table :data="users" v-loading="loading" style="width: 100%">
+    <el-table :data="categories" v-loading="loading" style="width: 100%">
       <el-table-column prop="name" label="이름" width="200" />
       <el-table-column label="상세보기">
         <template #default="{ row }">
@@ -21,9 +21,8 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { useCategoryList } from '@/composables/category/useCategoryList'
+import { useCategoryList } from '@/composables/category/useCategoryList.js'
 
-console.log('시작');
 const router = useRouter()
 const { categories, loading, error } = useCategoryList()
 
