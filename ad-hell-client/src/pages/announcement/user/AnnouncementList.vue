@@ -1,4 +1,4 @@
-<!-- src/pages/inquiry/admin/AdminInquiryList.vue -->
+<!-- src/pages/announcement/user/AnnouncementList.vue -->
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -9,12 +9,12 @@ import DataTable from '@/components/common/DataTable.vue'
 
 const router = useRouter()
 
-// 문의 목록
-const inquiries = ref([])
+// 공지사항 목록 (TODO: API 연동)
+const announcements = ref([])
 const page = ref(1)
 const totalPages = ref(1)
 
-// 검색 폼 (게시판/공지랑 동일 구조 사용)
+// 검색 폼 (게시판 검색과 동일 구조)
 const searchForm = reactive({
   title: '',
   writer: '',
@@ -22,41 +22,11 @@ const searchForm = reactive({
   toDate: null,
 })
 
-// DataTable 컬럼 정의
-const columns = [
-  { prop: 'id',          label: 'ID',      width: 80 },
-  { prop: 'memberName',  label: '회원',    width: 140 },
-  {
-    prop: 'title',
-    label: '제목',
-    minWidth: 300,
-    showOverflowTooltip: true,
-  },
-  {
-    prop: 'answeredAt',
-    label: '답변일자',
-    width: 160,
-    align: 'center',
-  },
-  {
-    prop: 'status',
-    label: '문의 상태',
-    width: 120,
-    align: 'center',
-  },
-]
-
-// 목록 조회 (TODO: API 연동)
-const loadInquiries = async () => {
-  // 나중에 여기만 /api/admin/inquiries 로 교체
-  inquiries.value = [
-    {
-      id: 101,
-      memberName: 'adhell',
-      title: '포인트 미지급 문의 입니다',
-      answeredAt: '2025-11-17',
-      status: '답변 완료',
-    },
+// 목록 조회
+const loadAnnouncements = async () => {
+  // TODO: /api/announcements 조회 API 연동
+  announcements.value = [
+    { id: 101, title: '서비스 점검 안내', createdAt: '2025-11-17' },
   ]
   totalPages.value = 5
 }
@@ -64,47 +34,56 @@ const loadInquiries = async () => {
 // 검색
 const onSearch = async () => {
   page.value = 1
-  await loadInquiries()
+  await loadAnnouncements()
 }
 
 // 페이지 변경
 const changePage = async (newPage) => {
   page.value = newPage
-  await loadInquiries()
+  await loadAnnouncements()
 }
 
 // 상세 이동
 const goDetail = (id) => {
-  router.push(`/admin/inquiries/${id}`)
+  router.push(`/announcements/${id}`)
 }
 
-onMounted(loadInquiries)
+onMounted(() => {
+  loadAnnouncements()
+})
 </script>
 
 <template>
-  <section class="inquiry-page">
-    <h2 class="inquiry-title">문의</h2>
+  <section class="announcement-page">
+    <h2 class="announcement-title">공지사항</h2>
 
-    <div class="inquiry-content">
-      <!-- 검색 영역 (공통 SearchForm) -->
+    <div class="announcement-content">
+      <!-- 검색 영역 -->
       <SearchForm
           :search-form="searchForm"
           @search="onSearch"
       />
 
       <!-- 목록 타이틀 -->
-      <h3 class="inquiry-subtitle">문의 목록</h3>
+      <h3 class="announcement-subtitle">공지사항 목록</h3>
 
-      <!-- 공통 DataTable -->
+      <!-- 공지사항 테이블 (공통 DataTable 사용) -->
       <DataTable
-          :data="inquiries"
-          :columns="columns"
-          empty-text="No Data"
+          :rows="announcements"
           @select="goDetail"
-      />
+      >
+        <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column prop="title" label="제목" />
+        <el-table-column
+            prop="createdAt"
+            label="등록일자"
+            width="140"
+            align="center"
+        />
+      </DataTable>
 
       <!-- 페이지네이션 -->
-      <div class="inquiry-bottom-row">
+      <div class="announcement-bottom-row">
         <div class="bottom-left">
           <Pagination
               :page="page"
@@ -118,28 +97,28 @@ onMounted(loadInquiries)
 </template>
 
 <style scoped lang="scss">
-.inquiry-page {
+.announcement-page {
   padding: 24px 32px 40px;
   box-sizing: border-box;
 }
 
-.inquiry-title {
+.announcement-title {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 16px;
 }
 
-.inquiry-content {
+.announcement-content {
   width: 100%;
 }
 
-.inquiry-subtitle {
+.announcement-subtitle {
   margin: 24px 0 8px;
   font-size: 18px;
   font-weight: 700;
 }
 
-.inquiry-bottom-row {
+.announcement-bottom-row {
   width: 100%;
   margin-top: 12px;
   box-sizing: border-box;

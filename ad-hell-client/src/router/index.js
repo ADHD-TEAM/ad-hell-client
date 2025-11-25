@@ -5,14 +5,13 @@ import { useAuthStore } from '@/stores/authStore'
 
 const routes = [
 
-    // 유저 영역 (UserSidebar)
+
     {path: '/login' , name : 'UserLoginView' , component: () => import('@/pages/account/LoginView.vue') , meta: { layout: 'none' } },
     {path: '/admin/login' , name : 'AdminLoginView' , component: () => import('@/pages/account/LoginView.vue'), meta: { layout: 'none' } },
     {path: '/signUp' , name : 'SignUpView' , component: () => import('@/pages/account/SignUpView.vue'), meta: { layout: 'none' } },
     {path: '/find' , name : 'RecoverAccountView' , component: () => import('@/pages/account/RecoverAccountView.vue'), meta: { layout: 'none' } },
-    /**
-     * 유저 영역 (UserSidebar)
-     */
+
+    // 유저 영역 (UserSidebar)
     {
         path: '/',
         component: DefaultLayout,
@@ -41,6 +40,17 @@ const routes = [
                 component: () => import('@/pages/board/user/BoardDetail.vue'),
                 props: true,
             },
+            {
+                path: 'boards/create',
+                name: 'boardCreate',
+                component: () => import('@/pages/board/user/BoardCreate.vue'),
+            },
+            {
+                path: 'boards/:id/edit',
+                name: 'boardEdit',
+                component: () => import('@/pages/board/user/BoardEdit.vue'),
+            },
+
 
             //  문의 (유저)
             {
@@ -56,17 +66,17 @@ const routes = [
             },
 
             //  공지사항 (유저)
-            // {
-            //     path: 'announcements',
-            //     name: 'AnnouncementList',
-            //     component: () => import('@/pages/announcement/user/AnnouncementList.vue'),
-            // },
-            // {
-            //     path: 'announcements/:id',
-            //     name: 'AnnouncementDetail',
-            //     component: () => import('@/pages/announcement/user/AnnouncementDetail.vue'),
-            //     props: true,
-            // },
+            {
+                path: 'announcements',
+            name: 'AnnouncementList',
+            component: () => import('@/pages/announcement/user/AnnouncementList.vue'),
+            },
+            {
+                path: 'announcements/:id',
+                name: 'AnnouncementDetail',
+                component: () => import('@/pages/announcement/user/AnnouncementDetail.vue'),
+                props: true,
+            },
 
             // 광고 페이지
             {
@@ -90,8 +100,18 @@ const routes = [
                 component: () => import('@/pages/advertise/AdMain.vue'),
             },
 
+            // 어드민 신고 목록 페이지
+            {
+                path: 'admin/reports',
+                name: 'ReportList',
+                component: () => import('@/pages/report/ReportList.vue'),
+            }
+
         ],
     },
+
+// 어드민 광고 등록 페이지
+
 ]
 
 const router = createRouter({
