@@ -35,6 +35,7 @@ a {
 }
 /* input size */
 .input-size-large {
+    height : 40px;
     width: 350px;
 }
 
@@ -72,26 +73,68 @@ a {
     font-size: 12px;
     color : dodgerblue;
 }
+
+.font-small {
+    font-size: 12px;
+}
+
+
 .btn-xxlage-red {
+    height : 40px;
     width: 350px;
     background-color: red;
     color : white;
     font-weight: 700;
 }
 .btn-xxlage-red:hover {
+    height : 40px;
     width: 350px;
     background-color: #FFE2E0;
     border-color: red;
     color : red;
     font-weight: 700;
 }
+.btn-large-red {
+    height : 40px;
+    width: 170px;
+    background-color: red;
+    color : white;
+    font-weight: 700;
+}
+.btn-large-red:hover {
+    height : 40px;
+    width:170px;
+    background-color: #FFE2E0;
+    border-color: red;
+    color : red;
+    font-weight: 700;
+}
+
+.btn-large-white {
+    height : 40px;
+    width: 170px;
+    background-color: white;
+    color : red;
+    font-weight: 700;
+    border-color: red;
+}
+.btn-large-white:hover {
+    height : 40px;
+    width: 170px;
+    background-color: #FFE2E0;
+    color : red;
+    font-weight: 700;
+    border-color: red;
+}
 
 .btn-xxlage-red:disabled {
+    height : 40px;
     background-color: darkgray;
     color: white;
     cursor: not-allowed;   /* 커서 바꾸기 */
 }
 .btn-xxlage-red:disabled:hover {
+    height : 40px;
     background-color: darkgray;
     color: white;
     cursor: not-allowed;   /* 커서 바꾸기 */
@@ -99,6 +142,7 @@ a {
 }
 
 .btn-medium {
+    height : 40px;
     width: 100px;
     background-color: red;
     color : white;

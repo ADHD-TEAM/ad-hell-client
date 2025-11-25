@@ -4,7 +4,6 @@ import SendEmailForm from "@/components/features/account/SendEmailForm.vue";
 import LogoView from "@/components/features/account/LogoView.vue";
 import {ElMessage} from "element-plus";
 import {useRouter} from "vue-router";
-import {loginApi} from "@/api/authApi.js";
 const router = useRouter();
 const submitting = ref(false);
 const errorMessage = ref('');
