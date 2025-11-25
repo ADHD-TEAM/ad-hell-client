@@ -1,0 +1,28 @@
+.admin-userManagement {
+    padding: 30px;
+}
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.detail-table th {
+    border: 1px solid #ddd;
+    width: 100px;
+    height: 60px;
+    background-color: #f7f7f7;
+
+}
+.detail-table td {
+    border: 1px solid #ddd;
+    width : 150px;
+    height: 60px;
+    text-align: center;
+}
+
+.btn-div {
+    display: flex;
+    justify-content: right;
+
+}

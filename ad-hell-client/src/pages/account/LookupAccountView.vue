@@ -53,7 +53,4 @@ const goLoginPage = () => {
   </div>
 </template>
 
-<style scoped>
-
-</style>
 <style src="./styles/account.css" scoped></style>

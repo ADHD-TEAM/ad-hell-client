@@ -20,3 +20,9 @@ export const mypageNavSub = [
     { tab: 5, index: 2, title: '신고', linkTo: {name :'MyProfileUpdate'} }
 ];
 
+// admin 회원관리
+export const userManagerNav = [
+    {index : 1 , title : '회원정보', linkTo : {name : 'UserManagement'}},
+    {index : 2 , title : '포인트', linkTo : {name : 'UserPointManagement'}}
+];
+
