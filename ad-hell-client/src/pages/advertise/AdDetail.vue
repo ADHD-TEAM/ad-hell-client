@@ -1,35 +1,155 @@
 <!-- src/pages/advertise/admin/AdDetail.vue -->
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import CommonButton from '@/components/common/CommonButton.vue'
-import { useRouter } from 'vue-router'
+import AdminCommentList from '@/pages/advertise/AdminCommentList.vue'
+import api from '@/api/api.js'
 
-const router = useRouter()
+interface AdCommentDto {
+  adCommentId: number;
+  adId: number;
+  userId: number;
+  content: string;
+  createdAt: string;
+  updateAt: string;
+}
 
-// 더미 광고 데이터 (나중에 API로 교체)
-const adTitle = ref('광고 이름: ~~~~~')
-const createdAt = ref('2025-11-14')
-const viewCount = ref(2580)
+interface AdCommentListData {
+  adComments: AdCommentDto[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+  };
+}
 
-// 댓글 더미 데이터
+interface AdFileDto {
+  fileId: number;
+  originFileName: string;
+  storedName: string;
+  fileUrl: string;
+  fileType: 'IMAGE' | 'VIDEO' | 'DOC' | string;
+}
+
+interface AdDto {
+  adId: number;
+  categoryId: number;
+  categoryName: string;
+  title: string;
+  viewCount: number;
+  likeCount: number;
+  bookmarkCount: number;
+  commentCount: number;
+  createdAt: string;
+  updatedAt: string;
+  files: AdFileDto[];
+}
+
+// 백엔드 응답의 data 부분 구조
+interface AdDetailData {
+  ad: AdDto;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  errorCode: string | null;
+  message: string | null;
+  timestamp: string;
+}
+
+
+// 댓글 데이터용 타입
 type CommentRow = {
   id: number
   writer: string
   content: string
 }
 
-const comments = ref<CommentRow[]>([
-  { id: 1, writer: 'adhell', content: '댓글내용 1입니다.' },
-  { id: 2, writer: 'user01', content: '댓글내용 2입니다.' },
-])
+// ---------- 라우터, 상태 ----------
+const route = useRoute()
+const router = useRouter()
 
-// 버튼 핸들러 (나중에 실제 로직 연결)
+// /admin/ads/:id 에서 :id 값 읽기
+const adId = Number(route.params.id)
+
+// 상세 정보 상태
+const adTitle = ref('')
+const createdAt = ref('')
+const viewCount = ref(0)
+const videoSrc = ref('')
+
+const isLoading = ref(false)
+const errorMessage = ref('')
+
+// 댓글 상태
+const comments = ref<CommentRow[]>([])
+
+const loadComments = async () => {
+  try {
+    // baseURL 이 /api 라고 가정하면 실제 호출은: GET /api/ad/comments?adId=20
+    const res = await api.get<ApiResponse<AdCommentListData>>('/ad/comments', {
+      params: { adId }
+    })
+
+    const adComments = res.data.data.adComments
+
+    // AdminCommentList가 기대하는 형태로 매핑
+    comments.value = adComments.map((c) => ({
+      id: c.adCommentId,
+      writer: String(c.userId), // 일단 userId 로 채워두고, 나중에 닉네임 나오면 교체
+      content: c.content
+    }))
+  } catch (e) {
+    console.error('댓글 조회 실패:', e)
+  }
+}
+
+
+// ---------- 광고 상세 조회 ----------
+const loadAdDetail = async () => {
+  if (!adId || Number.isNaN(adId)) {
+    errorMessage.value = '잘못된 광고 ID 입니다.'
+    return
+  }
+
+  try {
+    isLoading.value = true
+    errorMessage.value = ''
+
+    // 응답 제네릭을 ApiResponse<AdDetailData>로 맞추기
+    const res = await api.get<ApiResponse<AdDetailData>>(`/ads/${adId}`)
+
+    // res.data.data.ad 에 실제 광고가 들어있음
+    const ad = res.data.data.ad
+
+    console.log('광고 상세 응답(ad만):', ad)
+
+    adTitle.value = ad.title ?? ''
+    createdAt.value = ad.createdAt ?? ''
+    viewCount.value = ad.viewCount ?? 0
+
+    const videoFile = (ad.files ?? []).find(
+        (file) => file.fileType === 'VIDEO'
+    )
+    videoSrc.value = videoFile?.fileUrl ?? ''
+  } catch (e) {
+    console.error('광고 상세 조회 실패:', e)
+    errorMessage.value = '광고 상세 정보를 불러오는데 실패했습니다.'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+
+// ---------- 버튼 핸들러들 ----------
 const handleEditAd = () => {
-  console.log('광고 수정')
+  console.log('광고 수정', adId)
 }
 
 const handleHideAd = () => {
-  console.log('광고 비공개 처리')
+  console.log('광고 비공개 처리', adId)
 }
 
 const handleCancel = () => {
@@ -45,15 +165,26 @@ const handleDeleteComment = (id: number) => {
     comments.value = comments.value.filter((c) => c.id !== id)
   }
 }
+
+// 마운트 시 상세 데이터 로딩
+onMounted(() => {
+  loadComments()
+  loadAdDetail()
+})
 </script>
+
 
 <template>
   <section class="ad-detail-page">
+    <!-- 로딩 / 에러 표시 -->
+    <p v-if="isLoading">불러오는 중입니다...</p>
+    <p v-else-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
+
     <!-- 상단 제목 + 메타 정보 -->
-    <header class="ad-header">
+    <header class="ad-header" v-if="!isLoading && !errorMessage">
       <div class="ad-title-row">
         <span class="ad-title-label">광고 이름:</span>
-        <span class="ad-title-text">~~~~~</span>
+        <span class="ad-title-text">{{ adTitle }}</span>
       </div>
 
       <div class="ad-meta-row">
@@ -69,54 +200,35 @@ const handleDeleteComment = (id: number) => {
       </div>
     </header>
 
-    <hr class="divider" />
+    <hr class="divider" v-if="!isLoading && !errorMessage" />
 
     <!-- 동영상(미디어) 영역 -->
-    <div class="media-box">
-      <!-- 실제로는 <video>나 <iframe> 유튜브 embed가 들어갈 자리 -->
-      <div class="media-placeholder">
+    <div class="media-box" v-if="!isLoading && !errorMessage">
+      <div class="media-placeholder" v-if="!videoSrc">
         <div class="play-icon">▶</div>
       </div>
+
+      <video
+          v-else
+          class="media-placeholder"
+          :src="videoSrc"
+          controls
+      />
     </div>
 
     <!-- 댓글 영역 -->
-    <section class="comment-section">
-      <h3 class="comment-title">댓글</h3>
-
-      <div class="comment-list">
-        <div
-            v-for="comment in comments"
-            :key="comment.id"
-            class="comment-row"
-        >
-          <div class="comment-writer">
-            {{ comment.writer }}
-          </div>
-          <div class="comment-content">
-            {{ comment.content }}
-          </div>
-
-          <!-- 행 위에 마우스 올렸을 때만 보이는 버튼 -->
-          <div class="comment-actions">
-            <CommonButton
-                type="update"
-                :width="54"
-                :height="30"
-                @click.stop="handleEditComment(comment.id)"
-            />
-            <CommonButton
-                type="delete"
-                :width="54"
-                :height="30"
-                @click.stop="handleDeleteComment(comment.id)"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+    <AdminCommentList
+        v-if="!isLoading && !errorMessage"
+        :comments="comments"
+        @edit="handleEditComment"
+        @delete="handleDeleteComment"
+    />
 
     <!-- 하단 광고 관리 버튼 -->
-    <div class="bottom-buttons">
+    <div
+        class="bottom-buttons"
+        v-if="!isLoading && !errorMessage"
+    >
       <CommonButton
           type="update"
           :width="80"
@@ -126,8 +238,7 @@ const handleDeleteComment = (id: number) => {
           type="reset"
           :width="80"
           @click="handleHideAd"
-      >
-      </CommonButton>
+      />
       <CommonButton
           type="cancel"
           :width="80"
@@ -136,6 +247,7 @@ const handleDeleteComment = (id: number) => {
     </div>
   </section>
 </template>
+
 
 <style scoped lang="scss">
 .ad-detail-page {
@@ -224,57 +336,6 @@ const handleDeleteComment = (id: number) => {
   align-items: center;
   justify-content: center;
   font-size: 28px;
-}
-
-/* ---------------- 댓글 리스트 ---------------- */
-
-.comment-section {
-  margin-top: 8px;
-}
-
-.comment-title {
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.comment-list {
-  border-top: 1px solid #f0f0f0;
-}
-
-.comment-row {
-  display: grid;
-  grid-template-columns: 120px 1fr auto;
-  align-items: center;
-  padding: 8px 0;
-  font-size: 13px;
-  border-bottom: 1px solid #f7f7f7;
-  position: relative;
-}
-
-.comment-writer {
-  font-weight: 700;
-  padding-left: 8px;
-}
-
-.comment-content {
-  color: #555;
-}
-
-.comment-actions {
-  display: flex;
-  gap: 4px;
-  padding-right: 8px;
-
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s;
-}
-
-/* 행에 마우스 올렸을 때만 버튼 보이기 */
-.comment-row:hover .comment-actions {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 /* ---------------- 하단 버튼 ---------------- */

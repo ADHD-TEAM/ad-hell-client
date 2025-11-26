@@ -3,7 +3,7 @@
 import { RouterLink } from 'vue-router';
 
 const props = defineProps<{
-  id: string;
+  id: number;
   title: string;      // 광고 제목
   category: string;   // 카테고리 이름
   videoSrc: string;   // 동영상 파일 경로나 URL
