@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { jwtDecode } from 'jwt-decode';
 
 import { loginApi, refreshApi, logoutApi } from '@/api/authApi';
-import { fetchMyInfoApi } from '@/api/userApi';
+import {fetchMyInfoApi, fetchNotificationAuthMe} from '@/api/userApi';
 import router from '@/router';
 
 /*
@@ -84,6 +84,13 @@ export const useAuthStore = defineStore('auth', () => {
   const setUserFromToken = (token) => {
     try {
       const payload = jwtDecode(token);
+
+        const userIdFromToken =
+            payload.userId ??   // 보통 이렇게 넣어둔 경우가 많음
+            payload.id ??       // 혹시 id 로 넣어둔 경우
+            payload.memberId ?? // 혹시 memberId 로 넣어둔 경우
+            null;
+
       const usernameFromToken = payload.sub || payload.username;
       const roleFromToken = payload.role;
       if (!usernameFromToken || !roleFromToken) {
@@ -91,6 +98,7 @@ export const useAuthStore = defineStore('auth', () => {
         return;
       }
       setUser({
+          userId: userIdFromToken,
         username: usernameFromToken,
         role: roleFromToken,
       });
@@ -158,6 +166,9 @@ export const useAuthStore = defineStore('auth', () => {
       setAccessToken(data.accessToken)
       setUserFromToken(data.accessToken)
 
+        // /me 호출해서 userId 포함한 full user 정보로 덮어쓰기
+        // await loadMyInfo()
+
       return { success : true }
     } catch(e) {
       return {
@@ -187,6 +198,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
       setAccessToken(data.accessToken)
       setUserFromToken(data.accessToken)
+      // await loadMyInfo()
     } catch(e) {
       setAccessToken(null)
       setUser(null)
@@ -203,7 +215,105 @@ export const useAuthStore = defineStore('auth', () => {
     // TODO: logoutApi 호출 및 상태 초기화, router 이동 로직 작성
   };
 
-  // 5) 외부로 공개할 state / getters / actions 반환
+    // 내 정보 불러오기 (/users/me)
+    const loadMyInfo = async () => {
+        if (!accessToken.value) return
+
+        try {
+            const dto = await fetchMyInfoApi()
+            console.log('[loadMyInfo] dto from /users/me =', dto)
+
+            // 백엔드 DTO가 어떤 이름을 쓰는지에 맞춰서 매핑
+            const resolvedUserId =
+                dto.userId ?? // 이미 userId 라고 내려오면 사용
+                dto.id ??     // 혹시 id 로 내려오면 사용
+                dto.memberId ?? // memberId 같은 이름일 수도 있음
+                null
+
+            const resolvedUsername =
+                dto.userLoginId ??  // 이런 이름이면 사용
+                dto.loginId ??      // 지금 로그에 찍힌 필드
+                dto.username ??     // 혹시 username 이라면
+                ''
+
+            const resolvedRole =
+                dto.role ??
+                dto.userRole ??
+                (Array.isArray(dto.authorities) ? dto.authorities[0]?.authority : undefined) ??
+                null
+
+            setUser({
+                ...dto,              // 원래 내려온 모든 필드 유지
+                userId: resolvedUserId,
+                username: resolvedUsername,
+                role: resolvedRole,
+            })
+        } catch (e) {
+            const status = e.response?.status
+
+            if (status === 401) {
+                console.warn('loadMyInfo: 401 → 토큰 무효, 상태 초기화')
+                clearAuthState()
+                return
+            }
+
+            console.error('loadMyInfo 에러', e)
+            setUser(null)
+        }
+    }
+
+    // userId가 없으면 /auth/me 를 한 번 호출해서 채우는 헬퍼
+    const ensureUserId = async () => {
+        // 이미 userId 있으면 그대로 반환
+        if (user.value?.userId) {
+            return user.value.userId;
+        }
+
+        // 토큰 없으면 여기서 끝
+        if (!accessToken.value) {
+            return null;
+        }
+
+        try {
+            //  알림 서비스의 /api/auth/me 호출
+            const dto = await fetchNotificationAuthMe();
+            console.log('[ensureUserId] dto from /auth/me =', dto);
+
+            const resolvedUserId =
+                dto.userId ??
+                dto.id ??
+                dto.memberId ??
+                null;
+
+            const resolvedUsername =
+                dto.username ??
+                dto.loginId ??    // 혹시 이렇게 내려오면
+                user.value?.username ??
+                '';
+
+            const resolvedRole =
+                dto.role ??
+                dto.userRole ??
+                user.value?.role ??
+                null;
+
+            // 기존 user 정보(닉네임, 이메일 등)는 가능한 한 유지하면서 userId만 보충
+            setUser({
+                ...(user.value || {}),
+                userId: resolvedUserId,
+                username: resolvedUsername,
+                role: resolvedRole,
+            });
+
+            return resolvedUserId;
+        } catch (e) {
+            console.error('[authStore.ensureUserId] /auth/me 로딩 실패', e);
+            return null;
+        }
+    };
+
+
+    // 5) 외부로 공개할 state / getters / actions 반환
   return {
     accessToken,
     user,
@@ -219,5 +329,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     refreshTokens,
     logout,
+    loadMyInfo,
+      ensureUserId,
   };
 });

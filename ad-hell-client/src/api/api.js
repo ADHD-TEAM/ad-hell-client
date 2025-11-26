@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '@/router'
 import { useAuthStore } from '@/stores/authStore';
 
 const api = axios.create({
@@ -9,13 +10,29 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-      if(config.skipAuth) return config;
+        // 로그인/회원가입/리프레시 같은 곳에서만 skipAuth: true를 명시적으로 줄 것
+        if (config.skipAuth) return config;
 
-      const authStore = useAuthStore();
-      if(authStore.accessToken && !config.headers.Authorization) {
-        config.headers.Authorization = `Bearer ${authStore.accessToken}`
-      }
-      return config;
+        const authStore = useAuthStore();
+
+        // 새로고침 직후 대비: 메모리에 없으면 localStorage에서 복구
+        if (!authStore.accessToken) {
+            authStore.loadFromStorage();
+        }
+
+        const token = authStore.accessToken;
+
+        if (token) {
+            // headers 객체 보장
+            config.headers = config.headers || {};
+
+            // 이미 Authorization을 명시한 경우는 건들지 않음
+            if (!config.headers.Authorization) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        }
+
+        return config;
     },
     (error) => Promise.reject(error),
 );
