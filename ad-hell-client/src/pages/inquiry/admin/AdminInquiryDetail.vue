@@ -1,86 +1,144 @@
-<template>
-  <section class="page">
-    <!-- 제목 -->
-    <header class="page-header">
-      <h2 class="page-title">{{ inquiry.title }}</h2>
-    </header>
+<!-- src/pages/inquiry/admin/AdminInquiryDetail.vue -->
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import CommonButton from '@/components/common/CommonButton.vue'
+import { useInquiryStore } from '@/stores/inquiryStore.js'
 
-    <!-- 작성자 / 작성일 -->
+const route = useRoute()
+const router = useRouter()
+const inquiryStore = useInquiryStore()
+
+const inquiryId = Number(route.params.id)
+
+const loading = ref(false)
+
+const inquiry = ref({
+  id: inquiryId,
+  title: '',
+  memberName: '',
+  createdAt: '',
+  answeredAt: '',
+  content: '',
+})
+
+const answerText = ref('')
+
+const loadDetail = async () => {
+  loading.value = true
+  try {
+    const data = await inquiryStore.fetchAdminInquiryDetail(inquiryId)
+
+    inquiry.value = {
+      id: data.id,
+      title: data.title,
+      memberName: data.memberName,
+      createdAt: data.createdAt,
+      answeredAt: data.answeredAt,
+      content: data.content,
+    }
+
+    answerText.value = data.answer || ''
+  } finally {
+    loading.value = false
+  }
+}
+
+const saveAnswer = async () => {
+  if (!answerText.value.trim()) {
+    alert('답변 내용을 입력하세요.')
+    return
+  }
+
+  loading.value = true
+  try {
+    await inquiryStore.updateAdminInquiryAnswer(inquiryId, {
+      answer: answerText.value,
+    })
+
+    alert('답변이 등록되었습니다.')
+    router.push('/admin/inquiries')
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(loadDetail)
+</script>
+
+<template>
+  <section class="inquiry-detail-page" v-loading="loading">
+    <h2 class="page-title">문의 답변 등록</h2>
+
+    <h3 class="inquiry-title">{{ inquiry.title }}</h3>
+
     <div class="meta-row">
       <div class="meta-item">
-        <span class="meta-label">작성자 :</span>
-        <span class="meta-value">{{ inquiry.writer }}</span>
+        <span class="meta-label">작성자:</span>
+        <span class="meta-value">{{ inquiry.memberName }}</span>
       </div>
-      <div class="meta-item right">
-        <span class="meta-label">작성일 :</span>
-        <span class="meta-value highlight">{{ inquiry.createdAt }}</span>
+      <div class="meta-item">
+        <span class="meta-label">작성일:</span>
+        <span class="meta-value">{{ inquiry.createdAt }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">답변일:</span>
+        <span class="meta-value">{{ inquiry.answeredAt || '-' }}</span>
       </div>
     </div>
 
-    <!-- 답변 내용 -->
+    <div class="divider"></div>
+
     <div class="content-box">
-      <div class="content-header">문의 답변 내용</div>
-      <div class="content-body">
-        <textarea
-            class="answer-textarea"
-            v-model="answer"
-            placeholder="문의 답변 내용을 입력하세요."
+      <div class="box-label">문의 내용</div>
+      <div class="box-body">
+        <p class="content-text">
+          {{ inquiry.content }}
+        </p>
+      </div>
+    </div>
+
+    <div class="content-box answer-box">
+      <div class="box-label">답변 내용</div>
+      <div class="box-body">
+        <el-input
+            v-model="answerText"
+            type="textarea"
+            :rows="8"
+            placeholder="답변 내용을 입력하세요."
+            class="answer-input"
         />
       </div>
     </div>
 
-    <!-- 버튼 영역 -->
-    <footer class="page-footer">
-      <button class="btn-outline-red" @click="goBack">뒤로 가기</button>
-    </footer>
+    <div class="bottom-actions">
+      <CommonButton type="register" @click="saveAnswer" />
+    </div>
   </section>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-
-const router = useRouter()
-const route = useRoute()
-
-// 임시 데이터 – 나중에 id 기반 API 호출로 교체
-const inquiryId = route.params.id
-
-const inquiry = ref({
-  id: inquiryId,
-  title: '포인트 미지급 문의 입니다.',
-  writer: '운영자',
-  createdAt: '2025-11-17',
-})
-
-const answer = ref('') // 답변 내용 – 추후 API 연동
-
-const goBack = () => {
-  router.push('/admin/inquiries')
-}
-</script>
-
-<style scoped>
-.page {
-  padding: 24px 32px;
-}
-
-.page-header {
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 8px;
-  margin-bottom: 16px;
+<style scoped lang="scss">
+.inquiry-detail-page {
+  padding: 24px 32px 40px;
 }
 
 .page-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.inquiry-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
 .meta-row {
   display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  margin-bottom: 12px;
+  gap: 40px;
+  font-size: 13px;
+  margin-bottom: 8px;
 }
 
 .meta-item {
@@ -88,75 +146,58 @@ const goBack = () => {
   gap: 4px;
 }
 
-.meta-item.right {
-  justify-content: flex-end;
-}
-
 .meta-label {
-  color: #6b7280;
+  font-weight: 600;
 }
 
 .meta-value {
-  font-weight: 600;
+  color: #ff0000;
 }
 
-.highlight {
-  color: #ff0000;
+.divider {
+  width: 100%;
+  height: 1px;
+  background: #ededed;
+  margin: 8px 0 16px;
 }
 
 .content-box {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #fff;
-  overflow: hidden;
-  min-height: 500px;
-  display: flex;
-  flex-direction: column;
+  border: 1px solid #efefef;
+  border-radius: 10px;
+  background: #ffffff;
+  margin-bottom: 16px;
 }
 
-.content-header {
-  padding: 10px 16px;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: 14px;
-  font-weight: 600;
-  background: #f9fafb;
+.box-label {
+  font-size: 12px;
+  color: #b3b3b3;
+  padding: 8px 12px 0;
 }
 
-.content-body {
-  padding: 12px 16px 16px;
-  flex: 1;
+.box-body {
+  padding: 8px 16px 16px;
+  min-height: 180px;
 }
 
-.answer-textarea {
+.content-text {
+  white-space: pre-wrap;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.answer-input {
   width: 100%;
-  height: 100%;
-  min-height: 400px;
-  border: none;
-  resize: none;
-  outline: none;
-  font-size: 14px;
-  line-height: 1.5;
+  :deep(.el-textarea__inner) {
+    border: none;
+    box-shadow: none;
+    resize: none;
+    min-height: 180px;
+  }
 }
 
-.page-footer {
+.bottom-actions {
+  margin-top: 12px;
   display: flex;
   justify-content: flex-end;
-  margin-top: 12px;
-}
-
-.btn-outline-red {
-  min-width: 96px;
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 6px;
-  border: 1px solid #ff0000;
-  background: #fff;
-  color: #ff0000;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.btn-outline-red:hover {
-  background: #fff5f5;
 }
 </style>
