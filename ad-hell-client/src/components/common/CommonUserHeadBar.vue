@@ -79,11 +79,13 @@ const AlertIcon = ref(
         </el-button>
 
         <!-- Element Plus 버튼들 예시 -->
-        <img :src = "AlertIcon.src"/>
+
+        <!-- 알림 아이콘 + 뱃지 + 팝오버 모두 NotificationBell에서 처리 -->
+        <NotificationBell :icon-src="AlertIcon.src" />
+
         <router-link :to="{ name: 'MyProfileUpdate' }">
           <img :src = "MypageIcon.src"/>
         </router-link>
-        <NotificationBell />
         <el-button type="primary" @click="goLogin">로그인</el-button>
       </div>
     </div>

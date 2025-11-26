@@ -29,7 +29,8 @@ const menus = [
   // 카테고리/알림 관리
   { id: 'category-noti-section', label: '카테고리/알림 관리', header: true },
   { id: 'category-manage', label: '카테고리', path: '/admin/categories', iconId: 'category' },
-  { id: 'alarm-manage', label: '알림', path: '/admin/alarms', iconId: 'notification' },
+  { id: 'alarm-manage', label: '알림 템플릿', path: '/admin/alarms', iconId: 'notification' },
+  { id: 'alarm-manage-send', label: '알림', path: '/admin/alarms/send', iconId: 'notification' },
 
   // 광고/경품 관리
   { id: 'ad-reward-section', label: '광고/ 경품 관리', header: true },
@@ -42,7 +43,9 @@ const hoverId = ref(null)
 const isActive = (item) => {
   if (!item.path) return false
   if (item.path === '/') return route.path === '/'
-  return route.fullPath.startsWith(item.path)
+  // return route.fullPath.startsWith(item.path)
+  // path 정확해야지만 작동
+  return route.path === item.path
 }
 
 const iconSrc = (item) => {
