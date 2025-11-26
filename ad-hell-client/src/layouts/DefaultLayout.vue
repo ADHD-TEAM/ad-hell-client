@@ -16,17 +16,35 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
 
 import CommonUserHeadBar from '@/components/common/CommonUserHeadBar.vue'
 import AdminSidebar from '@/layouts/sidebar/AdminSidebar.vue'
 import UserSidebar from '@/layouts/sidebar/UserSidebar.vue'
 
 const route = useRoute()
+const authStore = useAuthStore()
+
+const isAdmin = computed(() => {
+  return authStore?.user?.role === 'ADMIN'
+})
+
+/*
+  1) URL이 /admin 으로 시작하고
+  2) Pinia 저장된 role이 ADMIN 일 때
+  -> AdminSidebar 사용
+*/
+const currentSidebar = computed(() => {
+  if (route.path.startsWith('/admin') && isAdmin.value) {
+    return AdminSidebar
+  }
+  return UserSidebar
+})
 
 // 라우트 메타에 따라 관리자 / 사용자 사이드바 선택
-const currentSidebar = computed(() => {
-  return route.meta.role === 'admin' ? AdminSidebar : UserSidebar
-})
+// const currentSidebar = computed(() => {
+//   return route.meta.role === 'admin' ? AdminSidebar : UserSidebar
+// })
 </script>
 
 <style scoped>

@@ -30,11 +30,23 @@ api.interceptors.response.use(
       const originalRequest = error.config;
 
       if (!error.response) {
+        alert("서버에 연결할 수 없습니다.\n잠시 후 다시 시도해주세요.");
         return Promise.reject(error);
       }
 
+
       const status = error.response.status;
       const url = originalRequest.url || '';
+
+      if (status === 500) {
+        alert("서비스 오류가 발생했습니다.\n관리자에게 문의해주세요.");
+        return Promise.reject(error);
+      }
+
+      if (status === 503) {
+        alert("서비스 오류가 발생했습니다.\n관리자에게 문의해주세요.");
+        return Promise.reject(error);
+      }
 
       // TODO: 401 응답 처리 및 토큰 재발급, 재시도, clearAuthState 호출 등 인터셉터 로직 작성
 
@@ -45,7 +57,11 @@ api.interceptors.response.use(
       if(url.includes('/api/v1/auth/')) return Promise.reject(error);
 
       // access token이 없는 상황도 그대로 throw
-      if(!authStore.accessToken) return Promise.reject(error);
+      if(!authStore.accessToken) {
+        authStore.clearAuthState();
+        router.replace('/login');
+        return Promise.reject(error);
+      }
 
       // 이미 재시도한 요청이면 그대로 실패
       if(originalRequest._retry) return Promise.reject(error);
