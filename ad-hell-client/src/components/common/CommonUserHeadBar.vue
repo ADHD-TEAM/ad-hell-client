@@ -55,7 +55,9 @@ const AlertIcon = ref(
             class="folding-img"
         />
         <!-- 로고 텍스트 -->
+        <router-link :to="{ name: 'MainPage' }">
         <img :src = "HeadBarIcon.src"/>
+        </router-link>
       </div>
 
       <!-- 오른쪽 영역 (메뉴, 버튼 등) -->

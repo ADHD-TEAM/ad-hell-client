@@ -202,6 +202,16 @@ const routes = [
               component: () => import('@/pages/report/ReportList.vue'),
               meta: { role: 'admin' }
             },
+            { // 어드민 회원관리
+                path: 'admin/user/managements',
+                name: 'UserManagementList',
+                component: () => import('@/pages/admin/UserManagementList.vue'),
+            },
+            { // 어드민 회원관리 상세
+                path: 'admin/user/management/1',
+                name: 'UserManagementDetail',
+                component: () => import('@/pages/admin/UserManagementDetail.vue'),
+            },
         ],
     },
 
