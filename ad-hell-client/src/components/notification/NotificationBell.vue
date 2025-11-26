@@ -23,7 +23,7 @@ const authStore = useAuthStore()
 // ===== 상태 =====
 const isNotificationOpen = ref(false)
 const hasLoaded = ref(false)
-const activeTab = ref<'unread' | 'read'>('unread')
+const activeTab = ref('unread')
 
 const notifications = ref([])
 
@@ -38,11 +38,14 @@ const unreadCount = computed(() => {
   return notifications.value.filter((n) => !n.read).length
 })
 
-const filteredNotifications = computed(() =>
-    notifications.value.filter((n) =>
-        activeTab.value === 'unread' ? !n.read : n.read,
-    ),
-)
+const filteredNotifications = computed(() => {
+  if (activeTab.value === 'unread') {
+    // 읽지 않은 것만
+    return notifications.value.filter((n) => n.read === false)
+  }
+  // 읽은 것만
+  return notifications.value.filter((n) => n.read === true)
+})
 
 // ===== API 호출 =====
 
@@ -63,7 +66,11 @@ const loadNotifications = async () => {
       type: '시스템',
       actor: '',
       message: n.notificationBody,
-      read: n.read,
+      read:
+          n.read === true ||
+          n.read === 'Y' ||
+          n.read === 'y' ||
+          n.read === 1,
       createdAt: n.createdAt,
     }))
 
@@ -72,6 +79,12 @@ const loadNotifications = async () => {
   } catch (e) {
     console.error('[NotificationBell] 알림 목록 로딩 실패', e)
   }
+
+  console.log('[NotificationBell] notifications(after map) =', notifications.value)
+  console.log(
+      '[NotificationBell] unread filtered length =',
+      notifications.value.filter((n) => n.read === false).length,
+  )
 }
 
 const loadUnreadCount = async () => {
