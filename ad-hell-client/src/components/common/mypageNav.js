@@ -2,7 +2,7 @@
 // mypage nav
 export const mypageNav = [
     {index : 1 , title : '회원정보', linkTo :  {name : 'MyProfileUpdate'}},
-    {index : 2, title : '포인트', linkTo : {name :'MyProfileUpdate'}},
+    {index : 2, title : '포인트', linkTo : {name :'MyPointHistory'}},
     {index : 3, title : '광고', linkTo : {name :'MyProfileUpdate'}},
     {index : 4, title : '게시판', linkTo : {name :'MyBoardList'}},
     {index : 5, title : '문의/신고', linkTo : {name :'MyInquiryList'}}

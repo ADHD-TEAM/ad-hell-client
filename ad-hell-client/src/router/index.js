@@ -102,10 +102,13 @@ const routes = [
                         path: 'boards',
                         name: 'MyBoardList',
                         component: () => import('@/pages/mypage/MyBoardList.vue'),
-                    }
+                    },
+                      path: '/mypage/points',
+                      name: 'MyPointHistory',
+                      component: () => import('@/pages/mypage/MyPointHistory.vue'),
+                    },
                 ]
             },
-
             /* 회원 경품 */
             {
               path: 'rewards',

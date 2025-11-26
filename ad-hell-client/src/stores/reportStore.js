@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import {
   fetchReports,
   createReport
-} from '@/api/reportApi'
+} from '@/api/reportAdminApi.js'
 
 export const useReportStore = defineStore('board', () => {
 
