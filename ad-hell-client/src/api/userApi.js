@@ -15,11 +15,6 @@ function unwrapApiResponse(res, defaultErrorMessage) {
 
 // 내 정보 조회: UserDetailResponse { user: UserDTO } 중 user만 반환
 export async function fetchMyInfoApi() {
-<<<<<<< HEAD
-  const res = await api.get('/users/me');
-  const data = unwrapApiResponse(res, '사용자 정보를 불러오지 못했습니다.');
-    return data.user ?? data.userDto ?? data.data ?? data; // UserDTO
-=======
     const authStore = useAuthStore();
     try {
         const res = await api.get('/users/me', {
@@ -62,7 +57,6 @@ export async function updatePasswordApi(payload) {
         throw error;
     }
 
->>>>>>> develop
 }
 
 // 전체 회원 조회: UserListResponse { users: List<UserDTO> } 중 users만 반환
@@ -72,7 +66,6 @@ export async function fetchAllUsersApi() {
   return data.users || [];
 }
 
-<<<<<<< HEAD
 // 알림/인증용: /api/auth/me 호출해서 { userId, username, role } 받기
 export async function fetchNotificationAuthMe() {
     const res = await api.get('/auth/me'); // 게이트웨이 기준 경로: /api/auth/me
@@ -89,7 +82,7 @@ export async function fetchNotificationAuthMe() {
     // data.data: NotificationLoginUserInfoResponse { userId, username, role }
     return data.data;
 }
-=======
+
 export function withdrawApi() {
     const authStore = useAuthStore();
 
@@ -111,4 +104,3 @@ export function withdrawApi() {
 export function userInfoListApi() {
 
 }
->>>>>>> develop

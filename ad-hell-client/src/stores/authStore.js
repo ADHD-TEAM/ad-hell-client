@@ -217,14 +217,10 @@ export const useAuthStore = defineStore('auth', () => {
     - 서버 요청 성공/실패와 상관 없이 클라이언트의 accessToken, user, 에러/로딩 상태를 모두 초기화하고 로그인 페이지로 이동한다.
   */
   const logout = async () => {
-    // TODO: logoutApi 호출 및 상태 초기화, router 이동 로직 작성
-<<<<<<< HEAD
       const notificationStore = useNotificationStore()
       notificationStore.disconnectSse()
       // 토큰/유저 정보 삭제
-=======
       console.log("로그아웃");
->>>>>>> develop
   };
 
     // 내 정보 불러오기 (/users/me)
