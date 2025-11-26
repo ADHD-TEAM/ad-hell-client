@@ -35,16 +35,18 @@ const labels = {
   save: '저장',
   cancel: '취소',
   reset: '초기화',
-  change: '교환'
+  change: '교환',
+  list : '목록',
+  detail: '상세'
 }
 
 const label = computed(() => labels[props.type] ?? props.type)
 
 // 색상 타입
 const variant = computed(() => {
-  const soft = ['search', 'delete']
+  const soft = ['search', 'delete', 'list']
   const primary = ['write', 'register', 'update', 'save', 'change']
-  const outline = ['cancel', 'reset']
+  const outline = ['cancel', 'reset', 'detail']
 
   if (soft.includes(props.type)) return 'soft'
   if (primary.includes(props.type)) return 'primary'
@@ -91,6 +93,7 @@ const sizeStyle = computed(() => ({
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 40px;
 }
 
 /* soft */
