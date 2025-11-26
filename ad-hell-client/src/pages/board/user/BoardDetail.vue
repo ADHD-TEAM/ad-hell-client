@@ -1,90 +1,77 @@
 <!-- src/pages/board/user/BoardDetail.vue -->
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import CommonButton from '@/components/common/CommonButton.vue'
+import { deleteBoard } from '@/api/boardApi.js'
+// 게시글 + 댓글 조회/처리 공통 로직
+import { useBoardDetail } from '@/composables/board/useBoardDetail.js'
 
 const route = useRoute()
 const router = useRouter()
 
+// URL 파라미터에서 게시글 ID
 const boardId = Number(route.params.id)
 
-const loading = ref(false)
-const board = ref({
-  id: boardId,
-  title: '',
-  writerName: '',
-  createdAt: '',
-  viewCount: 0,
-  content: '',
-})
+// 컴포저블에서 상태/함수 가져오기
+const {
+  board,
+  comments,
+  newComment,
+  loading,
+  addComment,
+  editComment,
+  removeComment,
+} = useBoardDetail(boardId)
 
-const comments = ref([])
-const newComment = ref('')
+// 이미지 모달 상태
+const imageModalVisible = ref(false)
+const selectedImageUrl = ref('')
 
-const loadDetail = async () => {
-  loading.value = true
-  try {
-    board.value = {
-      id: boardId,
-      title: '플랫폼 안내',
-      writerName: '운영자',
-      createdAt: '2025-11-14',
-      viewCount: 2580,
-      content: '게시글 내용입니다.',
-    }
-
-    comments.value = [
-      { id: 1, writerName: 'adhell', content: '답글내용 1입니다.' },
-      { id: 2, writerName: 'user01', content: '답글내용 2입니다.' },
-    ]
-  } finally {
-    loading.value = false
-  }
-}
-
+// 목록으로 이동
 const goList = () => {
   router.push('/boards')
 }
 
+// 게시글 수정 이동
 const onClickUpdate = () => {
   router.push(`/boards/${boardId}/edit`)
 }
 
-const onClickDelete = () => {
-  console.log('게시글 삭제', boardId)
+// 게시글 삭제
+const onClickDelete = async () => {
+  if (!confirm('게시글을 삭제하시겠습니까?')) return
+
+  try {
+    await deleteBoard(boardId)
+    alert('게시글이 삭제되었습니다.')
+    goList()
+  } catch (e) {
+    console.error(e)
+    alert('게시글 삭제 중 오류가 발생했습니다.')
+  }
 }
 
-const addComment = () => {
-  if (!newComment.value.trim()) return
-  comments.value.push({
-    id: Date.now(),
-    writerName: '현재사용자',
-    content: newComment.value,
-  })
-  newComment.value = ''
+// 이미지 썸네일 클릭 → 모달 열기
+const openImageModal = (url) => {
+  if (!url) return
+  selectedImageUrl.value = url
+  imageModalVisible.value = true
 }
 
-const editComment = (c) => {
-  console.log('댓글 수정', c.id)
+// 모달 닫기
+const closeImageModal = () => {
+  imageModalVisible.value = false
+  selectedImageUrl.value = ''
 }
-
-const deleteComment = (c) => {
-  comments.value = comments.value.filter((v) => v.id !== c.id)
-}
-
-onMounted(() => {
-  loadDetail()
-})
 </script>
 
 <template>
   <section class="board-detail-page" v-loading="loading">
-
-    <!--  제목만 -->
+    <!-- 제목 -->
     <h2 class="detail-title">{{ board.title }}</h2>
 
-    <!--  작성자 / 작성일 / 조회수 + 구분선 -->
+    <!-- 작성자 / 작성일 / 조회수 -->
     <div class="detail-meta">
       <div class="meta-item">
         <span class="meta-label">작성자:</span>
@@ -102,7 +89,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <!--  구분선 -->
+    <!-- 구분선 -->
     <div class="divider"></div>
 
     <!-- 내용 박스 -->
@@ -112,7 +99,19 @@ onMounted(() => {
       </p>
     </div>
 
-    <!--   수정/삭제 버튼 -->
+    <!-- 이미지 썸네일 영역 -->
+    <div class="detail-images" v-if="board.files && board.files.length">
+      <div
+          v-for="img in board.files"
+          :key="img.storedName || img.id || img.url"
+          class="image-item"
+          @click="openImageModal(img.url)"
+      >
+        <img :src="img.url" class="detail-image" />
+      </div>
+    </div>
+
+    <!-- 수정/삭제 버튼 -->
     <div class="detail-actions">
       <CommonButton type="update" @click="onClickUpdate" />
       <CommonButton type="delete" @click="onClickDelete" />
@@ -131,7 +130,7 @@ onMounted(() => {
 
         <div class="comment-actions">
           <CommonButton type="update" @click="editComment(c)" />
-          <CommonButton type="delete" @click="deleteComment(c)" />
+          <CommonButton type="delete" @click="removeComment(c)" />
         </div>
       </div>
 
@@ -149,6 +148,24 @@ onMounted(() => {
         </div>
       </div>
     </section>
+
+    <!-- 이미지 모달 -->
+    <el-dialog
+        v-model="imageModalVisible"
+        width="60%"
+        :show-close="true"
+        class="image-modal"
+        center
+        @close="closeImageModal"
+    >
+      <div class="image-modal-body">
+        <img
+            v-if="selectedImageUrl"
+            :src="selectedImageUrl"
+            class="image-modal-img"
+        />
+      </div>
+    </el-dialog>
   </section>
 </template>
 
@@ -206,6 +223,30 @@ onMounted(() => {
   font-size: 14px;
   line-height: 1.6;
   white-space: pre-wrap;
+}
+
+/* 이미지 썸네일 리스트 */
+.detail-images {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.image-item {
+  width: 180px;
+  height: 180px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8f8f8;
+  border: 1px solid #eee;
+  cursor: pointer;
+}
+
+.detail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* 수정/삭제 버튼 */
@@ -273,5 +314,23 @@ onMounted(() => {
   margin-top: 8px;
   display: flex;
   justify-content: flex-end;
+}
+
+/* 이미지 모달 스타일 */
+.image-modal-body {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.image-modal-img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+:deep(.el-dialog__body) {
+  padding: 16px 20px 20px;
 }
 </style>

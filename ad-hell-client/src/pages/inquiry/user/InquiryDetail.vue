@@ -1,4 +1,4 @@
-<!-- src/pages/inquiry/user/InquiryDetail.vue -->
+<!-- src/pages/inquiry/admin/AdminInquiryDetail.vue -->
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -9,34 +9,57 @@ const router = useRouter()
 const inquiryId = Number(route.params.id)
 
 const loading = ref(false)
+
+// 문의 상세 데이터 (임시 더미 데이터)
 const inquiry = ref({
   id: inquiryId,
   title: '',
-  writerName: '',
+  memberName: '',
   createdAt: '',
-  question: '',
-  answer: '',
+  answeredAt: '',
+  content: '',
 })
 
+// 답변 입력값
+const answerText = ref('')
+
+// 상세 데이터 로드 (나중에 API / store로 교체)
 const loadDetail = async () => {
   loading.value = true
   try {
-    // TODO: API 연동
     inquiry.value = {
       id: inquiryId,
-      title: '포인트 미지급 문의 입니다.',
-      writerName: '운영자',
-      createdAt: '2025-11-17',
-      question: '문의 내용 예시입니다.',
-      answer: '문의 답변 내용',
+      title: '포인트 미지급 문의입니다.',
+      memberName: 'adhell',
+      createdAt: '2025-11-14',
+      answeredAt: '2025-11-14',
+      content: '문의 내용 예시입니다.\n실제 데이터는 API 연동 후 교체하세요.',
     }
+
+    // ✅ 기존 예시 텍스트 설정 부분 제거
+    // answerText.value = '답변 내용 예시입니다...\n...'
   } finally {
     loading.value = false
   }
 }
 
-const goList = () => {
-  router.push('/inquiries')
+// 등록 버튼
+const saveAnswer = async () => {
+  if (!answerText.value.trim()) {
+    alert('답변 내용을 입력하세요.')
+    return
+  }
+
+  console.log('답변 등록 요청', {
+    id: inquiryId,
+    answer: answerText.value,
+  })
+
+  // TODO: 나중에 updateInquiryAnswer API / store 호출
+  // await inquiryStore.updateInquiryAnswer(inquiryId, { answer: answerText.value })
+
+  alert('답변이 등록되었습니다.')
+  router.push('/admin/inquiries')
 }
 
 onMounted(loadDetail)
@@ -44,40 +67,56 @@ onMounted(loadDetail)
 
 <template>
   <section class="inquiry-detail-page" v-loading="loading">
-    <!-- 제목 -->
-    <h2 class="detail-title">{{ inquiry.title }}</h2>
+    <!-- 페이지 타이틀 -->
+    <h2 class="page-title">문의 답변 등록</h2>
 
-    <!-- 작성자 / 작성일 -->
-    <div class="detail-meta">
+    <!-- 문의 제목 -->
+    <h3 class="inquiry-title">{{ inquiry.title }}</h3>
+
+    <!-- 작성자 / 작성일 / 답변일자 -->
+    <div class="meta-row">
       <div class="meta-item">
         <span class="meta-label">작성자:</span>
-        <span class="meta-value">{{ inquiry.writerName }}</span>
+        <span class="meta-value">{{ inquiry.memberName }}</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">작성일:</span>
         <span class="meta-value">{{ inquiry.createdAt }}</span>
       </div>
+      <div class="meta-item">
+        <span class="meta-label">답변일:</span>
+        <span class="meta-value">{{ inquiry.answeredAt || '-' }}</span>
+      </div>
     </div>
 
-    <div class="divider" />
+    <!-- 구분선 -->
+    <div class="divider"></div>
 
+    <!-- 문의 내용 박스 -->
+    <div class="content-box">
+      <div class="box-label">문의 내용</div>
+      <div class="box-body">
+        <p class="content-text">
+          {{ inquiry.content }}
+        </p>
+      </div>
+    </div>
 
-      <!-- 답변 -->
-      <!-- element plus 폼으로 감싸서 label을 위에 배치함   -->
-    <el-form label-position="top" class="detail-form">
-      <el-form-item label="문의 답변 내용">
-        <div class="content-box content-box--large">
-          <p class="content-text">
-            {{ inquiry.answer }}
-          </p>
-        </div>
-      </el-form-item>
-    </el-form>
+    <!-- ✅ 답변 내용 박스: 안쪽 박스 제거 + textarea만 -->
+    <div class="content-box answer-box">
+      <div class="box-label">답변 내용</div>
+      <el-input
+          v-model="answerText"
+          type="textarea"
+          :rows="8"
+          placeholder="답변 내용을 입력하세요."
+          class="answer-input"
+      />
+    </div>
 
-    <!-- 하단 버튼 -->
-    <div class="detail-actions">
-      <!-- TODO: CommonButton에서 cancel 라벨을 '이전'으로 바꾸면 Figma와 동일 -->
-      <CommonButton type="cancel" @click="goList" />
+    <!-- 하단 등록 버튼 -->
+    <div class="bottom-actions">
+      <CommonButton type="register" @click="saveAnswer" />
     </div>
   </section>
 </template>
@@ -87,20 +126,26 @@ onMounted(loadDetail)
   padding: 24px 32px 40px;
 }
 
-/* 제목 */
-.detail-title {
-  font-size: 22px;
+/* 상단 타이틀 */
+.page-title {
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
-/* 작성자 / 작성일 */
-.detail-meta {
+/* 문의 제목 (굵게) */
+.inquiry-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* 메타 정보 줄 */
+.meta-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  font-size: 14px;
-  margin-bottom: 10px;
+  gap: 40px;
+  font-size: 13px;
+  margin-bottom: 8px;
 }
 
 .meta-item {
@@ -124,48 +169,49 @@ onMounted(loadDetail)
   margin: 8px 0 16px;
 }
 
-/* 문의/답변 */
-.detail-form {
-  width: 100%;
-}
-
-:deep(.el-form-item__label) {
-  font-size: 14px;
-  font-weight: 700;
-  color: #333;
-}
-
+/* 공통 박스 */
 .content-box {
-  padding: 12px 16px;
   border: 1px solid #efefef;
   border-radius: 10px;
-  background: #fff;
-  min-height: 120px;
+  background: #ffffff;
+  margin-bottom: 16px;
 }
 
-/* 답변 박스 */
-.content-box--large {
+.box-label {
+  font-size: 12px;
+  color: #b3b3b3;
+  padding: 8px 12px 0;
+}
 
-  min-height: 550px;
-  width: 100%;
-  display: flex;
-  padding: 20px 24px;
-  margin-left: auto;
-  margin-right: auto;
-
-
-
+/* 문의 내용 쪽만 안쪽 박스 유지 */
+.box-body {
+  padding: 8px 16px 16px;
+  min-height: 180px;
 }
 
 .content-text {
-  font-size: 14px;
-  line-height: 1.6;
   white-space: pre-wrap;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
-/* 하단 버튼 */
-.detail-actions {
-  margin-top: 16px;
+/* ✅ 답변 textarea 박스 패딩 */
+.answer-box {
+  padding: 8px 16px 16px;
+}
+
+/* 답변 textarea */
+.answer-input {
+  width: 100%;
+  :deep(textarea) {
+    resize: none;
+    min-height: 180px;
+  }
+}
+
+/* 하단 등록 버튼 (오른쪽) */
+.bottom-actions {
+  margin-top: 12px;
   display: flex;
   justify-content: flex-end;
 }

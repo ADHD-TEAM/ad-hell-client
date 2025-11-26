@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router'
 import { useBoardStore } from '@/stores/boardStore.js'
 
 import SearchForm from '@/components/common/SearchForm.vue'
-// ✅ BoardTable 대신 공통 DataTable 사용
 import DataTable from '@/components/common/DataTable.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import CommonButton from '@/components/common/CommonButton.vue'
@@ -13,6 +12,7 @@ import CommonButton from '@/components/common/CommonButton.vue'
 const router = useRouter()
 const boardStore = useBoardStore()
 
+// store 에서 상태/액션 가져오기
 const {
   boards,
   page,
@@ -21,16 +21,27 @@ const {
   loadBoards,
   search,
   changePage,
+  loading,
 } = boardStore
 
+// 상세 이동
 const goDetail = (id) => {
   router.push(`/boards/${id}`)
 }
 
+// 글쓰기 이동
 const goCreate = () => {
   router.push('/boards/create')
 }
 
+// 검색 버튼 클릭 시 처리
+const onSearch = () => {
+  // 검색 조건은 SearchForm 에서 v-model 로 이미 searchForm 에 들어가 있으니
+  // 여기서는 검색 액션만 호출
+  search()
+}
+
+// 초기 로딩
 onMounted(() => {
   loadBoards()
 })
@@ -44,15 +55,16 @@ onMounted(() => {
       <!-- 검색 -->
       <SearchForm
           :search-form="searchForm"
-          @search="search"
+          @search="onSearch"
       />
 
       <!-- 목록 타이틀 -->
       <h3 class="board-subtitle">게시판 목록</h3>
 
-      <!-- ✅ 공통 DataTable + 게시판 전용 컬럼 -->
+      <!-- 공통 DataTable + 게시판 전용 컬럼 -->
       <DataTable
           :data="boards"
+          :loading="loading"
           @select="goDetail"
       >
         <el-table-column

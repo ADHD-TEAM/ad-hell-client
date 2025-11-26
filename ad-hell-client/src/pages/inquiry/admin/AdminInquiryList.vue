@@ -9,12 +9,12 @@ import DataTable from '@/components/common/DataTable.vue'
 
 const router = useRouter()
 
-// 문의 목록
+// 목록 데이터
 const inquiries = ref([])
 const page = ref(1)
 const totalPages = ref(1)
 
-// 검색 폼 (게시판/공지랑 동일 구조 사용)
+// 검색 폼 (타이틀 / 작성자 / 기간)
 const searchForm = reactive({
   title: '',
   writer: '',
@@ -22,33 +22,9 @@ const searchForm = reactive({
   toDate: null,
 })
 
-// DataTable 컬럼 정의
-const columns = [
-  { prop: 'id',          label: 'ID',      width: 80 },
-  { prop: 'memberName',  label: '회원',    width: 140 },
-  {
-    prop: 'title',
-    label: '제목',
-    minWidth: 300,
-    showOverflowTooltip: true,
-  },
-  {
-    prop: 'answeredAt',
-    label: '답변일자',
-    width: 160,
-    align: 'center',
-  },
-  {
-    prop: 'status',
-    label: '문의 상태',
-    width: 120,
-    align: 'center',
-  },
-]
-
-// 목록 조회 (TODO: API 연동)
+//  목록 조회 (TODO: 나중에 API 연동)
 const loadInquiries = async () => {
-  // 나중에 여기만 /api/admin/inquiries 로 교체
+  // 지금은 더미 데이터
   inquiries.value = [
     {
       id: 101,
@@ -56,6 +32,13 @@ const loadInquiries = async () => {
       title: '포인트 미지급 문의 입니다',
       answeredAt: '2025-11-17',
       status: '답변 완료',
+    },
+    {
+      id: 102,
+      memberName: 'tester',
+      title: '광고가 노출되지 않습니다',
+      answeredAt: '-',
+      status: '답변 대기',
     },
   ]
   totalPages.value = 5
@@ -75,7 +58,7 @@ const changePage = async (newPage) => {
 
 // 상세 이동
 const goDetail = (id) => {
-  router.push(`/admin/inquiries/${id}`)
+  router.push({ name: 'AdminInquiryDetail', params: { id } })
 }
 
 onMounted(loadInquiries)
@@ -86,7 +69,7 @@ onMounted(loadInquiries)
     <h2 class="inquiry-title">문의</h2>
 
     <div class="inquiry-content">
-      <!-- 검색 영역 (공통 SearchForm) -->
+      <!-- 검색 영역 -->
       <SearchForm
           :search-form="searchForm"
           @search="onSearch"
@@ -95,13 +78,40 @@ onMounted(loadInquiries)
       <!-- 목록 타이틀 -->
       <h3 class="inquiry-subtitle">문의 목록</h3>
 
-      <!-- 공통 DataTable -->
+      <!-- DataTable + slot으로 el-table-column 정의 -->
       <DataTable
           :data="inquiries"
-          :columns="columns"
-          empty-text="No Data"
           @select="goDetail"
-      />
+      >
+        <el-table-column
+            prop="id"
+            label="ID"
+            width="80"
+        />
+        <el-table-column
+            prop="memberName"
+            label="회원"
+            width="140"
+        />
+        <el-table-column
+            prop="title"
+            label="제목"
+            min-width="300"
+            show-overflow-tooltip
+        />
+        <el-table-column
+            prop="answeredAt"
+            label="답변일자"
+            width="160"
+            align="center"
+        />
+        <el-table-column
+            prop="status"
+            label="문의 상태"
+            width="120"
+            align="center"
+        />
+      </DataTable>
 
       <!-- 페이지네이션 -->
       <div class="inquiry-bottom-row">
