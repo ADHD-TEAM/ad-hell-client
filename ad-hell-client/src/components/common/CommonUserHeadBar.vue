@@ -1,4 +1,4 @@
-<script setup>
+<script setup >
 import { ref ,reactive } from "vue";
 import foldingIconSrc from '@/assets/icon/icon-folding.svg';
 import {useRouter} from "vue-router";

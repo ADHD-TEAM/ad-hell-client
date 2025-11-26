@@ -1,20 +1,61 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import AdSlot from '@/pages/advertise/AdSlot.vue';
-import api from '@/api/api.js'; // axios 인스턴스 (baseURL 설정되어 있다고 가정)
+import api from '@/api/api.js'; // axios 인스턴스
+
+interface AdFileDto {
+  fileId: number;
+  originFileName: string;
+  storedName: string;
+  fileUrl: string;
+  fileType: 'IMAGE' | 'VIDEO' | 'DOC' | string;
+}
+
+interface AdDto {
+  adId: number;
+  categoryId: number;
+  categoryName: string;
+  title: string;
+  viewCount: number;
+  likeCount: number;
+  bookmarkCount: number;
+  commentCount: number;
+  createdAt: string;
+  updatedAt: string;
+  files: AdFileDto[];
+}
+
+interface Pagination {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+}
+
+interface AdListResponse {
+  ads: AdDto[];
+  pagination: Pagination;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  errorCode: string | null;
+  message: string | null;
+  timestamp: string;
+}
 
 interface AdItem {
-  id: string;
+  id: number;
   title: string;
   category: string;
-  videoSrc: string; // 백엔드에서 주는 동영상 URL
+  videoSrc: string;
 }
 
 // 광고 리스트
 const ads = ref<AdItem[]>([]);
 
 // 페이지네이션 상태
-const page = ref(0);      // 현재 페이지 (0부터 시작)
+const page = ref(1);      // 현재 페이지 (0부터 시작)
 const size = 6;           // 한 번에 몇 개씩 가져올지
 const isLoading = ref(false);
 const isLastPage = ref(false);
@@ -23,22 +64,40 @@ const isLastPage = ref(false);
 const sentinel = ref<HTMLElement | null>(null);
 let observer: IntersectionObserver | null = null;
 
-// 광고 가져오는 함수
 const loadAds = async () => {
   if (isLoading.value || isLastPage.value) return;
 
   isLoading.value = true;
   try {
-    const res = await api.get('/ads', {
+    const res = await api.get<ApiResponse<AdListResponse>>('/ads', {
       params: { page: page.value, size }
     });
 
-    // 백엔드가 Page<AdResponse> 형식(Sprint Data)이라면:
-    const content: AdItem[] = res.data.content ?? [];
-    ads.value.push(...content);
+    const listResponse = res.data?.data;
+    if (!listResponse) {
+      console.error('응답에 data가 없습니다.', res.data);
+      return;
+    }
 
-    // 마지막 페이지 판별
-    if (res.data.last === true || content.length < size) {
+    const content = listResponse.ads ?? [];
+
+    const mapped: AdItem[] = content.map((ad: AdDto) => {
+      const videoFile = (ad.files ?? []).find(
+          (file) => file.fileType === 'VIDEO'
+      );
+
+      return {
+        id: ad.adId,
+        title: ad.title,
+        category: ad.categoryName,
+        videoSrc: videoFile?.fileUrl ?? ''
+      };
+    });
+
+    ads.value.push(...mapped);
+
+    // 👉 pagination 쓰면 더 좋지만, 일단 content 기준으로 유지
+    if (content.length < size) {
       isLastPage.value = true;
     } else {
       page.value += 1;
@@ -50,22 +109,22 @@ const loadAds = async () => {
   }
 };
 
-onMounted(() => {
-  // 첫 페이지 로드
-  loadAds();
+// 🔥 onMounted를 async로 바꾼다
+onMounted(async () => {
+  // 1) 첫 페이지를 다 불러오고
+  await loadAds();
 
-  // IntersectionObserver 생성
+  // 2) 그 다음에 Observer를 단다
   observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
         if (entry.isIntersecting) {
-          // sentinel이 화면에 보이면 다음 페이지 로드
           loadAds();
         }
       },
       {
-        root: null,              // 현재 뷰포트 기준
-        rootMargin: '0px 0px 200px 0px', // 바닥에서 200px 남았을 때 미리 로드
+        root: null,
+        rootMargin: '0px 0px 200px 0px',
         threshold: 0
       }
   );
@@ -85,9 +144,6 @@ onBeforeUnmount(() => {
 
 <template>
   <main class="ad-main">
-    <!-- 중앙 제목: 광고 목록 (이건 PageTitle에서 이미 하니까 지워도 됨) -->
-    <!-- <h2 class="ad-main__title">광고 목록</h2> -->
-
     <section class="ad-main__section">
       <h3 class="ad-main__section-label">오늘</h3>
 
