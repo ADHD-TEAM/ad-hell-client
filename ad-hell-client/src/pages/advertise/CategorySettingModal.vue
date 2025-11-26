@@ -3,29 +3,35 @@
 import { ref, watch } from 'vue'
 import CommonButton from '@/components/common/CommonButton.vue'
 
+// 부모에서 내려줄 타입
+interface CategoryOption {
+  value: number
+  label: string
+}
+
 const props = defineProps<{
   visible: boolean
-  selectedCategory?: string | null
+  selectedCategoryId?: number | null
+  categoryOptions: CategoryOption[]
 }>()
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'save', category: string): void
+  (e: 'save', categoryId: number): void
 }>()
 
-const categoryOptions = [
-  { value: 'FOOD', label: '음식' },
-  { value: 'SERVICE', label: '서비스' },
-  { value: 'SHOPPING', label: '쇼핑' },
-  { value: 'ETC', label: '기타' },
-]
-
-const current = ref<string>('FOOD')
+// 현재 선택 값 (카테고리 ID)
+const current = ref<number | null>(null)
 
 watch(
-    () => props.selectedCategory,
+    () => props.selectedCategoryId,
     (v) => {
-      if (v) current.value = v
+      if (v != null) {
+        current.value = v
+      } else if (props.categoryOptions.length > 0) {
+        // 초기값: 목록 중 첫 번째
+        current.value = props.categoryOptions[0].value
+      }
     },
     { immediate: true }
 )
@@ -35,9 +41,11 @@ const handleClose = () => {
 }
 
 const handleSave = () => {
+  if (current.value == null) return
   emit('save', current.value)
 }
 </script>
+
 
 <template>
   <!-- visible 이 true일 때만 모달 표시 -->
@@ -65,12 +73,13 @@ const handleSave = () => {
       </ul>
 
       <div class="modal-footer">
-        <CommonButton type="cancel"  :width="70" @click="handleClose" />
-        <CommonButton type="save"    :width="70" @click="handleSave" />
+        <CommonButton type="cancel" :width="70" @click="handleClose" />
+        <CommonButton type="save"   :width="70" @click="handleSave" />
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .modal-backdrop {
