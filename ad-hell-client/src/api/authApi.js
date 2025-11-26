@@ -29,4 +29,6 @@ export function isAvailableApi(payload) {
 export function sendEmailbyCode(payload) {
     // 이메일 인증번호 보내기
     return api.post('/auth/email/send-code', payload);
+
 }
+

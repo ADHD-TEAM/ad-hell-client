@@ -1,23 +1,31 @@
+<!-- src/pages/board/user/BoardEdit.vue -->
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import CommonButton from '@/components/common/CommonButton.vue'
-import { useBoardStore } from '@/stores/boardStore'
+
+// 게시글 상세 조회 / 수정 / 이미지 추가/삭제 API
+import {
+  fetchBoardDetail,
+  updateBoard,
+  appendBoardImages,
+  deleteBoardImage,
+} from '@/api/boardApi.js'
 
 // 라우터
 const router = useRouter()
 const route = useRoute()
-const boardId = route.params.id
+const boardId = Number(route.params.id)
 
-// store
-const boardStore = useBoardStore()
-
-// 수정 폼
+// 수정 폼 (제목/내용 + 새로 추가할 파일)
 const form = reactive({
   title: '',
   content: '',
-  files: [],
+  files: [], // 새로 선택한 파일 목록
 })
+
+// 서버에 이미 저장된 이미지 목록
+const existingImages = ref([])
 
 // 파일 선택용 ref
 const fileInputRef = ref(null)
@@ -27,29 +35,47 @@ const onClickUpload = () => {
   fileInputRef.value?.click()
 }
 
-// 파일 선택 시 목록 저장
+// 파일 선택 시 목록 저장 (새로 추가할 파일만)
 const onFileChange = (event) => {
   const files = Array.from(event.target.files || [])
   form.files = files
 }
 
+// 기존 이미지 삭제 (storedName 기준)
+const onRemoveExisting = async (img) => {
+  if (!confirm('이 이미지를 삭제하시겠습니까?')) return
+  try {
+    await deleteBoardImage(boardId, img.storedName)
+    existingImages.value = existingImages.value.filter(
+        (f) => f.storedName !== img.storedName,
+    )
+  } catch (e) {
+    console.error(e)
+    alert('이미지 삭제 중 오류가 발생했습니다.')
+  }
+}
+
 // 수정 요청
 const onSubmit = async () => {
-  console.log('수정 요청 데이터', {
-    id: boardId,
-    title: form.title,
-    content: form.content,
-    files: form.files,
-  })
+  try {
+    // 1) 게시글 기본 정보 수정 (제목/내용만 변경)
+    await updateBoard(boardId, {
+      title: form.title,
+      content: form.content,
+      // categoryId, status는 null로 보내서 그대로 유지 (서비스에서 null이면 변경 안 함)
+    })
 
-  // API 연동 시 사용
-  // const formData = new FormData()
-  // formData.append('title', form.title)
-  // formData.append('content', form.content)
-  // form.files.forEach(f => formData.append('files', f))
-  // await boardStore.updateBoardAction(boardId, formData)
+    // 2) 새로 선택한 파일이 있으면 이미지 추가 API 호출
+    if (form.files.length > 0) {
+      await appendBoardImages(boardId, form.files)
+    }
 
-  // router.push(`/boards/${boardId}`)
+    alert('게시글이 수정되었습니다.')
+    router.push(`/boards/${boardId}`)
+  } catch (e) {
+    console.error(e)
+    alert('게시글 수정 중 오류가 발생했습니다.')
+  }
 }
 
 // 취소 → 이전 페이지
@@ -59,13 +85,15 @@ const onCancel = () => {
 
 // 기존 게시글 상세 데이터 로드
 onMounted(async () => {
-  // const data = await boardStore.loadBoardDetail(boardId)
-  // form.title = data.title
-  // form.content = data.content
-
-  // 임시 값
-  form.title = '기존 제목 예시입니다.'
-  form.content = '기존 내용 예시입니다.\nAPI 연동 시 서버 데이터로 교체하세요.'
+  try {
+    const data = await fetchBoardDetail(boardId)
+    form.title = data.title
+    form.content = data.content
+    existingImages.value = data.files || []
+  } catch (e) {
+    console.error(e)
+    alert('게시글 정보를 불러오는 중 오류가 발생했습니다.')
+  }
 })
 </script>
 
@@ -75,7 +103,7 @@ onMounted(async () => {
 
     <div class="form-wrapper">
       <el-form :model="form" label-position="top" class="board-form">
-
+        <!-- 제목 -->
         <el-form-item label="제목">
           <el-input
               v-model="form.title"
@@ -84,6 +112,7 @@ onMounted(async () => {
           />
         </el-form-item>
 
+        <!-- 내용 -->
         <el-form-item label="내용">
           <el-input
               v-model="form.content"
@@ -94,12 +123,29 @@ onMounted(async () => {
           />
         </el-form-item>
 
+        <!-- 이미지 영역 -->
         <el-form-item>
           <div class="upload-box" @click="onClickUpload">
             <div class="upload-inner">
-              <div class="upload-icon">⬆</div>
-              <div class="upload-text">이미지 / 파일 업로드 해보세요</div>
+              <!-- 기존에 저장된 이미지 목록 -->
+              <div v-if="existingImages.length" class="upload-files">
+                <span
+                    v-for="img in existingImages"
+                    :key="img.storedName || img.fileId"
+                    class="file-chip"
+                    @click.stop
+                >
+                  {{ img.originFileName }}
+                  <span
+                      style="margin-left: 4px; cursor: pointer;"
+                      @click.stop="onRemoveExisting(img)"
+                  >
+                    삭제
+                  </span>
+                </span>
+              </div>
 
+              <!-- 새로 선택한 파일 목록 -->
               <div v-if="form.files.length" class="upload-files">
                 <span
                     v-for="file in form.files"
@@ -109,8 +155,12 @@ onMounted(async () => {
                   {{ file.name }}
                 </span>
               </div>
+
+              <div class="upload-icon">⬆</div>
+              <div class="upload-text">이미지 / 파일 업로드 해보세요</div>
             </div>
 
+            <!-- 실제 파일 input -->
             <input
                 ref="fileInputRef"
                 type="file"
@@ -120,7 +170,6 @@ onMounted(async () => {
             />
           </div>
         </el-form-item>
-
       </el-form>
 
       <div class="form-footer">

@@ -218,9 +218,13 @@ export const useAuthStore = defineStore('auth', () => {
   */
   const logout = async () => {
     // TODO: logoutApi 호출 및 상태 초기화, router 이동 로직 작성
+<<<<<<< HEAD
       const notificationStore = useNotificationStore()
       notificationStore.disconnectSse()
       // 토큰/유저 정보 삭제
+=======
+      console.log("로그아웃");
+>>>>>>> develop
   };
 
     // 내 정보 불러오기 (/users/me)

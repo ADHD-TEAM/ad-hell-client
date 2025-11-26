@@ -1,7 +1,7 @@
 <!-- src/components/common/DataTable.vue -->
 <script setup>
 const props = defineProps({
-  // 테이블에 뿌릴 데이터 (게시판/공지/문의 등 공통)
+  // 테이블에 사용할 데이터
   data: {
     type: Array,
     required: true,

@@ -1,4 +1,3 @@
-<!-- src/components/board/SearchForm.vue -->
 <script setup>
 import CommonButton from '@/components/common/CommonButton.vue'
 
@@ -42,7 +41,7 @@ const { searchForm } = props
 
           <el-form-item label="시작일">
             <el-date-picker
-                v-model="searchForm.fromDate"
+                v-model="searchForm.startDate"
                 type="date"
                 value-format="YYYY-MM-DD"
                 placeholder="시작일"
@@ -53,7 +52,7 @@ const { searchForm } = props
 
           <el-form-item label="종료일">
             <el-date-picker
-                v-model="searchForm.toDate"
+                v-model="searchForm.endDate"
                 type="date"
                 value-format="YYYY-MM-DD"
                 placeholder="종료일"
