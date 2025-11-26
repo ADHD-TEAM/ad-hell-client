@@ -8,13 +8,17 @@ import HeadBarIconSrc from '@/assets/icon/icon-logo.svg'
 import AlertIconSrc from '@/assets/icon/icon-headbar-alert.svg'
 import MypageIconSrc from '@/assets/icon/icon-headbar-mypage.svg'
 import { useAuthStore } from "@/stores/authStore.js";
+import {storeToRefs} from "pinia";
+import {logoutApi} from "@/api/authApi.js";
+import {ElMessage} from "element-plus";
 
 const authStore = useAuthStore();
 const isAdmin = computed(() => authStore?.user?.role === 'ADMIN');
 const router = useRouter();
 const route = useRoute();
+const { isLoggedIn } = storeToRefs(authStore);
 const isAdminPage = computed(() => route.path.startsWith('/admin'));
-
+console.log(isLoggedIn);
 const goAdminHome = () => {
   router.push({ name: 'AdminHome' });
 };
@@ -39,6 +43,21 @@ const MypageIcon = ref(
 const AlertIcon = ref(
     {src : AlertIconSrc}
 )
+
+const logout = async () => {
+  try {
+    await logoutApi();
+    ElMessage.success('로그아웃 되었습니다.');
+  } catch (e) {
+    console.log(e);
+  } finally {
+    authStore.setAccessToken(null);
+    authStore.setUser(null);
+    router.push({ name: 'MainPage' });
+  }
+
+}
+
 </script>
 
 <template>
@@ -62,31 +81,44 @@ const AlertIcon = ref(
 
       <!-- 오른쪽 영역 (메뉴, 버튼 등) -->
       <div class="header-right">
-        <el-button
-            v-if="isAdmin && !isAdminPage"
-            class="admin-btn"
-            @click="goAdminHome"
-        >
-          관리자 페이지
-        </el-button>
 
-        <el-button
-            v-if="isAdmin && isAdminPage"
-            class="user-btn"
-            @click="goUserHome"
-        >
-          사용자 페이지
-        </el-button>
 
-        <!-- Element Plus 버튼들 예시 -->
+        <template v-if="!isLoggedIn">
+          <!--    비 로그인 상태      -->
+          <el-button type="danger"
+                     @click="goLogin"
+          >
+            로그인
+          </el-button>
+        </template>
+        <template v-else>
+          <!--   로그인 상태      -->
 
-        <!-- 알림 아이콘 + 뱃지 + 팝오버 모두 NotificationBell에서 처리 -->
-        <NotificationBell :icon-src="AlertIcon.src" />
+          <el-button
+              v-if="isAdmin && !isAdminPage"
+              class="admin-btn"
+              @click="goAdminHome"
+          >
+            관리자 페이지
+          </el-button>
 
-        <router-link :to="{ name: 'MyProfileUpdate' }">
-          <img :src = "MypageIcon.src"/>
-        </router-link>
-        <el-button type="primary" @click="goLogin">로그인</el-button>
+          <el-button
+              v-if="isAdmin && isAdminPage"
+              class="user-btn"
+              @click="goUserHome"
+          >
+            사용자 페이지
+          </el-button>
+
+          <!-- 알림 아이콘 + 뱃지 + 팝오버 모두 NotificationBell에서 처리 -->
+          <NotificationBell :icon-src="AlertIcon.src" />
+
+          <router-link :to="{ name: 'MyProfileUpdate' }">
+            <img :src = "MypageIcon.src"/>
+          </router-link>
+
+          <p style="font-size: 12px;" @click="logout">로그아웃</p>
+        </template>
       </div>
     </div>
   </el-header>
