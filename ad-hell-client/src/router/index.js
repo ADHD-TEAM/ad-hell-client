@@ -174,27 +174,20 @@ const routes = [
             {
               path: 'admin/rewards',
               name: 'AdminRewardList',
-              component: () => import('@/pages/reward/RewardList.vue'),
+              component: () => import('@/pages/reward/AdminRewardList.vue'),
             },
             {
               path: 'admin/rewards/create',
               name: 'AdminRewardCreate',
-              component: () => import('@/pages/reward/RewardCreate.vue'),
+              component: () => import('@/pages/reward/AdminRewardCreate.vue'),
               meta: { role: 'admin' }
             },
             {
               path: 'admin/rewards/:id/edit',
               name: 'AdminRewardEdit',
-              component: () => import('@/pages/reward/RewardEdit.vue'),
+              component: () => import('@/pages/reward/AdminRewardEdit.vue'),
               meta: { role: 'admin' }
             },
-            {
-              path: 'admin/rewards/:id/stock',
-              name: 'AdminRewardStockCreate',
-              component: () => import('@/pages/reward/RewardStockCreate.vue'),
-              meta: { role: 'admin' }
-            },
-
             /* 관리자 신고 관리 */
             {
               path: 'admin/reports',
@@ -208,9 +201,24 @@ const routes = [
                 component: () => import('@/pages/admin/UserManagementList.vue'),
             },
             { // 어드민 회원관리 상세
-                path: 'admin/user/management/1',
+                path: 'admin/user/management',
                 name: 'UserManagementDetail',
                 component: () => import('@/pages/admin/UserManagementDetail.vue'),
+                children: [
+                    {
+                        path: 'detail/:id',
+                        name: 'UserDetailUpdate',
+                        component: () => import('@/pages/admin/UserDetailUpdate.vue'),
+                        props: true,
+                    },
+                    {
+                        path: 'point/:id',
+                        name: 'UserPointManagement',
+                        component: () => import('@/pages/admin/UserPointManagement.vue'),
+                        props: true,
+                    },
+
+                ]
             },
         ],
     },

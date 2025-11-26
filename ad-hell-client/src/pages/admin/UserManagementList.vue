@@ -14,7 +14,8 @@ const page = ref('');
 const totalPages = ref('');
 
 const userSearchBar = reactive({
-  role : ''
+  id : null
+  ,role : ''
   , userLoginId : ''
   , nickname : ''
   , email : ''
@@ -25,7 +26,7 @@ const userSearchBar = reactive({
 const userInfo = [
   { id: 1, role : '관리자',userLoginId: '홍길동', nickname: '홍길동',email: 'hong@test.com', status: 'active' },
   { id: 2, role : '회원',userLoginId: '김철수', nickname: '홍길동',email:'kim@test.com', status: 'deactive' },
-  { id: 2, role : '회원', userLoginId: '김철수', nickname: '홍길동',email:'kim@test.com', status: 'withdraw' },
+  { id: 3, role : '회원', userLoginId: '김철수', nickname: '홍길동',email:'kim@test.com', status: 'withdraw' },
 ]
 
 const search = () => {
@@ -50,8 +51,9 @@ const search = () => {
 
 }
 
-function goDetail() {
-  router.push({name : 'UserManagementDetail'});
+function goDetail(id) {
+  console.log(id)
+  router.push({name : 'UserDetailUpdate', params: { id : id}});
 }
 
 onMounted(() => {
@@ -83,8 +85,6 @@ onMounted(() => {
           </el-tag>
         </template>
       </el-table-column>
-
-
     </DataTable>
     <!-- 페이지 네이션 -->
     <div class="board-bottom-row">

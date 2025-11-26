@@ -13,9 +13,20 @@ export function refreshApi() {
 }
 
 export function logoutApi() {
-    return api.post('/auth/logout')
+    return api.post('/auth/logout');
 }
 
 export function registerApi(payload) {
-    return api.post('/api/users', payload)
+    // 회원가입
+    return api.post('/auth/signUp', payload);
+}
+
+export function isAvailableApi(payload) {
+    // 닉네임, 로그인 아이디 사용가능한지 확인
+    return api.post('/users/isAvailable', payload);
+}
+
+export function sendEmailbyCode(payload) {
+    // 이메일 인증번호 보내기
+    return api.post('/auth/email/send-code', payload);
 }

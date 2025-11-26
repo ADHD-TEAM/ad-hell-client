@@ -3,6 +3,7 @@ import {reactive, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {useAuthStore} from "@/stores/authStore.js";
 import LogoView from "@/components/features/account/LogoView.vue";
+import {ElMessage} from "element-plus";
 const labelPosition = ref('top');
 const route = useRoute();
 const router = useRouter();
@@ -34,6 +35,7 @@ const login = async () => {
 
     if(!result.success) {
       errorMessage.value = result.message;
+      ElMessage.error('아이디와 비밀번호를 확인해주세요.');
       return;
     }
 
@@ -46,6 +48,7 @@ const login = async () => {
   } catch (e) {
     console.log(e);
     errorMessage.value = e.message || '로그인 중 오류가 발생했습니다.'
+
   } finally {
     submitting.value = false;
   }
@@ -68,7 +71,7 @@ const login = async () => {
       <div class="input-div">
         <el-form-item :label="modeId" class="input-form-label">
           <div class="input-vertical">
-            <el-input
+            <el-input type="text"
                 v-model="loginForm.userLoginId"
                 class="input-size-large"
                 placeholder="아이디를 입력해주세요."
@@ -81,7 +84,7 @@ const login = async () => {
       <div class="input-div">
         <el-form-item label="비밀번호" class="input-form-label">
           <div class="input-vertical">
-            <el-input
+            <el-input type="password"
                 v-model="loginForm.password"
                 class="input-size-large"
                 placeholder="비밀번호를 입력해주세요."
