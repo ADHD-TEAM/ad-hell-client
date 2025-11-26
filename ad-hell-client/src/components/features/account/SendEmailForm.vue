@@ -2,12 +2,13 @@
 import {reactive, ref, watch} from "vue";
 import {ElMessage} from "element-plus";
 import {regEmail} from "@/utils/format.js";
+import {sendEmailbyCode} from "@/api/authApi.js"
+const submitting = ref(false);
 const errorMessage = ref('');
 const labelPosition = ref('top');
 const email = ref('');
 const verifiedNumber = ref(null);
 const sendEmailStatus = ref(false); // 이메일 인증
-const successVerifiedNum = ref(''); // 맞는 인증번호
 const isEmailVerified = ref(false); // 인증번호 확인
 const emits = defineEmits(['sendStatus']);
 const findStatus = ref(false);
@@ -50,56 +51,43 @@ const formatTime = (seconds) => {
   return `${String(min).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 };
 
-const sendEmail = ()  => {
+const sendEmail = async ()  => {
+  submitting.value = true;
   errorMessage.value = '';
-
   if (!email.value) {
     ElMessage.error('이메일을 입력해주세요.');
     return;
   }
 
-
-  if (!email.value || !regEmail(email.value)) {
-   //ElMessage.error('이메일을 입력해주세요.');
+  if (!regEmail(email.value)) {
     return;
   }
 
-
-
   // TODO
   sendEmailStatus.value = true;
-  console.log(localData);
   emialDataEmit();
   try {
-    // TODO
     // 1. 이메일 보내기
-    const result = null;
+    let payload = {email : localData.email};
+    const result = await sendEmailbyCode(payload);
     ElMessage.info('입력하신 이메일로 인증번호 발송했습니다. 인증번호를 입력해주세요.');
 
     // 2. 인증번호 input 활성화
     findStatus.value = true;
 
-    // 4. 5분 타이머 시작
+    // 3. 5분 타이머 시작
     startTimer();
 
-    // 5. 인증번호 넣어주기 ( 가져온 인증번호)
-    successVerifiedNum.value = "4444444444";
   } catch (e) {
     console.log(e);
     errorMessage.value = e.message || '인증번호 보내기 중 오류가 발생했습니다.'
   }
 };
 
-
-
 const rules = {
   email : [
     // { required: true, message: '이메일을 입력하세요.', trigger: 'blur' },
     { validator: (rule, value) => {
-
-        console.log(rule);
-        console.log(value);
-        console.log(!regEmail(value));
         if (!regEmail(value)) {
           return new Error('이메일 형식에 맞춰 입력해주세요.');
         }
@@ -109,21 +97,7 @@ const rules = {
     }
   ]
   , verifiedNumber : [
-    {validator : (rule, value) =>{
-        console.log(String(successVerifiedNum.value))
-        console.log(value);
-        // 인증번호 가져오기
-        if (String(successVerifiedNum.value) !== String(value)) {
-          isEmailVerified.value = false;
-          emialDataEmit();
-          return new Error('인증번호가 다릅니다. 다시 입력해주세요.');
-        }
-        isEmailVerified.value = true;
-        emialDataEmit();
-
-        return true;
-      } , trigger: 'blur',required: true
-    }
+    { required: true, message: '인증번호를 입력하세요.', trigger: 'blur' },
   ]
 }
 
@@ -133,8 +107,6 @@ watch(() => verifiedNumber, () => {
 
 // 인증번호 체크 보내주기
 const checkVerified = () => {
-
-  console.log(localData);
 
   emits('sendEmailData', {
     sendStatus: sendEmailStatus.value,
