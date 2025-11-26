@@ -128,9 +128,13 @@ const goCreate = () => {
 <style scoped lang="scss">
 .category-page {
   padding: 24px;
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
 }
 
 .title {
+  flex-shrink: 0;
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 16px;
@@ -142,7 +146,7 @@ const goCreate = () => {
 }
 
 .scroll-box {
-  max-height: 580px;
+  flex: 1;
   overflow-y: auto;
   padding-right: 8px;
 }
@@ -211,6 +215,7 @@ const goCreate = () => {
 }
 
 .create-btn-box {
+  flex-shrink: 0;
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;

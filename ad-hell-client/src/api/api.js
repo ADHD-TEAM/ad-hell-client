@@ -30,11 +30,23 @@ api.interceptors.response.use(
       const originalRequest = error.config;
 
       if (!error.response) {
+        alert("서버에 연결할 수 없습니다.\n잠시 후 다시 시도해주세요.");
         return Promise.reject(error);
       }
 
+
       const status = error.response.status;
       const url = originalRequest.url || '';
+
+      if (status === 500) {
+        alert("서비스 오류가 발생했습니다.\n관리자에게 문의해주세요.");
+        return Promise.reject(error);
+      }
+
+      if (status === 503) {
+        alert("서비스 오류가 발생했습니다.\n관리자에게 문의해주세요.");
+        return Promise.reject(error);
+      }
 
       // TODO: 401 응답 처리 및 토큰 재발급, 재시도, clearAuthState 호출 등 인터셉터 로직 작성
 

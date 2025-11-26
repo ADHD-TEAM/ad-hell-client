@@ -174,27 +174,20 @@ const routes = [
             {
               path: 'admin/rewards',
               name: 'AdminRewardList',
-              component: () => import('@/pages/reward/RewardList.vue'),
+              component: () => import('@/pages/reward/AdminRewardList.vue'),
             },
             {
               path: 'admin/rewards/create',
               name: 'AdminRewardCreate',
-              component: () => import('@/pages/reward/RewardCreate.vue'),
+              component: () => import('@/pages/reward/AdminRewardCreate.vue'),
               meta: { role: 'admin' }
             },
             {
               path: 'admin/rewards/:id/edit',
               name: 'AdminRewardEdit',
-              component: () => import('@/pages/reward/RewardEdit.vue'),
+              component: () => import('@/pages/reward/AdminRewardEdit.vue'),
               meta: { role: 'admin' }
             },
-            {
-              path: 'admin/rewards/:id/stock',
-              name: 'AdminRewardStockCreate',
-              component: () => import('@/pages/reward/RewardStockCreate.vue'),
-              meta: { role: 'admin' }
-            },
-
             /* 관리자 신고 관리 */
             {
               path: 'admin/reports',
