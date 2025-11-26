@@ -17,5 +17,11 @@ export function logoutApi() {
 }
 
 export function registerApi(payload) {
+    // 회원가입
     return api.post('/api/users', payload)
+}
+
+export function isAvailableApi(payload) {
+    // 닉네임, 로그인 아이디 사용가능한지 확인
+    return api.get('/users/isAvailable', payload);
 }
