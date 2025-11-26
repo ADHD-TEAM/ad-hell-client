@@ -99,7 +99,6 @@ const routes = [
                 name: 'AdMain',
                 component: () => import('@/pages/advertise/AdMain.vue'),
             },
-
         ],
     },
 
