@@ -14,7 +14,7 @@ const menus = [
 
   // 회원
   { id: 'member-section', label: '회원', header: true },
-  { id: 'member-manage', label: '회원관리', path: '/admin/members', iconId: 'user' },
+  { id: 'member-manage', label: '회원관리', path: {name :'UserManagementList' }, iconId: 'user' },
 
   // 공지·문의·게시판
   { id: 'notice-section', label: '공지사항', header: true },
