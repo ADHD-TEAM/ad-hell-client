@@ -4,7 +4,6 @@ import {
   fetchRewards,
   fetchReward
 } from '@/api/rewardApi.js'
-import {createReport, fetchReports} from "@/api/reportApi.js";
 
 export const useReportStore = defineStore('board', () => {
 

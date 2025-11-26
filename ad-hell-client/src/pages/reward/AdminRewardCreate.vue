@@ -11,7 +11,7 @@ const onSaved = () => {
 
 <template>
   <section class="reward-create-page">
-    <h1 class="title">경품 등록</h1>
+    <h1 class="title"></h1>
     <RewardForm @saved="onSaved" />
   </section>
 </template>

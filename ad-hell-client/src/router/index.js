@@ -96,10 +96,14 @@ const routes = [
                         name: 'AccountDelete',
                         component: () => import('@/pages/mypage/AccountDelete.vue'),
                         props: true,
-                    }
+                    },
+                    {
+                      path: '/mypage/points',
+                      name: 'MyPointHistory',
+                      component: () => import('@/pages/mypage/MyPointHistory.vue'),
+                    },
                 ]
             },
-
             /* 회원 경품 */
             {
               path: 'rewards',
