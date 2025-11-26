@@ -22,7 +22,7 @@ export const mypageNavSub = [
 
 // admin 회원관리
 export const userManagerNav = [
-    {index : 1 , title : '회원정보', linkTo : {name : 'UserManagement'}},
+    {index : 1 , title : '회원정보', linkTo : {name : 'UserDetailUpdate'}},
     {index : 2 , title : '포인트', linkTo : {name : 'UserPointManagement'}}
 ];
 

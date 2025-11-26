@@ -208,9 +208,24 @@ const routes = [
                 component: () => import('@/pages/admin/UserManagementList.vue'),
             },
             { // 어드민 회원관리 상세
-                path: 'admin/user/management/1',
+                path: 'admin/user/management',
                 name: 'UserManagementDetail',
                 component: () => import('@/pages/admin/UserManagementDetail.vue'),
+                children: [
+                    {
+                        path: 'detail/:id',
+                        name: 'UserDetailUpdate',
+                        component: () => import('@/pages/admin/UserDetailUpdate.vue'),
+                        props: true,
+                    },
+                    {
+                        path: 'point/:id',
+                        name: 'UserPointManagement',
+                        component: () => import('@/pages/admin/UserPointManagement.vue'),
+                        props: true,
+                    },
+
+                ]
             },
         ],
     },
