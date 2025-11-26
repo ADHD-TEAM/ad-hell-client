@@ -103,6 +103,7 @@ const routes = [
                         name: 'MyBoardList',
                         component: () => import('@/pages/mypage/MyBoardList.vue'),
                     },
+                    {
                       path: '/mypage/points',
                       name: 'MyPointHistory',
                       component: () => import('@/pages/mypage/MyPointHistory.vue'),
