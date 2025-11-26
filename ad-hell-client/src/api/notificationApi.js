@@ -210,3 +210,26 @@ export async function deleteMyReadNotifications() {
     const res = await apiClient.delete(`/users/${userId}/notifications/read-all`)
     return res.data
 }
+
+/* ===================== 푸시 설정 on/off ===================== */
+
+// 현재 내 push 설정 조회
+export async function fetchMyPushSetting() {
+    // 로그인 체크 + 토큰 헤더 셋업은 인터셉터가 처리
+    const res = await apiClient.get('/notifications/settings/push')
+    // { success, data: { memberId, pushEnabled } }
+    return res.data.data
+}
+
+// 내 push 설정 변경
+export async function updateMyPushSetting(notificationStatus) {
+    const userId = await getCurrentUserId()        // memberId
+    const pushEnabled = notificationStatus === 'on' // 'on' → true, 'off' → false
+
+    const res = await apiClient.patch('/notifications/settings/push', {
+        memberId: userId,
+        pushEnabled,
+    })
+
+    return res.data
+}

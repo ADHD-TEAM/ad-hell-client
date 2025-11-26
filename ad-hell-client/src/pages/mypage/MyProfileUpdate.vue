@@ -1,7 +1,15 @@
-<script setup lang="ts">
-import {reactive, ref} from "vue";
+<script setup>
+import {onMounted, reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
 import CommonModal  from "@/components/common/CommonModal.vue";
+import {
+  fetchMyPushSetting,
+  updateMyPushSetting,
+} from '@/api/notificationApi.js'
+import {useRouter} from "vue-router";
+
+const router = useRouter()
+
 const formRef = ref(null); // validation (특정  필드 검증용)
 const submitting = ref(false);
 const errorMessage = ref('');
@@ -60,12 +68,27 @@ const onCancel = () => {
   console.log('취소 클릭됨')
 }
 
+// ===== 페이지 진입 시 초기값 세팅 =====
+onMounted(async () => {
+  try {
+    // 푸시 알림 설정 조회 → 라디오에 반영
+    const pushStatus = await fetchMyPushSetting()
+    // pushStatus.pushEnabled: true/false 라고 가정
+    updateForm.notificationStatus = pushStatus.pushEnabled ? 'on' : 'off'
+  } catch (e) {
+    console.error('[MyPage] push setting 조회 실패', e)
+    // 실패하면 기본값 'on' 그대로 사용
+  }
+})
 
-const userInfoUpdate= () => {
+const userInfoUpdate= async () => {
   submitting.value = true;
   errorMessage.value = '';
 
   try {
+
+    // 알림 수신 여부(on/off)
+    await updateMyPushSetting(updateForm.notificationStatus)
 
     // const result = await loginApi(payload);
     ElMessage.success('수정되었습니다.');
