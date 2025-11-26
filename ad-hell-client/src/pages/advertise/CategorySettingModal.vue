@@ -42,6 +42,7 @@ const handleClose = () => {
 
 const handleSave = () => {
   if (current.value == null) return
+  console.log('[Modal] 저장 버튼 클릭, current = ', current.value)
   emit('save', current.value)
 }
 </script>
@@ -64,6 +65,7 @@ const handleSave = () => {
           <label>
             <input
                 type="radio"
+                name="ad-category"
                 v-model="current"
                 :value="opt.value"
             />
