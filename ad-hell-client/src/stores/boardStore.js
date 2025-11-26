@@ -5,66 +5,58 @@ import {
     fetchBoards,
     fetchBoardDetail,
     createBoard,
-    updateBoard
+    updateBoard,
 } from '@/api/boardApi'
 
-/*
-  useBoardStore: 게시판 상태 관리
-  - 목록, 상세, 검색, 등록, 수정 기능 포함
-*/
 export const useBoardStore = defineStore('board', () => {
-
-    // ======================
-    // 1) state
-    // ======================
-    const boards = ref([])         // 목록
-    const total = ref(0)           // 총 개수
-    const loading = ref(false)     // 로딩
-    const boardDetail = ref(null)  // 상세 데이터
+    // 목록, 전체 개수, 로딩, 상세
+    const boards = ref([])
+    const total = ref(0)
+    const loading = ref(false)
+    const boardDetail = ref(null)
 
     const page = ref(1)
     const size = ref(10)
 
+    // 검색 폼(제목, 작성자, 기간) - 화면에서 사용하는 키 그대로 유지
     const searchForm = reactive({
         title: '',
         writer: '',
-        fromDate: null,
-        toDate: null,
+        fromDate: '', // 시작일 (YYYY-MM-DD)
+        toDate: '',   // 종료일 (YYYY-MM-DD)
     })
 
-    // ======================
-    // 2) getters
-    // ======================
+    // 전체 페이지 수
     const totalPages = computed(() => {
         if (!total.value || !size.value) return 1
         return Math.max(1, Math.ceil(total.value / size.value))
     })
 
-    // ======================
-    // 3) util
-    // ======================
+    // 백엔드 BoardSearchRequest 에 맞춰 쿼리 구성
     const buildQuery = () => ({
         page: page.value,
         size: size.value,
-        title: searchForm.title || undefined,
-        writer: searchForm.writer || undefined,
-        fromDate: searchForm.fromDate || undefined,
-        toDate: searchForm.toDate || undefined,
-    })
 
-    // ======================
-    // 4) actions
-    // ======================
+        // 제목 → keyword 로 넘김
+        keyword: searchForm.title || undefined,
+
+        startDate: searchForm.startDate || undefined,
+        endDate: searchForm.endDate || undefined,
+    })
 
     // 목록 조회
     const loadBoards = async () => {
         loading.value = true
         try {
             const params = buildQuery()
-            const data = await fetchBoards(params)
+            const data = await fetchBoards(params) // { boards, pagination }
 
-            boards.value = data.items ?? data.boards ?? []
-            total.value = data.totalCount ?? data.total ?? 0
+            boards.value = data.boards ?? []
+            total.value = data.pagination?.totalItems ?? 0
+
+            if (data.pagination?.currentPage) {
+                page.value = data.pagination.currentPage
+            }
         } catch (e) {
             console.error('loadBoards error:', e)
             throw e
@@ -107,7 +99,7 @@ export const useBoardStore = defineStore('board', () => {
         }
     }
 
-    // 검색
+    // 검색 버튼 클릭
     const search = async () => {
         page.value = 1
         await loadBoards()
@@ -123,15 +115,12 @@ export const useBoardStore = defineStore('board', () => {
     const reset = async () => {
         searchForm.title = ''
         searchForm.writer = ''
-        searchForm.fromDate = null
-        searchForm.toDate = null
+        searchForm.fromDate = ''
+        searchForm.toDate = ''
         page.value = 1
         await loadBoards()
     }
 
-    // ======================
-    // 5) export
-    // ======================
     return {
         // state
         boards,

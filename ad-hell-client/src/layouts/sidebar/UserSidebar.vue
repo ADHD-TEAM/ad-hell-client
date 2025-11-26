@@ -23,7 +23,7 @@ const menus = [
 
   { id: 'board-section', label: '문의/공지사항/게시판', header: true },
   { id: 'announcement', label: '공지사항', path: '/announcements', iconId: 'notice' },
-  { id: 'inquiry', label: '문의', path: '/inquiries', iconId: 'qna' },
+  { id: 'inquiry', label: '문의', path: '/mypage/inquiries', iconId: 'qna' },
   { id: 'board', label: '게시판', path: '/boards', iconId: 'board' },
   { id: 'reward', label: '경품', path: '/rewards', iconId: 'reward'}
 ]
