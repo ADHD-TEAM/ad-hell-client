@@ -167,6 +167,10 @@ export const useAuthStore = defineStore('auth', () => {
       setAccessToken(data.accessToken)
       setUserFromToken(data.accessToken)
 
+        const notificationStore = useNotificationStore()
+        await notificationStore.fetchUnreadCount()
+        notificationStore.connectSse()              // SSE 연결
+
         // /me 호출해서 userId 포함한 full user 정보로 덮어쓰기
         // await loadMyInfo()
 
@@ -179,10 +183,6 @@ export const useAuthStore = defineStore('auth', () => {
     } finally {
       loading.value = false;
     }
-
-      const notificationStore = useNotificationStore()
-      await notificationStore.fetchUnreadCount()
-      notificationStore.connectSse()              // SSE 연결
   };
 
   /*
@@ -218,6 +218,9 @@ export const useAuthStore = defineStore('auth', () => {
   */
   const logout = async () => {
     // TODO: logoutApi 호출 및 상태 초기화, router 이동 로직 작성
+      const notificationStore = useNotificationStore()
+      notificationStore.disconnectSse()
+      // 토큰/유저 정보 삭제
   };
 
     // 내 정보 불러오기 (/users/me)

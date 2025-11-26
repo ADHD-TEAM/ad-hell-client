@@ -1,13 +1,16 @@
 // src/stores/notificationStore.js
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
+import {
+    fetchMyNotifications,
+    fetchMyUnreadCount,
+} from '@/api/notificationApi.js'
 
 export const useNotificationStore = defineStore('notification', () => {
-    const notifications = ref([])    // 현재 페이지 알림 목록
+    const notifications = ref([])    // 현재 페이지 알림 목록 (원본 데이터)
     const unreadCount = ref(0)       // 뱃지 숫자
-    const sse = ref(null)            // EventSource 인스턴스
+    const sse = ref(null)
     const connected = ref(false)
 
     const authStore = useAuthStore()
@@ -16,31 +19,42 @@ export const useNotificationStore = defineStore('notification', () => {
     async function loadNotifications(page = 0, size = 10) {
         if (!authStore.user) return
 
-        const userId = authStore.user.userId
-        const res = await apiClient.get(`/api/users/${userId}/notifications`, {
-            params: { page, size }
-        })
+        const pageRes = await fetchMyNotifications({ page, size })
+        // pageRes.notifications : 백엔드 NotificationSummaryResponse 리스트
+        notifications.value = pageRes.notifications.map((n) => {
+            const isRead =
+                n.read === true ||
+                n.read === 'Y' ||
+                n.read === 'y' ||
+                n.read === 1 ||
+                n.readYn === 'Y' ||
+                n.readYn === 'y'
 
-        // ApiResponse<NotificationPageResponse> 형태라 가정
-        notifications.value = res.data.data.notifications
+            return {
+                notificationId: n.notificationId,
+                notificationTitle: n.notificationTitle,
+                notificationBody: n.notificationBody,
+                readYn: isRead ? 'Y' : 'N',
+                createdAt: n.createdAt,
+            }
+        })
     }
 
-    // 2) 미읽음 개수 한번 가져오기
+    // 2) 미읽음 개수 한 번 가져오기
     async function fetchUnreadCount() {
         if (!authStore.user) return
-        const userId = authStore.user.userId
-
-        const res = await apiClient.get(`/api/users/${userId}/notifications/unread-count`)
-        unreadCount.value = res.data.data
+        const cnt = await fetchMyUnreadCount()
+        unreadCount.value = cnt
     }
+
 
     // 3) SSE 연결
     function connectSse() {
         if (connected.value || !authStore.user) return
 
         const userId = authStore.user.userId
-        // 백엔드 주소 맞춰서
-        const url = `${import.meta.env.VITE_API_BASE_URL}/api/users/${userId}/notifications/stream`
+        // 게이트웨이 기준: /api/users/{userId}/notifications/stream
+        const url = `/api/users/${userId}/notifications/stream`
 
         const es = new EventSource(url, { withCredentials: true })
         sse.value = es
@@ -49,30 +63,27 @@ export const useNotificationStore = defineStore('notification', () => {
             console.log('[SSE] INIT', event.data)
         })
 
-        // 새 알림이 도착했을 때
-        es.addEventListener('NOTIFICATION', async (event) => {
+        es.addEventListener('NOTIFICATION', (event) => {
             const payload = JSON.parse(event.data)
             console.log('[SSE] NOTIFICATION', payload)
 
-            // 현재 리스트 맨 앞에 추가
             notifications.value.unshift({
                 notificationId: payload.notificationId,
                 notificationTitle: payload.notificationTitle,
                 notificationBody: payload.notificationBody,
                 readYn: payload.read ? 'Y' : 'N',
-                createdAt: payload.createdAt
+                createdAt: payload.createdAt,
             })
         })
 
-        // 미읽음 카운트 갱신 이벤트
         es.addEventListener('UNREAD_COUNT', (event) => {
-            const payload = JSON.parse(event.data)   // { count: number }
+            const payload = JSON.parse(event.data)
             console.log('[SSE] UNREAD_COUNT', payload)
             unreadCount.value = payload.count
         })
 
         es.addEventListener('PING', () => {
-            // console.log('[SSE] PING')
+            // keep-alive
         })
 
         es.onerror = (err) => {
@@ -80,11 +91,11 @@ export const useNotificationStore = defineStore('notification', () => {
             es.close()
             connected.value = false
             sse.value = null
-            // 필요하면 여기서 재연결 로직 넣기
         }
 
         connected.value = true
     }
+
 
     // 4) SSE 해제 (로그아웃 시)
     function disconnectSse() {

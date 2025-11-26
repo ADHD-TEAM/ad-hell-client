@@ -1,15 +1,14 @@
 <!-- NotificationBell.vue -->
 <script setup>
-import { computed, ref } from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import {
-  fetchMyNotifications,
-  fetchMyUnreadCount,
   markMyNotificationRead,
   markMyNotificationsReadAll,
   deleteMyNotification,
   deleteMyReadNotifications,
 } from '@/api/notificationApi.js'
+import {useNotificationStore} from "@/stores/notificationStore.js";
 
 const props = defineProps({
   iconSrc: {
@@ -19,83 +18,46 @@ const props = defineProps({
 })
 
 const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
 
 // ===== 상태 =====
 const isNotificationOpen = ref(false)
 const hasLoaded = ref(false)
 const activeTab = ref('unread')
 
-const notifications = ref([])
-
-// 서버에서 받아오는 미읽음 개수 (옵션)
-const serverUnreadCount = ref(null)
-
-// 기본은 notifications 기준으로 계산
-const unreadCount = computed(() => {
-  if (serverUnreadCount.value != null) {
-    return serverUnreadCount.value
-  }
-  return notifications.value.filter((n) => !n.read).length
-})
-
-const filteredNotifications = computed(() => {
-  if (activeTab.value === 'unread') {
-    // 읽지 않은 것만
-    return notifications.value.filter((n) => n.read === false)
-  }
-  // 읽은 것만
-  return notifications.value.filter((n) => n.read === true)
-})
-
-// ===== API 호출 =====
-
-const loadNotifications = async () => {
-  if (!authStore.isLoggedIn) {
-    console.log(
-        '[NotificationBell] 로그인 상태가 아니어서 알림을 불러오지 않습니다.',
-    )
-    return
-  }
-
-  try {
-    const pageRes = await fetchMyNotifications({ page: 0, size: 20 })
-    console.log('[NotificationBell] pageRes =', pageRes)
-    // pageRes.notifications : 백엔드 NotificationSummaryResponse 리스트
-    notifications.value = pageRes.notifications.map((n) => ({
+// store.notifications 를 화면용 형태로 변환
+const uiNotifications = computed(() =>
+    notificationStore.notifications.map((n) => ({
       id: n.notificationId,
       type: '시스템',
       actor: '',
       message: n.notificationBody,
-      read:
-          n.read === true ||
-          n.read === 'Y' ||
-          n.read === 'y' ||
-          n.read === 1,
+      read: n.readYn === 'Y',
       createdAt: n.createdAt,
-    }))
+    })),
+)
 
-    // 뱃지용 서버 카운트도 같이 갱신
-    await loadUnreadCount()
-  } catch (e) {
-    console.error('[NotificationBell] 알림 목록 로딩 실패', e)
+// 뱃지 숫자도 store.unreadCount 사용
+const unreadCount = computed(() => notificationStore.unreadCount)
+
+// 탭 필터링
+const filteredNotifications = computed(() => {
+  const list = uiNotifications.value
+  if (activeTab.value === 'unread') {
+    return list.filter((n) => !n.read)
   }
+  return list.filter((n) => n.read)
+})
 
-  console.log('[NotificationBell] notifications(after map) =', notifications.value)
-  console.log(
-      '[NotificationBell] unread filtered length =',
-      notifications.value.filter((n) => n.read === false).length,
-  )
-}
 
-const loadUnreadCount = async () => {
-  if (!authStore.isLoggedIn) return
-  try {
-    const cnt = await fetchMyUnreadCount()
-    serverUnreadCount.value = cnt
-  } catch (e) {
-    console.error('[NotificationBell] 미읽음 개수 로딩 실패', e)
+// ===== API 호출 =====
+
+// 페이지 로딩 시 미리 1번 가져오기
+onMounted(async () => {
+  if (authStore.isLoggedIn && !notificationStore.notifications.length) {
+    await notificationStore.loadNotifications(0)
   }
-}
+})
 
 // ====== 읽음 / 삭제 ======
 
@@ -103,12 +65,8 @@ const loadUnreadCount = async () => {
 const markAsRead = async (id) => {
   try {
     await markMyNotificationRead(id)
-
-    notifications.value = notifications.value.map((item) =>
-        item.id === id ? { ...item, read: true } : item,
-    )
-
-    await loadUnreadCount()
+    await notificationStore.loadNotifications(0)
+    await notificationStore.fetchUnreadCount()
   } catch (err) {
     console.error('[NotificationBell] 알림 읽음 처리 실패:', err)
   }
@@ -118,26 +76,19 @@ const markAsRead = async (id) => {
 const markAllRead = async () => {
   try {
     await markMyNotificationsReadAll()
-
-    notifications.value = notifications.value.map((item) => ({
-      ...item,
-      read: true,
-    }))
-
-    await loadUnreadCount()
+    await notificationStore.loadNotifications(0)
+    await notificationStore.fetchUnreadCount()
   } catch (err) {
     console.error('[NotificationBell] 알림 모두 읽음 처리 실패:', err)
   }
 }
 
-// 개별 삭제 (주로 읽음 탭에서)
+// 개별 삭제
 const deleteNotification = async (id) => {
   try {
     await deleteMyNotification(id)
-
-    notifications.value = notifications.value.filter((item) => item.id !== id)
-
-    await loadUnreadCount()
+    await notificationStore.loadNotifications(0)
+    await notificationStore.fetchUnreadCount()
   } catch (err) {
     console.error('[NotificationBell] 알림 삭제 실패:', err)
   }
@@ -147,14 +98,13 @@ const deleteNotification = async (id) => {
 const deleteAllRead = async () => {
   try {
     await deleteMyReadNotifications()
-
-    notifications.value = notifications.value.filter((item) => !item.read)
-
-    await loadUnreadCount()
+    await notificationStore.loadNotifications(0)
+    await notificationStore.fetchUnreadCount()
   } catch (err) {
     console.error('[NotificationBell] 읽은 알림 전체 삭제 실패:', err)
   }
 }
+
 
 // ===== UI 관련 =====
 
@@ -165,12 +115,15 @@ const setActiveTab = (tab) => {
 const toggleNotification = async () => {
   isNotificationOpen.value = !isNotificationOpen.value
 
-  // 처음 열릴 때만 로딩
   if (isNotificationOpen.value && !hasLoaded.value) {
-    await loadNotifications()
+    await Promise.all([
+      notificationStore.loadNotifications(0),
+      notificationStore.fetchUnreadCount(),
+    ])
     hasLoaded.value = true
   }
 }
+
 
 const closeNotification = () => {
   isNotificationOpen.value = false
