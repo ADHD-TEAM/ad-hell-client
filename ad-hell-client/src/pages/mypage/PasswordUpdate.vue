@@ -3,6 +3,9 @@ import {ElMessage} from "element-plus";
 import SendEmailForm from "@/components/features/account/SendEmailForm.vue";
 import {reactive, ref, watch} from "vue";
 import CommonModal from "@/components/common/CommonModal.vue";
+import {updateMyInfoApi, updatePasswordApi} from "@/api/userApi.js";
+import {useRouter} from "vue-router";
+const router = useRouter();
 const submitting = ref(false);
 const errorMessage = ref('');
 const labelPosition = ref('top');
@@ -23,9 +26,6 @@ const rules = {
     { required: true, message: '비밀번호 확인을 입력하세요.', trigger: 'blur' },
     {
       validator: (rule, value) => {
-        console.log(rule);
-        console.log(value);
-
         if (value !== passwordUpdateForm.password) {
           return new Error('비밀번호와 일치하지 않습니다.');
         }
@@ -43,7 +43,6 @@ watch(() => passwordUpdateForm.password,() => {
 
 // 이메일 전송시 회원가입 btn 활성화
 const handleSendStatus = (item) => {
-  console.log(item.email);
   sendStatus.value = item.sendStatus;
   passwordUpdateForm.email = item.email;
   isEmailVerified.value = item.isEmailVerified;
@@ -69,22 +68,25 @@ const onCancel = () => {
 }
 
 
-const passwordUpdate= () => {
+const passwordUpdate= async () => {
   submitting.value = true;
   errorMessage.value = '';
 
+  let payload = {
+    password: passwordUpdateForm.password
+  }
+
   try {
 
-    // const result = await loginApi(payload);
+    const result = await updatePasswordApi(payload);
     ElMessage.success('수정되었습니다.');
-    router.push({name : 'UserLoginView'});
+    router.push({name : 'MainPage'});
   } catch (e) {
     console.log(e);
     errorMessage.value = e.message || '비밀번호 수정 중 오류가 발생했습니다.'
   } finally {
     submitting.value = false;
   }
-
 }
 
 </script>

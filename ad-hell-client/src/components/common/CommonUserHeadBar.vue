@@ -2,7 +2,6 @@
 import {ref, reactive, computed} from "vue";
 import foldingIconSrc from '@/assets/icon/icon-folding.svg';
 import {useRoute, useRouter} from "vue-router";
-import LoginView from "@/pages/account/LoginView.vue";
 import NotificationBell from "@/components/notification/NotificationBell.vue";
 import HeadBarIconSrc from '@/assets/icon/icon-logo.svg'
 import AlertIconSrc from '@/assets/icon/icon-headbar-alert.svg'
@@ -18,7 +17,6 @@ const router = useRouter();
 const route = useRoute();
 const { isLoggedIn } = storeToRefs(authStore);
 const isAdminPage = computed(() => route.path.startsWith('/admin'));
-console.log(isLoggedIn);
 const goAdminHome = () => {
   router.push({ name: 'AdminHome' });
 };
