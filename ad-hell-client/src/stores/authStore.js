@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 import { loginApi, refreshApi, logoutApi } from '@/api/authApi';
 import {fetchMyInfoApi, fetchNotificationAuthMe} from '@/api/userApi';
 import router from '@/router';
+import {useNotificationStore} from "@/stores/notificationStore.js";
 
 /*
   useAuthStore: 인증 전용 전역 상태 모듈
@@ -178,6 +179,10 @@ export const useAuthStore = defineStore('auth', () => {
     } finally {
       loading.value = false;
     }
+
+      const notificationStore = useNotificationStore()
+      await notificationStore.fetchUnreadCount()
+      notificationStore.connectSse()              // SSE 연결
   };
 
   /*
