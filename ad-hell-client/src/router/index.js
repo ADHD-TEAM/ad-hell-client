@@ -204,6 +204,59 @@ const routes = [
             },
         ],
     },
+
+    /**
+     * 관리자 영역 (AdminSidebar)
+     */
+    {
+        path: '/admin',
+        component: DefaultLayout,
+        meta: { role: 'admin' },
+        children: [
+            //  템플릿 목록 조회 페이지
+            {
+                path: 'alarms',
+                name: 'AdminAlarmTemplates',
+                component: () => import('@/pages/notification/admin/AlarmTemplateList.vue'),
+            },
+
+            //  템플릿 생성 페이지
+            {
+                path: 'alarms/new',
+                name: 'AdminAlarmTemplateCreate',
+                component: () => import('@/pages/notification/admin/AlarmTemplateCreate.vue'),
+            },
+
+            // 템플릿 수정 페이지
+            {
+                path: 'alarms/:templateId/edit',
+                name: 'AdminAlarmTemplateEdit',
+                component: () => import('@/pages/notification/admin/AlarmTemplateEdit.vue'),
+            },
+
+            //  템플릿 상세 조회 페이지
+            {
+                path: 'alarms/:templateId',
+                name: 'AdminAlarmTemplateDetail',
+                component: () => import('@/pages/notification/admin/AlarmTemplateDetail.vue'),
+            },
+
+            //  발송 알림 조회 페이지
+            {
+                path: 'alarms/send',
+                name: 'AdminAlarmSendList',
+                component: () => import ('@/pages/notification/admin/AlarmSendList.vue')
+            },
+
+            // 알림 발송 생성 페이지
+            {
+                path: '/admin/alarms/send/create',
+                name: 'AdminAlarmSendCreate',
+                component: () => import('@/pages/notification/admin/AlarmSendCreate.vue'),
+            },
+        ],
+    },
+
 ]
 
 const router = createRouter({
