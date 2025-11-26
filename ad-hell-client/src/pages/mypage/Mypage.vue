@@ -1,8 +1,6 @@
 <script setup>
 import UserMypageNav from "@/components/common/UserMypageNav.vue";
 
-const rote
-
 </script>
 
 <template>

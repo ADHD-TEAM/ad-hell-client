@@ -4,7 +4,7 @@ import SendEmailForm from "@/components/features/account/SendEmailForm.vue";
 import LogoView from "@/components/features/account/LogoView.vue";
 import {ElMessage} from "element-plus";
 import {useRouter} from "vue-router";
-import {isAvailableApi } from '@/api/authApi.js';
+import {isAvailableApi, registerApi} from '@/api/authApi.js';
 const router = useRouter();
 const submitting = ref(false);
 const errorMessage = ref('');
@@ -25,16 +25,12 @@ const signUpForm = reactive({
 
 // 이메일 전송시 회원가입 btn 활성화
 const handleSendStatus = (item) => {
-  console.log(item.email);
   sendStatus.value = item.sendStatus;
   signUpForm.email = item.email;
   isEmailVerified.value = item.isEmailVerified;
 
 }
-let payload = {
-  loginId : null
-  , nickname : null
-}
+
 const rules = {
   loginId : [
     { required: true, message: '아이디를 입력하세요.', trigger: 'blur' },
@@ -44,18 +40,14 @@ const rules = {
       validator: async (rule, value) => {
         if (!value) return true; // 빈 값이면 다른 rule에서 처리
         try {
-         payload.loginId = value;
-         const res = await isAvailableApi(payload);
-         console.log("#######################")
-         console.log(res)
-        //  const data = await res.json();
-          const data = {
-            available : true
-          }
-          if (!data.available) {
-            return new Error('이미 사용 중인 아이디입니다.');
-          }
-          return true;
+           let payload = {loginid : value}
+            const res = await isAvailableApi(payload);
+            const data = res.data;
+            if (data.userIsAvailable) {
+              return new Error('이미 사용 중인 아이디입니다.');
+            }
+          console.log("사용 가능한 아이디");
+            return false;
         } catch (e) {
           return new Error('서버 확인 중 오류가 발생했습니다.');
         }
@@ -69,9 +61,6 @@ const rules = {
     { required: true, message: '비밀번호 확인을 입력하세요.', trigger: 'blur' },
     {
       validator: (rule, value) => {
-        console.log(rule);
-        console.log(value);
-
         if (value !== signUpForm.password) {
           return new Error('비밀번호와 일치하지 않습니다.');
         }
@@ -85,19 +74,16 @@ const rules = {
     { min : 1, max : 30, message: '닉네임은 30자 내외여야 합니다.', trigger: 'blur'},
     {
       validator: async (rule, value) => {
-        console.log(value)
         if (!value) return true; // 빈 값이면 다른 rule에서 처리
         try {
-          //  const res = await fetch(`/api/check-loginId?value=${value}`);
-          //  const data = await res.json();
-          const data = {
-            available : true
+          let payload = {nickname : value}
+          const res = await isAvailableApi(payload);
+          const data = res.data;
+          if (data.userIsAvailable) {
+            return new Error('이미 사용 중인 닉네임입니다.');
           }
-          if (!data.available) {
-            return new Error('이미 사용 중인 아이디입니다.');
-          }
-
-          return true;
+          console.log("사용 가능한 닉네임");
+          return false;
         } catch (e) {
           return new Error('서버 확인 중 오류가 발생했습니다.');
         }
@@ -124,7 +110,8 @@ const signUpApi = async () => {
 
   try {
 
-    // const result = await registerApi(payload);
+    const result = await registerApi(payload);
+    console.log(result);
     ElMessage.success('회원가입 되었습니다.');
     router.push({name : 'UserLoginView'});
   } catch (e) {
@@ -140,11 +127,8 @@ const signUp = () => {
   // rules 체크
   formRef.value.validate((valid) => {
     if(!valid) {
-      return new Element('입력 폼이 맞지않습니다. 다시 입력해주세요.');
-    }
-    // 인증번호가 맞는지 체크
-    if (!isEmailVerified.value) {
-      return new Element('인증번호가 맞지않습니다.');
+      ElMessage.error('입력 폼이 맞지않습니다. 다시 입력해주세요.');
+      return;
     }
 
     // 회원가입
