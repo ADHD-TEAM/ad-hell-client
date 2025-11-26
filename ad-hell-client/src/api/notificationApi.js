@@ -3,15 +3,25 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
 const apiClient = axios.create({
-    baseURL: '/api',       // Vite proxy 기준
+    baseURL: '/api',
     withCredentials: true,
 })
 
 apiClient.interceptors.request.use((config) => {
     const authStore = useAuthStore()
-    if (authStore.token) {
-        config.headers.Authorization = `Bearer ${authStore.token}`
+
+    // 새로고침 직후 같은 상황 대비해서, 비어있으면 localStorage에서 복구
+    if (!authStore.accessToken) {
+        authStore.loadFromStorage()
     }
+
+    const token = authStore.accessToken
+
+    if (token) {
+        config.headers = config.headers || {}
+        config.headers.Authorization = `Bearer ${token}`
+    }
+
     return config
 })
 
