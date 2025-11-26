@@ -214,8 +214,76 @@ src/
 </details>
 <br/><br/>
 
-<h1 id="figma">🎨 4. 화면 설계서 (Figma) (https://www.figma.com/site/FoNABcZyvI0sTu51OpBgaq/ad-hell-design?node-id=0-1&p=f&t=EidBwKK1bhPTBCbm-0)</h1>
+<!-- SECTION: 화면 설계서 --> <h1 id="figma">🎨 4. 화면 설계서 (Figma)</h1>
 
 📌 Figma 화면 기획 보러가기
 
+<details> <summary><b>미리보기</b></summary> <img src="<!-- Figma 스크린샷 URL -->" width="90%"/> </details>
+
 <br/><br/>
+
+<!-- SECTION: API --> <h1 id="api">🔗 5. API 명세서</h1>
+
+📌 API 문서 바로가기
+
+<br/><br/>
+
+<!-- SECTION: 테스트 결과 --> <h1 id="test">🧪 6. 기능 테스트 결과</h1>
+
+아래는 실제 서비스 기능을 검증한 시연 영상입니다.
+
+<details> <summary><b>🔐 로그인 / 인증</b></summary> <img src="<!-- gif url -->" width="80%"/> </details> <details> <summary><b>👤 회원 관리</b></summary> <img src="<!-- gif url -->" width="80%"/> </details> <details> <summary><b>🚨 신고 처리</b></summary> <img src="<!-- gif url -->" width="80%"/> </details> <details> <summary><b>📺 광고 관리</b></summary> <img src="<!-- gif url -->" width="80%"/> </details>
+
+<br/><br/>
+
+<!-- SECTION: 트러블슈팅 --> <h1 id="trouble">⚡ 7. 트러블슈팅</h1>
+
+아래는 프로젝트 진행 중 실제로 직면했던 문제들과 해결 과정입니다.
+
+🔥 1) Axios Authorization 누락 문제
+
+문제
+요청마다 Authorization 헤더가 붙지 않아 인증 실패 발생
+
+원인
+Axios 인스턴스 설정 누락 & Refresh Token 처리 순서 문제
+
+해결
+
+인터셉터에서 accessToken 자동 주입
+
+재발급 처리 후 원본 요청 재시도 로직 구축
+
+🔥 2) Pinia 상태변경 무한 리렌더링
+
+문제
+watch / computed 안에서 store를 직접 수정해 렌더링 루프 발생
+
+해결
+
+store → 컴포넌트 단방향 흐름 정리
+
+composable 로직 분리로 재사용성과 안정성 확보
+
+🔥 3) Element Plus 컴포넌트 확장 이슈
+
+문제
+props 전달 구조가 복잡해져 UI 반응이 꼬임
+
+해결
+
+공통 컴포넌트를 직접 래핑(wrap)
+
+필요한 props만 내려주는 경량 컴포넌트 구성
+
+<br/><br/>
+
+<!-- SECTION: 팀원 회고 --> <h1 id="review">👨‍👩‍👧‍👦 8. 팀원 회고</h1> <div align="center">
+이름	회고
+	
+	
+	
+</div>
+
+<br/><br/>
+
