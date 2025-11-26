@@ -4,6 +4,7 @@ import SendEmailForm from "@/components/features/account/SendEmailForm.vue";
 import LogoView from "@/components/features/account/LogoView.vue";
 import {ElMessage} from "element-plus";
 import {useRouter} from "vue-router";
+import {isAvailableApi } from '@/api/authApi.js';
 const router = useRouter();
 const submitting = ref(false);
 const errorMessage = ref('');
@@ -30,7 +31,10 @@ const handleSendStatus = (item) => {
   isEmailVerified.value = item.isEmailVerified;
 
 }
-
+let payload = {
+  loginId : null
+  , nickname : null
+}
 const rules = {
   loginId : [
     { required: true, message: '아이디를 입력하세요.', trigger: 'blur' },
@@ -40,7 +44,10 @@ const rules = {
       validator: async (rule, value) => {
         if (!value) return true; // 빈 값이면 다른 rule에서 처리
         try {
-        //  const res = await fetch(`/api/check-loginId?value=${value}`);
+         payload.loginId = value;
+         const res = await isAvailableApi(payload);
+         console.log("#######################")
+         console.log(res)
         //  const data = await res.json();
           const data = {
             available : true
@@ -117,7 +124,7 @@ const signUpApi = async () => {
 
   try {
 
-    // const result = await loginApi(payload);
+    // const result = await registerApi(payload);
     ElMessage.success('회원가입 되었습니다.');
     router.push({name : 'UserLoginView'});
   } catch (e) {
