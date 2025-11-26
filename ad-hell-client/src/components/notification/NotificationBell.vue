@@ -1,7 +1,15 @@
 <!-- NotificationBell.vue -->
 <script setup>
 import { computed, ref } from 'vue'
-import { BellFilled } from '@element-plus/icons-vue'
+// import { BellFilled } from '@element-plus/icons-vue'
+
+// 부모에서 아이콘 경로를 받는 props 정의
+const props = defineProps({
+  iconSrc: {
+    type: String,
+    required: true,
+  },
+})
 
 const isNotificationOpen = ref(false)
 const activeTab = ref('unread')
@@ -74,9 +82,13 @@ const closeNotification = () => {
           class="notification-badge"
           type="danger"
       >
-        <el-button class="notification-button" text @click="toggleNotification">
-          <el-icon><BellFilled /></el-icon>
-        </el-button>
+        <!-- 부모에서 받은 아이콘을 클릭 트리거로 사용 -->
+        <img
+            :src="props.iconSrc"
+            alt="알림"
+            class="alert-icon"
+            @click="toggleNotification"
+        />
       </el-badge>
     </template>
 
@@ -163,42 +175,6 @@ const closeNotification = () => {
 </template>
 
 <style scoped>
-/* el-header 기본 높이가 60px이라 56px로 맞춰줌 */
-.app-header {
-  padding: 0; /* el-header의 기본 padding 제거 */
-  background-color: #ffffff;
-  border-bottom: 1px solid #ebeef5; /* Element Plus 스타일 비슷하게 */
-  display: flex;
-  justify-content: center; /* 가운데에 1280 컨테이너 정렬 */
-}
-
-/* 실제 규격: 1280 x 56 + 좌우 패딩 30 */
-.header-inner {
-  width: 1280px;
-  height: 56px;
-  padding: 0 30px; /* 좌우 패딩 30 */
-  box-sizing: border-box;
-
-  display: flex;
-  align-items: center; /* 세로 중앙 */
-  justify-content: space-between; /* 좌우로 퍼지게 정렬 */
-  gap: 12px;
-}
-
-/* 왼쪽/오른쪽 컨테이너 */
-.header-left,
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* 로고 텍스트 예시 스타일 */
-.logo-text {
-  font-size: 18px;
-  font-weight: 600;
-  color: #303133;
-}
 
 .notification-badge :deep(.el-badge__content) {
   top: 8px;
@@ -344,5 +320,14 @@ const closeNotification = () => {
   padding: 32px 16px 40px;
   text-align: center;
   color: #9ca3af;
+}
+
+.alert-icon {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  /* 필요하면 아래처럼 둥근 테두리 정도는 자유롭게
+  border-radius: 50%;
+  */
 }
 </style>
