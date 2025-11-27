@@ -292,6 +292,22 @@ src/
 	<img src="./ad-hell-client/product/gif/알림함.gif" width="80%"/>
 </details>
 
+<details> 
+    <summary><b>📺 광고 관리</b></summary>
+    <h4>광고 리스트 조회</h4>
+    <img src="./ad-hell-client/product/gif/getAdList.gif" width="80%"/> 
+    <br>
+    <h4>모든 광고 리스트 조회</h4>
+    <img src="./ad-hell-client/product/gif/getAdList.gif" width="80%"/>
+    <br>
+    <h4>광고 상세 조회</h4>
+    <img src="./ad-hell-client/product/gif/getDetail.gif" width="80%"/>
+    <br>
+    <h4>광고 등록</h4>
+    <img src="./ad-hell-client/product/gif/adCreate.gif" width="80%"/>
+    <br>
+    
+</details>
 
 <br/><br/>
 
@@ -424,7 +440,12 @@ src/
   <tr><td>김성태</td><td></td></tr>
   <tr><td>배창민</td><td></td></tr>
   <tr><td>정혜인</td><td></td></tr>
-  <tr><td>강성현</td><td></td></tr>
+  <tr>
+    <td>강성현</td>
+    <td>백엔드보다 프론트–백엔드 통합 과정에서 협업의 중요성과, 프론트엔드는 협업 능력·경험이 곧 실력이라는 걸 깨달았다.
+        프로젝트 처음부터 끝까지 해보며 프론트 실력 부족을 느끼고, 재사용성·유지보수성·문서화의 가치를 깊이 생각하게 되었다.
+    </td>
+  </tr>
 </table>
 
 
