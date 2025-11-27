@@ -1,10 +1,16 @@
-<script setup lang="ts">
-import {reactive, ref, onMounted} from "vue";
+<script setup>
+import {onMounted, reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
 import CommonModal  from "@/components/common/CommonModal.vue";
-import {fetchMyInfoApi ,updateMyInfoApi  } from "@/api/userApi"
+import {
+  fetchMyPushSetting,
+  updateMyPushSetting,
+} from '@/api/notificationApi.js'
 import {useRouter} from "vue-router";
-const router = useRouter();
+import {fetchMyInfoApi, updateMyInfoApi} from "@/api/userApi.js";
+
+const router = useRouter()
+
 const formRef = ref(null); // validation (특정  필드 검증용)
 const submitting = ref(false);
 const errorMessage = ref('');
@@ -12,7 +18,7 @@ const labelPosition = ref('top');
 const updateForm = reactive({
   loginId : ''
    , nickname : ''
-/* , notificationStatus : 'on'*/
+  , notificationStatus : 'on'
   , email : ''
 });
 
@@ -62,20 +68,34 @@ const onCancel = () => {
   console.log('취소 클릭됨')
 }
 
+// ===== 페이지 진입 시 초기값 세팅 =====
+onMounted(async () => {
+  try {
+    // 푸시 알림 설정 조회 → 라디오에 반영
+    const pushStatus = await fetchMyPushSetting()
+    // pushStatus.pushEnabled: true/false 라고 가정
+    updateForm.notificationStatus = pushStatus.pushEnabled ? 'on' : 'off'
+  } catch (e) {
+    console.error('[MyPage] push setting 조회 실패', e)
+    // 실패하면 기본값 'on' 그대로 사용
+  }
+})
+
 // 수정하기
 const userInfoUpdate = async () => {
   submitting.value = true;
   errorMessage.value = '';
 
   let payload = {
-    nickname : updateForm.nickname
-    // TODO : 알림 수신 여부 생기면 추가하기
-    // , notificationStatus : updateForm.notificationStatus
-  };
+    nickname: updateForm.nickname,
+  }
 
   try {
 
     await updateMyInfoApi(payload);
+
+    // 푸시 설정(on/off) 수정
+    await updateMyPushSetting(updateForm.notificationStatus)
     ElMessage.success('수정되었습니다.');
     router.push({name : 'MainPage'});
 
@@ -162,14 +182,14 @@ onMounted(() => {
         </el-form-item>
       </div>
 
-<!--      <div>-->
-<!--        <el-form-item label="알림 수신 여부" class="input-form-label" prop="gender">-->
-<!--          <el-radio-group v-model="updateForm.notificationStatus">-->
-<!--            <el-radio label="on">on</el-radio>-->
-<!--            <el-radio label="off">off</el-radio>-->
-<!--          </el-radio-group>-->
-<!--        </el-form-item>-->
-<!--      </div>-->
+      <div>
+        <el-form-item label="알림 수신 여부" class="input-form-label" prop="gender">
+          <el-radio-group v-model="updateForm.notificationStatus">
+            <el-radio label="on">on</el-radio>
+            <el-radio label="off">off</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </div>
 
       <el-form-item>
         <el-button class="btn-xxlage-red"

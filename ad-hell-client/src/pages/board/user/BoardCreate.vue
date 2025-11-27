@@ -1,43 +1,76 @@
-  <script setup>
+<!-- src/pages/board/user/BoardCreate.vue -->
+<script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import CommonButton from '@/components/common/CommonButton.vue'
+import { createBoard } from '@/api/boardApi.js'
 
 const router = useRouter()
 
-// 게시글 작성 폼 데이터
+// 게시글 작성 폼 상태
 const form = reactive({
   title: '',
   content: '',
-  files: [], // 업로드한 파일 목록 (UI용)
+  categoryId: null, // 기본 카테고리 ID (필수)
+  files: [],        // 업로드 파일 목록
 })
 
 // 파일 input ref
 const fileInputRef = ref(null)
 
-// 파일 선택 클릭
+// 파일 선택 창 열기
 const onClickUpload = () => {
   fileInputRef.value?.click()
 }
 
-// 파일 선택 시
+// 파일 선택 시 상태에 반영
 const onFileChange = (event) => {
   const files = Array.from(event.target.files || [])
   form.files = files
 }
 
-// 등록 버튼 (나중에 API 연동 시 여기서 FormData 만들어 전송)
-const onSubmit = () => {
-  console.log('등록 요청 데이터', {
-    title: form.title,
-    content: form.content,
-    files: form.files,
-  })
-  // TODO: boardCreate API 호출 후 /boards 로 이동
-  // router.push('/boards')
+// 등록 버튼 클릭
+const onSubmit = async () => {
+  if (!form.title.trim() || !form.content.trim()) {
+    alert('제목과 내용을 입력하세요.')
+    return
+  }
+  if (!form.categoryId) {
+    alert('카테고리 ID를 입력하세요.')
+    return
+  }
+
+  try {
+    // 서버 DTO와 맞는 boardInfo 생성
+    const boardInfo = {
+      title: form.title,
+      content: form.content,
+      categoryId: form.categoryId,
+      // status는 서버에서 기본값 처리
+    }
+
+    // FormData 생성 (boardInfo + imageFiles)
+    const formData = new FormData()
+    formData.append(
+        'boardInfo',
+        new Blob([JSON.stringify(boardInfo)], { type: 'application/json' })
+    )
+
+    form.files.forEach((file) => {
+      formData.append('imageFiles', file)
+    })
+
+    await createBoard(formData)
+
+    alert('게시글이 등록되었습니다.')
+    router.push('/boards')
+  } catch (e) {
+    console.error('createBoard error:', e.response?.data || e)
+    alert('게시글 등록 중 오류가 발생했습니다.')
+  }
 }
 
-// 취소 버튼
+// 취소 버튼 클릭
 const onCancel = () => {
   router.push('/boards')
 }
@@ -62,6 +95,15 @@ const onCancel = () => {
           />
         </el-form-item>
 
+        <!-- 카테고리 ID -->
+        <el-form-item label="카테고리 ID">
+          <el-input-number
+              v-model="form.categoryId"
+              :min="1"
+              placeholder="카테고리 ID"
+          />
+        </el-form-item>
+
         <!-- 내용 -->
         <el-form-item label="내용">
           <el-input
@@ -73,7 +115,7 @@ const onCancel = () => {
           />
         </el-form-item>
 
-        <!-- 이미지 / 파일 업로드 박스 -->
+        <!-- 이미지 / 파일 업로드 -->
         <el-form-item>
           <div class="upload-box" @click="onClickUpload">
             <div class="upload-inner">
@@ -91,7 +133,7 @@ const onCancel = () => {
               </div>
             </div>
 
-            <!-- 실제 파일 입력 (숨김) -->
+            <!-- 실제 파일 input (숨김) -->
             <input
                 ref="fileInputRef"
                 type="file"
@@ -103,7 +145,7 @@ const onCancel = () => {
         </el-form-item>
       </el-form>
 
-      <!-- 하단 버튼 (오른쪽 정렬) -->
+      <!-- 하단 버튼 -->
       <div class="form-footer">
         <CommonButton type="register" @click="onSubmit" />
         <CommonButton type="cancel" @click="onCancel" />

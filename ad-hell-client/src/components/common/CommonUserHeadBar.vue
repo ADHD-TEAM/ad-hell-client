@@ -51,7 +51,7 @@ const logout = async () => {
   } finally {
     authStore.setAccessToken(null);
     authStore.setUser(null);
-    router.push({ name: 'MainPage' });
+    await router.push({ name: 'MainPage' });
   }
 
 }

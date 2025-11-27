@@ -1,9 +1,15 @@
 <!-- NotificationBell.vue -->
 <script setup>
-import { computed, ref } from 'vue'
-// import { BellFilled } from '@element-plus/icons-vue'
+import {computed, onMounted, ref} from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import {
+  markMyNotificationRead,
+  markMyNotificationsReadAll,
+  deleteMyNotification,
+  deleteMyReadNotifications,
+} from '@/api/notificationApi.js'
+import {useNotificationStore} from "@/stores/notificationStore.js";
 
-// 부모에서 아이콘 경로를 받는 props 정의
 const props = defineProps({
   iconSrc: {
     type: String,
@@ -11,55 +17,113 @@ const props = defineProps({
   },
 })
 
+const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
+
+// ===== 상태 =====
 const isNotificationOpen = ref(false)
+const hasLoaded = ref(false)
 const activeTab = ref('unread')
 
-const notifications = ref([
-  { id: 1, type: '댓글',   actor: '김철수',  message: '님이 회원님의 게시글에 댓글을 남겼어요.', read: false },
-  { id: 2, type: '좋아요', actor: '이영희',  message: '님이 회원님의 게시글에 좋아요를 눌렀어요.', read: false },
-  { id: 3, type: '시스템', actor: '',       message: '서비스 점검이 오늘 자정에 예정되어 있습니다.', read: true },
-  { id: 4, type: '댓글',   actor: '박민수',  message: '님이 회원님의 게시글에 댓글을 남겼어요.', read: false },
-  { id: 5, type: '좋아요', actor: '정하늘',  message: '님이 회원님의 게시글에 좋아요를 눌렀어요.', read: true },
-  { id: 6, type: '시스템', actor: '',       message: '새로운 공지 사항이 등록되었습니다.', read: true },
-  { id: 7, type: '댓글',   actor: '최가은',  message: '님이 회원님의 게시글에 댓글을 남겼어요.', read: false },
-  { id: 8, type: '좋아요', actor: '오지훈',  message: '님이 회원님의 게시글에 좋아요를 눌렀어요.', read: false },
-  { id: 9, type: '시스템', actor: '',       message: '보안 관련 안내 메일이 발송되었습니다.', read: true },
-  { id:10, type: '댓글',   actor: '나애리',  message: '님이 회원님의 게시글에 댓글을 남겼어요.', read: false },
-])
-
-
-const unreadCount = computed(() => notifications.value.filter((item) => !item.read).length)
-const filteredNotifications = computed(() =>
-    notifications.value.filter((item) => (activeTab.value === 'unread' ? !item.read : item.read)),
+// store.notifications 를 화면용 형태로 변환
+const uiNotifications = computed(() =>
+    notificationStore.notifications.map((n) => ({
+      id: n.notificationId,
+      type: '시스템',
+      actor: '',
+      message: n.notificationBody,
+      read: n.readYn === 'Y',
+      createdAt: n.createdAt,
+    })),
 )
 
-const markAllRead = () => {
-  notifications.value = notifications.value.map((item) => ({ ...item, read: true }))
+// 뱃지 숫자도 store.unreadCount 사용
+const unreadCount = computed(() => notificationStore.unreadCount)
+
+// 탭 필터링
+const filteredNotifications = computed(() => {
+  const list = uiNotifications.value
+  if (activeTab.value === 'unread') {
+    return list.filter((n) => !n.read)
+  }
+  return list.filter((n) => n.read)
+})
+
+
+// ===== API 호출 =====
+
+// 페이지 로딩 시 미리 1번 가져오기
+onMounted(async () => {
+  if (authStore.isLoggedIn && !notificationStore.notifications.length) {
+    await notificationStore.loadNotifications(0)
+  }
+})
+
+// ====== 읽음 / 삭제 ======
+
+// 단건 읽음
+const markAsRead = async (id) => {
+  try {
+    await markMyNotificationRead(id)
+    await notificationStore.loadNotifications(0)
+    await notificationStore.fetchUnreadCount()
+  } catch (err) {
+    console.error('[NotificationBell] 알림 읽음 처리 실패:', err)
+  }
 }
 
-const markAsRead = (id) => {
-  notifications.value = notifications.value.map((item) =>
-      item.id === id ? { ...item, read: true } : item,
-  )
+// 모두 읽음
+const markAllRead = async () => {
+  try {
+    await markMyNotificationsReadAll()
+    await notificationStore.loadNotifications(0)
+    await notificationStore.fetchUnreadCount()
+  } catch (err) {
+    console.error('[NotificationBell] 알림 모두 읽음 처리 실패:', err)
+  }
 }
 
-/** 개별 알림 삭제 */
-const deleteNotification = (id) => {
-  notifications.value = notifications.value.filter((item) => item.id !== id)
+// 개별 삭제
+const deleteNotification = async (id) => {
+  try {
+    await deleteMyNotification(id)
+    await notificationStore.loadNotifications(0)
+    await notificationStore.fetchUnreadCount()
+  } catch (err) {
+    console.error('[NotificationBell] 알림 삭제 실패:', err)
+  }
 }
 
-/** 읽은 알림 모두 삭제 */
-const deleteAllRead = () => {
-  notifications.value = notifications.value.filter((item) => !item.read)
+// 읽은 알림 모두 삭제
+const deleteAllRead = async () => {
+  try {
+    await deleteMyReadNotifications()
+    await notificationStore.loadNotifications(0)
+    await notificationStore.fetchUnreadCount()
+  } catch (err) {
+    console.error('[NotificationBell] 읽은 알림 전체 삭제 실패:', err)
+  }
 }
+
+
+// ===== UI 관련 =====
 
 const setActiveTab = (tab) => {
   activeTab.value = tab
 }
 
-const toggleNotification = () => {
+const toggleNotification = async () => {
   isNotificationOpen.value = !isNotificationOpen.value
+
+  if (isNotificationOpen.value && !hasLoaded.value) {
+    await Promise.all([
+      notificationStore.loadNotifications(0),
+      notificationStore.fetchUnreadCount(),
+    ])
+    hasLoaded.value = true
+  }
 }
+
 
 const closeNotification = () => {
   isNotificationOpen.value = false
