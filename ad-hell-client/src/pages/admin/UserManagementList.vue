@@ -7,6 +7,7 @@ import {ElMessage} from "element-plus";
 import {useRouter} from "vue-router";
 import Pagination from "@/components/common/Pagination.vue";
 import CommonButton from "@/components/common/CommonButton.vue";
+import {fetchUsers} from "@/api/adminApi.js";
 const router = useRouter();
 const submitting = ref(false);
 const errorMessage = ref('');
@@ -29,17 +30,24 @@ const userInfo = [
   { id: 3, role : '회원', userLoginId: '김철수', nickname: '홍길동',email:'kim@test.com', status: 'withdraw' },
 ]
 
-const search = () => {
+const search = async () => {
   submitting.value = true;
   errorMessage.value = '';
 
+  let payload = {
+    role : userSearchBar.role
+    , userLoginId : userSearchBar.userLoginId
+    , nickname : userSearchBar.nickname
+    , email : userSearchBar.email
+    , status : userSearchBar.status
+  }
+
+
   try {
 
-    // const result = await loginApi(userSearchBar);
+    const result = await fetchUsers(payload);
     // TODO : 리스트를 userInfo에 넣어주기
-
-    console.log(userSearchBar);
-
+    console.log(result);
 
 
   } catch (e) {
@@ -58,7 +66,7 @@ function goDetail(id) {
 
 onMounted(() => {
   // list 가져오기
-  // search();
+  search();
   // 가져온 리스트 totalPages 넣어주기
 })
 </script>

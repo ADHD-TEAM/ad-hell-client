@@ -5,6 +5,7 @@ import AdMain from '@/pages/advertise/AdMain.vue'
 import {useAuthStore} from "@/stores/authStore.js";
 
 
+
 const routes = [
     {path: '/login' , name : 'UserLoginView' , component: () => import('@/pages/account/LoginView.vue') , meta: { layout: 'none' } },
     {path: '/admin/login' , name : 'AdminLoginView' , component: () => import('@/pages/account/LoginView.vue'), meta: { layout: 'none' } },
@@ -114,12 +115,7 @@ const routes = [
             },
 
 
-            //  문의 (유저)
-            {
-                path: 'inquiries',
-                name: 'InquiryList',
-                component: () => import('@/pages/inquiry/user/InquiryList.vue'),
-            },
+            //  문의
             {
                 path: 'inquiries/:id',
                 name: 'InquiryDetail',
@@ -127,11 +123,11 @@ const routes = [
                 props: true,
             },
 
-            //  공지사항 (유저)
+            //  공지사항
             {
                 path: 'announcements',
-            name: 'AnnouncementList',
-            component: () => import('@/pages/announcement/user/AnnouncementList.vue'),
+                name: 'AnnouncementList',
+                component: () => import('@/pages/announcement/user/AnnouncementList.vue'),
             },
             {
                 path: 'announcements/:id',
@@ -162,6 +158,16 @@ const routes = [
                         name: 'AccountDelete',
                         component: () => import('@/pages/mypage/AccountDelete.vue'),
                         props: true,
+                    },
+                    {
+                        path: 'inquiries',
+                        name: 'MyInquiryList',
+                        component: () => import('@/pages/mypage/MyInquiryList.vue'),
+                    },
+                    {
+                        path: 'boards',
+                        name: 'MyBoardList',
+                        component: () => import('@/pages/mypage/MyBoardList.vue'),
                     },
                     {
                       path: '/mypage/points',
@@ -200,18 +206,17 @@ const routes = [
                 component: () => import('@/pages/advertise/AdDetail.vue'),
             },
             {
-              path: 'admin/home',
-              name: 'AdminHome',
-              component: () => import('@/pages/admin/Home.vue'),
-              meta: { role: 'admin' }
+                path: 'admin/home',
+                name: 'AdminHome',
+                component: () => import('@/pages/admin/Home.vue'),
             },
 
             // 어드민 신고 목록 페이지
             {
-              path: 'admin/reports',
-              name: 'ReportList',
-              component: () => import('@/pages/report/ReportList.vue'),
-              meta: { role: 'admin' }
+                path: 'admin/reports',
+                name: 'ReportList',
+                component: () => import('@/pages/report/ReportList.vue'),
+                meta: { role: 'admin' }
             },
 
             /* 관리자 카테고리 관리 */
@@ -252,6 +257,13 @@ const routes = [
               component: () => import('@/pages/reward/AdminRewardEdit.vue'),
               meta: { role: 'admin' }
             },
+            {
+              path: 'admin/rewards/:id/stock',
+              name: 'AdminRewardStockCreate',
+              component: () => import('@/pages/reward/RewardStockCreate.vue'),
+              meta: { role: 'admin' }
+            },
+
             /* 관리자 신고 관리 */
             {
               path: 'admin/reports',
@@ -259,6 +271,55 @@ const routes = [
               component: () => import('@/pages/report/ReportList.vue'),
               meta: { role: 'admin' }
             },
+            // 관리자 문의
+            {
+                path: 'admin/inquiries',
+                name: 'AdminInquiryList',
+                component: () => import('@/pages/inquiry/admin/AdminInquiryList.vue'),
+                meta: { requiresAuth: true, role: 'admin' },
+            },
+            {
+                path: 'admin/inquiries/:id',
+                name: 'AdminInquiryDetail',
+                component: () => import('@/pages/inquiry/admin/AdminInquiryDetail.vue'),
+                props: true,
+                meta: { requiresAuth: true, role: 'admin' },
+            },
+
+            //관리자 공지사항
+            {
+                path: 'admin/announcements',
+                name: 'AdminAnnouncementList',
+                component: () => import('@/pages/announcement/admin/AdminAnnouncementList.vue'),
+                meta: { requiresAuth: true, role: 'admin' },
+            },
+            {
+                path: 'admin/announcements/create',
+                name: 'AdminAnnouncementCreate',
+                component: () => import('@/pages/announcement/admin/AdminAnnouncementCreate.vue'),
+                meta: { requiresAuth: true, role: 'admin' },
+            },
+            {
+                path: 'admin/announcements/:id',
+                name: 'AdminAnnouncementDetail',
+                component: () => import('@/pages/announcement/admin/AdminAnnouncementDetail.vue'),
+                props: true,
+                meta: { requiresAuth: true, role: 'admin' },
+            },
+            {
+                path: 'admin/announcements/:id/edit',
+                name: 'AdminAnnouncementEdit',
+                component: () => import('@/pages/announcement/admin/AdminAnnouncementEdit.vue'),
+                props: true,
+                meta: { requiresAuth: true, role: 'admin' },
+            },
+            {
+                path: 'admin/boards',
+                name: 'AdminBoardList',
+                component: () => import('@/pages/board/user/BoardList.vue'),
+                meta: { requiresAuth: true, role: 'admin' },
+            },
+
             { // 어드민 회원관리
                 path: 'admin/user/managements',
                 name: 'UserManagementList',
@@ -336,6 +397,7 @@ const routes = [
                 name: 'AdminAlarmSendCreate',
                 component: () => import('@/pages/notification/admin/AlarmSendCreate.vue'),
             },
+
         ],
     },
 

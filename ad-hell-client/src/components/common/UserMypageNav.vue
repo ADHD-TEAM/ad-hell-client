@@ -1,8 +1,10 @@
 <script setup>
-import { ref } from "vue";
-import {mypageNav , mypageNavSub} from './mypageNav.js';
-import {useRouter} from "vue-router";
+import { ref, onMounted, watch } from "vue";
+import { mypageNav, mypageNavSub } from "./mypageNav.js";
+import { useRouter, useRoute } from "vue-router";
+
 const router = useRouter();
+const route = useRoute();
 // nav sub 가져오기
 function getNavSub(index) {
   const result = mypageNavSub.filter(item => item.tab === index);
@@ -37,6 +39,20 @@ function handleNavSubClick(item) {
     router.push(item.linkTo);
   }
 }
+const syncFromRoute = () => {
+  if (route.name === 'MyInquiryList') {
+    activeIndex.value = 5
+    navSub.value = getNavSub(5)
+    activeSubIndex.value = 1
+  }
+}
+onMounted(syncFromRoute)
+
+watch(
+    () => route.name,
+    () => syncFromRoute()
+)
+
 
 </script>
 

@@ -10,11 +10,11 @@ const route = useRoute()
   // 관리자 사이드바 메뉴 (요청에 맞게 수정 완료)
 const menus = [
   // 홈
-  { id: 'home', label: '홈', path: '/', iconId: 'home' },
+  { id: 'home', label: '홈', path: '/admin/home', iconId: 'home' },
 
   // 회원
   { id: 'member-section', label: '회원', header: true },
-  { id: 'member-manage', label: '회원관리', path: '/admin/members', iconId: 'user' },
+  { id: 'member-manage', label: '회원관리', path: {name :'UserManagementList' }, iconId: 'user' },
 
   // 공지·문의·게시판
   { id: 'notice-section', label: '공지사항', header: true },

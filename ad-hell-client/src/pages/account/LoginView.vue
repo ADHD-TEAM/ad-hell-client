@@ -26,33 +26,33 @@ const loginForm = reactive({
 
 // login
 const login = async () => {
-
+  console.log(mode.value);
   submitting.value = true;
   errorMessage.value = '';
 
   try {
     const result = await authStore.login(loginForm);
 
-    if(!result.success) {
-      errorMessage.value = result.message;
+    if (!result?.success) {
+      errorMessage.value = result?.message || '로그인을 다시 시도해주세요.';
       ElMessage.error('아이디와 비밀번호를 확인해주세요.');
       return;
     }
 
     if (mode.value === 'user') {
-      await router.push({name : 'MainPage'});
-
+      await router.push({ name: 'MainPage' });
     } else if (mode.value === 'admin') {
-      await router.push({name : 'AdminMainPage'});
+      await router.push({ name: 'AdminHome'});
+    } else {
+      console.warn('mode 값 없음 → 기본 user 페이지 이동');
+      await router.push({ name: 'MainPage' });
     }
   } catch (e) {
     console.log(e);
-    errorMessage.value = e.message || '로그인 중 오류가 발생했습니다.'
-
+    errorMessage.value = e.message || '로그인 중 오류가 발생했습니다.';
   } finally {
     submitting.value = false;
   }
-
 };
 
 </script>
