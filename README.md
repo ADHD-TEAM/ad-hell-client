@@ -235,22 +235,39 @@ src/
 <details> <summary><b>🔐 로그인 / 인증</b></summary> <img src="<!-- gif url -->" width="80%"/> </details> 
 <details> 
 	<summary><b>👤 회원 관리</b></summary> 
+	<h4>포인트 이력</h4>
 	<img src="./ad-hell-client/product/gif/pointHistory.gif" width="80%"/> 
 </details> 
 
 <details> 
-	<summary><b>🔗 카테고리 관리</b></summary> 
+	<summary><b>🎁 경품 관리</b></summary> 
+	<h4>경품등록</h4>
 	<img src="./ad-hell-client/product/gif/rewardCreate.gif" width="80%"/> 
-	<img src="./ad-hell-client/product/gif/rewardDelete.gif" width="80%"/> 
+	<br>
+	<h4>경품수정</h4>
 	<img src="./ad-hell-client/product/gif/rewardEdit.gif" width="80%"/> 
+	<br>
+	<h4>경품삭제</h4>
+	<img src="./ad-hell-client/product/gif/rewardDelete.gif" width="80%"/>
+	<br>
+	<h4>경품 재고 목록 및 등록</h4>
 	<img src="./ad-hell-client/product/gif/rewardStockListAndCreate.gif" width="80%"/> 
+	<br>
+	<h4>경품 교환</h4>
 	<img src="./ad-hell-client/product/gif/rewardChange.gif" width="80%"/> 
+	<br>
 </details> 
 <details> 
-	<summary><b>🎁 경품 관리</b></summary> 
+	<summary><b>🔗 카테고리 관리</b></summary> 
+	<h4>카테고리 등록</h4>
 	<img src="./ad-hell-client/product/gif/categoryCreate.gif" width="80%"/> 
-	<img src="./ad-hell-client/product/gif/categoryDelte.gif" width="80%"/> 
+	<br>
+	<h4>카테고리 수정</h4>
 	<img src="./ad-hell-client/product/gif/categoryEdit.gif" width="80%"/> 
+	<br>
+	<h4>카테고리 삭제</h4>
+	<img src="./ad-hell-client/product/gif/categoryDelte.gif" width="80%"/> 
+	<br>
 </details> 
 <details> <summary><b>📺 광고 관리</b></summary> <img src="<!-- gif url -->" width="80%"/> </details>
 
