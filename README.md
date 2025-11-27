@@ -54,12 +54,6 @@
   
 ### ⚡ **ADHD: 광고당했다 — Frontend Client**
 
-<p style="max-width: 800px; font-size: 17px">
-<strong>AD Hell Frontend</strong>는 광고 리워드 플랫폼  
-<strong style="color:#ff4646">“ADHD: 광고당했다”</strong>의 모든 화면·상태·UX 흐름을 담당하는  
-<strong>웹 프론트엔드 애플리케이션</strong>입니다.
-</p>
-
 </div>
 
 ---
@@ -274,50 +268,138 @@ src/
 <br/><br/>
 
 <!-- SECTION: 트러블슈팅 --> <h1 id="trouble">⚡ 7. 트러블슈팅</h1>
+<p>프로젝트 진행 중 실제로 직면했던 핵심 문제들과 해결 과정을 정리했습니다.</p>
 
-아래는 프로젝트 진행 중 실제로 직면했던 문제들과 해결 과정입니다.
+<!-- 1번 -->
+<h2>🔐 1) Refresh Token 구조 문제 – userId 기반 검증 실패</h2>
+<div style="padding:12px; border-left:6px solid #ff6b6b; background:#fff2f2; border-radius:6px;">
+  <strong>📌 문제</strong><br>
+  Access Token 만료 시 Refresh Token만으로 재발급해야 했으나,<br>
+  Redis Key가 <b>userId</b> 기반이라 검증 자체가 불가능한 구조였다.
+</div>
 
-🔥 1) Axios Authorization 누락 문제
+<h3>🎯 원인</h3>
+<ul>
+  <li>Refresh Token에는 <b>loginId</b>만 포함됨</li>
+  <li>Redis Key는 <b>userId</b> 기반 저장 → Access Token 없이 loginId 추출 불가</li>
+</ul>
 
-문제
-요청마다 Authorization 헤더가 붙지 않아 인증 실패 발생
+<h3>🛠 해결</h3>
+<ul>
+  <li>Redis Key 구조를 <b>loginId 기반</b>으로 전면 개편</li>
+  <li>Refresh Token에서 loginId 추출 후 Redis 검증</li>
+  <li>검증된 loginId/role 기반으로 새로운 Access/Refresh 발급</li>
+</ul>
 
-원인
-Axios 인스턴스 설정 누락 & Refresh Token 처리 순서 문제
+<div style="padding:12px; border-left:6px solid #4a90e2; background:#eef5ff; border-radius:6px;">
+  <strong>➡️ 개선 효과</strong><br>
+  Access Token 없이도 <b>Refresh Token 단독 재발급 가능</b>
+</div>
 
-해결
+<br>
 
-인터셉터에서 accessToken 자동 주입
+<!-- 2번 -->
+<h2>📨 2) 이메일 인증 – Element Plus Validation 미작동</h2>
+<div style="padding:12px; border-left:6px solid #6b8cff; background:#f0f3ff; border-radius:6px;">
+  <strong>📌 문제</strong><br>
+  이메일 형식 검증 rules가 동작하지 않아 오류 메시지가 표시되지 않음.
+</div>
 
-재발급 처리 후 원본 요청 재시도 로직 구축
+<h3>🎯 원인</h3>
+<ul>
+  <li><code>:model</code> 속성이 누락되어 validation 대상 필드를 인식하지 못함</li>
+</ul>
 
-🔥 2) Pinia 상태변경 무한 리렌더링
+<h3>🛠 해결</h3>
+<ul>
+  <li><code>&lt;el-form :model="form"&gt;</code> 명시</li>
+  <li><code>v-model="form.email"</code>로 필드 연결</li>
+  <li>전체 Form 구조 정상 확인</li>
+</ul>
 
-문제
-watch / computed 안에서 store를 직접 수정해 렌더링 루프 발생
+<div style="padding:12px; border-left:6px solid #3b7cff; background:#eaf0ff; border-radius:6px;">
+  <strong>➡️ 개선 효과</strong><br>
+  Element Plus 검증 정상 작동
+</div>
 
-해결
+<br>
 
-store → 컴포넌트 단방향 흐름 정리
+<!-- 3번 -->
+<h2>♻️ 3) 광고 무한 스크롤 – JOIN으로 인한 페이징 중복 오류</h2>
+<div style="padding:12px; border-left:6px solid #00b894; background:#eafff4; border-radius:6px;">
+  <strong>📌 문제</strong><br>
+  광고 1개에 이미지 2개가 있어 JOIN 시 광고가 중복되어 페이징이 틀어지는 문제 발생.
+</div>
 
-composable 로직 분리로 재사용성과 안정성 확보
+<h3>🎯 원인</h3>
+<ul>
+  <li>이미지 개수만큼 광고 row 중복 생성</li>
+  <li><code>count</code> 및 <code>hasNext</code> 계산 오류</li>
+</ul>
 
-🔥 3) Element Plus 컴포넌트 확장 이슈
+<h3>🛠 해결</h3>
+<ul>
+  <li>페이징 기준을 <b>광고 ID</b> 기준으로 변경</li>
+  <li>광고 ID를 먼저 페이징 처리</li>
+  <li>해당 ID들만 JOIN하여 이미지 조회</li>
+</ul>
 
-문제
-props 전달 구조가 복잡해져 UI 반응이 꼬임
+<div style="padding:12px; border-left:6px solid #00a86b; background:#e9fff2; border-radius:6px;">
+  <strong>➡️ 개선 효과</strong><br>
+  광고 단위 기준으로 정확한 페이징 구현
+</div>
 
-해결
+<br>
 
-공통 컴포넌트를 직접 래핑(wrap)
+<!-- 4번 -->
+<h2>🔔 4) 알림(SSE) – 로그인 직후 뱃지 숫자 지연 표시</h2>
+<div style="padding:12px; border-left:6px solid #ffa801; background:#fff7e6; border-radius:6px;">
+  <strong>📌 문제</strong><br>
+  로그인 직후 알림 뱃지가 표시되지 않고 SSE 연결 이후에야 표시되는 UX 지연 발생.
+</div>
 
-필요한 props만 내려주는 경량 컴포넌트 구성
+<h3>🎯 원인</h3>
+<ul>
+  <li>초기 알림 개수를 SSE 이벤트에만 의존</li>
+  <li>로그인 직후 SSE 연결 지연 → 뱃지 0으로 보임</li>
+</ul>
+
+<h3>🛠 해결</h3>
+<ul>
+  <li>로그인 성공 시 REST API <b>/notifications/unread-count</b> 즉시 호출</li>
+  <li>SSE는 새 알림/읽음 처리 등 실시간 변화만 담당하도록 분리</li>
+</ul>
+
+<div style="padding:12px; border-left:6px solid #ff9900; background:#fff2db; border-radius:6px;">
+  <strong>➡️ 개선 효과</strong><br>
+  로그인 직후 즉시 정확한 뱃지 표시 + 자연스러운 SSE 실시간 갱신
+</div>
+
 
 <br/><br/>
 
 <!-- SECTION: 팀원 회고 --> <h1 id="review">👨‍👩‍👧‍👦 8. 팀원 회고</h1> <div align="center">
-이름	회고
-	
+
+<table>
+  <colgroup>
+    <col>
+    <col>
+  </colgroup>
+  <tr>
+    <th>👤 이름</th>
+    <th>📝 내용</th>
+  </tr>
+  <tr>
+    <td>이민욱</td>
+    <td>이번 프로젝트를 통해 구조와 흐름을 먼저 이해하는 것이 개발의 절반이라는 걸 제대로 배웠다. 중간중간 막히는 부분도 많았지만, 그때마다 팀원들이 서로 도와주며 끝까지 완성할 수 있었다. 기술도 사고 방식도 한 단계 더 성장했다고 느낀다.</td>
+  </tr>
+  <tr><td>김성태</td><td></td></tr>
+  <tr><td>배창민</td><td></td></tr>
+  <tr><td>정혜인</td><td></td></tr>
+  <tr><td>강성현</td><td></td></tr>
+</table>
+
+
 	
 	
 </div>
