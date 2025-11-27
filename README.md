@@ -215,10 +215,10 @@ src/
 
 <br/><br/>
 
-<!-- SECTION: API --> <h1 id="api">🔗 5. API 명세서</h1>
+<!-- SECTION: API --> <h1 id="api">🔗 5. 기능 명세서</h1>
 
   <a href="https://docs.google.com/spreadsheets/d/16O4Hz9qNTF_cdzcfYx0W3bYIvBDRBE045Gb6kjDid9Q/edit?gid=0#gid=0" target="_blank" style="text-decoration: none; color: inherit;">
-	  <p>📌 API 문서 바로가기 </p>
+	  <p>📌 기능 명세서 바로가기 </p>
   </a>
 <br/><br/>
 
