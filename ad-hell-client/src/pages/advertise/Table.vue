@@ -1,44 +1,26 @@
 <!-- src/components/advertise/AdListTable.vue -->
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// 한 행 타입 (원하면 interface로 빼도 됨)
+// 한 행 타입
 type AdRow = {
   id: number
   title: string
   categoryName: string
-  rank: number
   status: 'ACTIVE' | 'INACTIVE'
 }
 
-// ✅ 부모에서 안 받음. 이 컴포넌트 안에서 상태 관리
-const ads = ref<AdRow[]>([])
+// 부모에서 목록을 그대로 받는다
+const props = defineProps<{
+  ads: AdRow[]
+}>()
 
-// 더미 데이터 (나중에 API로 교체)
-const mockData: AdRow[] = [
-  { id: 1, title: 'ADHD',     categoryName: '음식', rank: 1, status: 'ACTIVE' },
-  { id: 2, title: "Mcdonald", categoryName: '음식', rank: 2, status: 'ACTIVE' },
-]
-
-// 목록 로딩 (여기에 API 연동하면 됨)
-const loadAds = async () => {
-  // TODO: 실제 API 연동
-  // const res = await axios.get('/api/admin/ads', { params: {...} })
-  // ads.value = res.data
-  ads.value = mockData
-}
-
-// 행 클릭 시 상세 페이지 이동 (원하면 경로 바꿔서 사용)
+// 행 클릭 시 상세 페이지 이동
 const handleRowClick = (id: number) => {
   router.push(`/admin/ads/${id}`)
 }
-
-onMounted(() => {
-  loadAds()
-})
 </script>
 
 <template>
@@ -49,14 +31,13 @@ onMounted(() => {
         <th class="col-no">NO</th>
         <th class="col-title">제목</th>
         <th class="col-category">카테고리</th>
-        <th class="col-rank">랭킹</th>
         <th class="col-status">상태</th>
       </tr>
       </thead>
 
       <tbody>
       <tr
-          v-for="(ad, idx) in ads"
+          v-for="(ad, idx) in props.ads"
           :key="ad.id"
           class="ad-row"
           @click="handleRowClick(ad.id)"
@@ -74,11 +55,6 @@ onMounted(() => {
           {{ ad.categoryName }}
         </td>
 
-        <!-- 랭킹 -->
-        <td class="col-rank">
-          {{ ad.rank }}
-        </td>
-
         <!-- 상태 배지 -->
         <td class="col-status">
           <span
@@ -91,8 +67,8 @@ onMounted(() => {
       </tr>
 
       <!-- 데이터 없을 때 -->
-      <tr v-if="ads.length === 0">
-        <td colspan="5" class="empty-row">
+      <tr v-if="props.ads.length === 0">
+        <td colspan="4" class="empty-row">
           등록된 광고가 없습니다.
         </td>
       </tr>

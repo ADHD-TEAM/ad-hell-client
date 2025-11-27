@@ -5,6 +5,7 @@ const router = useRouter();
 import CommonModal from "@/components/common/CommonModal.vue";
 import {useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
+import {withdrawApi} from '@/api/userApi.js'
 const submitting = ref(false);
 const errorMessage = ref('');
 const formRef = ref(null); // validation (특정  필드 검증용)
@@ -22,8 +23,6 @@ const rules = {
     { required: true, message: '비밀번호 확인을 입력하세요.', trigger: 'blur' },
     {
       validator: (rule, value) => {
-        console.log(rule);
-        console.log(value);
 
         if (value !== accountDeleteForm.password) {
           return new Error('비밀번호와 일치하지 않습니다.');
@@ -62,13 +61,12 @@ const onCancel = () => {
   console.log('취소 클릭됨')
 }
 
-const accountDelete= () => {
+const accountDelete= async () => {
   submitting.value = true;
   errorMessage.value = '';
 
   try {
-
-    // const result = await loginApi(payload);
+    const result = await withdrawApi();
     ElMessage.success('회원 탈퇴되었습니다.');
     router.push({name : 'MainPage'});
   } catch (e) {

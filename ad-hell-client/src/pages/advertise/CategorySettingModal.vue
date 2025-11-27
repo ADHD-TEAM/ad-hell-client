@@ -3,31 +3,45 @@
 import { ref, watch } from 'vue'
 import CommonButton from '@/components/common/CommonButton.vue'
 
+// 부모에서 내려줄 타입
+interface CategoryOption {
+  value: number
+  label: string
+}
+
 const props = defineProps<{
   visible: boolean
-  selectedCategory?: string | null
+  selectedCategoryId?: number | null
+  categoryOptions: CategoryOption[]
 }>()
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'save', category: string): void
+  (e: 'save', categoryId: number): void
 }>()
 
-const categoryOptions = [
-  { value: 'FOOD', label: '음식' },
-  { value: 'SERVICE', label: '서비스' },
-  { value: 'SHOPPING', label: '쇼핑' },
-  { value: 'ETC', label: '기타' },
-]
+// 현재 선택 값 (카테고리 ID)
+const current = ref<number | null>(null)
 
-const current = ref<string>('FOOD')
-
+// visible + selectedCategoryId + categoryOptions 동시에 감시
 watch(
-    () => props.selectedCategory,
-    (v) => {
-      if (v) current.value = v
+    () => [props.visible, props.selectedCategoryId, props.categoryOptions],
+    ([visible, selectedId, options]) => {
+      if (!visible) return  // 모달 닫혀 있으면 신경 안 씀
+
+      if (selectedId != null) {
+        // 부모에서 이미 선택한 카테고리가 있으면 그걸로 세팅
+        current.value = selectedId
+      } else if (options.length > 0) {
+        // 없으면 목록의 첫 번째를 기본값으로
+        current.value = options[0].value
+      } else {
+        current.value = null
+      }
+
+      console.log('[Modal] watch 초기화, current = ', current.value)
     },
-    { immediate: true }
+    { immediate: true, deep: true }
 )
 
 const handleClose = () => {
@@ -35,7 +49,15 @@ const handleClose = () => {
 }
 
 const handleSave = () => {
-  emit('save', current.value)
+  console.log('[Modal] handleSave 호출, current = ', current.value, typeof current.value)
+
+  if (current.value == null) {
+    alert('카테고리를 선택해주세요.')
+    return
+  }
+
+  // 라디오에서 문자열이 들어올 수 있으니 숫자로 캐스팅
+  emit('save', Number(current.value))
 }
 </script>
 
@@ -56,6 +78,7 @@ const handleSave = () => {
           <label>
             <input
                 type="radio"
+                name="ad-category"
                 v-model="current"
                 :value="opt.value"
             />
@@ -65,8 +88,8 @@ const handleSave = () => {
       </ul>
 
       <div class="modal-footer">
-        <CommonButton type="cancel"  :width="70" @click="handleClose" />
-        <CommonButton type="save"    :width="70" @click="handleSave" />
+        <CommonButton type="cancel" :width="70" @click="handleClose" />
+        <CommonButton type="save"   :width="70" @click="handleSave" />
       </div>
     </div>
   </div>

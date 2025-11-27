@@ -25,6 +25,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['click'])
+
 // 버튼 라벨
 const labels = {
   search: '검색',
@@ -37,7 +39,8 @@ const labels = {
   reset: '초기화',
   change: '교환',
   list : '목록',
-  detail: '상세'
+  detail: '상세',
+  completion: '완료'
 }
 
 const label = computed(() => labels[props.type] ?? props.type)
@@ -45,7 +48,7 @@ const label = computed(() => labels[props.type] ?? props.type)
 // 색상 타입
 const variant = computed(() => {
   const soft = ['search', 'delete', 'list']
-  const primary = ['write', 'register', 'update', 'save', 'change']
+  const primary = ['write', 'register', 'update', 'save', 'change', 'completion']
   const outline = ['cancel', 'reset', 'detail']
 
   if (soft.includes(props.type)) return 'soft'
@@ -68,6 +71,7 @@ const sizeStyle = computed(() => ({
       :class="[`common-btn--${variant}`, { 'is-active': active }]"
       :style="sizeStyle"
       :disabled="disabled"
+      @click="emit('click', $event)"
   >
     {{ label }}
   </button>

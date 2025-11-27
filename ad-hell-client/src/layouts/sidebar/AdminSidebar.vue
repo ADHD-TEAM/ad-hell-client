@@ -14,7 +14,7 @@ const menus = [
 
   // 회원
   { id: 'member-section', label: '회원', header: true },
-  { id: 'member-manage', label: '회원관리', path: '/admin/members', iconId: 'user' },
+  { id: 'member-manage', label: '회원관리', path: {name :'UserManagementList' }, iconId: 'user' },
 
   // 공지·문의·게시판
   { id: 'notice-section', label: '공지사항', header: true },
@@ -34,7 +34,7 @@ const menus = [
 
   // 광고/경품 관리
   { id: 'ad-reward-section', label: '광고/ 경품 관리', header: true },
-  { id: 'ad-manage', label: '광고관리', path: '/admin/ads', iconId: 'ad' },
+  { id: 'ad-manage', label: '광고관리', path: '/admin/admanageview', iconId: 'ad' },
   { id: 'reward-manage', label: '경품관리', path: '/admin/rewards', iconId: 'reward' },
 ]
 

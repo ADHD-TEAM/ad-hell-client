@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import CommonButton from '@/components/common/CommonButton.vue'
 import AdminCommentList from '@/pages/advertise/AdminCommentList.vue'
 import api from '@/api/api.js'
+import AdminCommentList2 from "@/pages/advertise/AdminCommentList2.vue";
 
 interface AdCommentDto {
   adCommentId: number;
@@ -217,12 +218,13 @@ onMounted(() => {
     </div>
 
     <!-- 댓글 영역 -->
-    <AdminCommentList
-        v-if="!isLoading && !errorMessage"
-        :comments="comments"
-        @edit="handleEditComment"
-        @delete="handleDeleteComment"
-    />
+<!--    <AdminCommentList-->
+<!--        v-if="!isLoading && !errorMessage"-->
+<!--        :comments="comments"-->
+<!--        @edit="handleEditComment"-->
+<!--        @delete="handleDeleteComment"-->
+<!--    />-->
+    <AdminCommentList2  :adId="adId"/>
 
     <!-- 하단 광고 관리 버튼 -->
     <div

@@ -143,6 +143,7 @@ onMounted(loadDetail)
   </section>
 </template>
 
+
 <style scoped lang="scss">
 .inquiry-detail-page {
   padding: 24px 32px 40px;
