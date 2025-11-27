@@ -161,71 +161,71 @@
 
 ```txt
 src/
- ├─ layouts/
+ ├─ layouts/					# 기본 레이아웃
  │    ├─ DefaultLayout.vue
- │    ├─ Header.vue
- │    ├─ Sidebar.vue
- │    └─ Footer.vue
+ │    └─ Sidebar.vue
+ │    
  │
  ├─ pages/                      # 라우트와 1:1 매핑되는 페이지
- │    ├─ UserList.vue
- │    └─ UserDetail.vue
+ │    ├─ admin
+ │    ├─ advertise
+ │    └─ reward
  │
  │
  ├─ components/                 # 재사용 가능한 UI 컴포넌트
  │    ├─ common/                # Element Plus 기반 커스텀 공통 UI
  │    │    ├─ CommonSearchForm.vue
  │    │    ├─ CommonModal.vue
+ │    │    ├─ CommonButton.vue
  │    │    └─ CommonPagination.vue
  │    │
  │    └─ features/              # 도메인 전용 UI 조각
- │         ├─ user/
- │         │    ├─ UserCard.vue
- │         │    └─ UserForm.vue
- │         └─ board/
- │              ├─ BoardCard.vue
- │              └─ BoardForm.vue
+ │         ├─ admin/
+ │         │    ├─ DetailTable.vue
+ │         │    └─ UpdateTable.vue
+ │         └─ mypage/
+ │              └─ PointHistoryTable.vue
  │
  ├─ composables/                # 재사용 로직(API + 상태 + composable 훅)
- │    ├─ useFetch.js
- │    ├─ usePagination.js
- │    └─ useForm.js
- │
+ │    └─ reward/
+ │          ├─ useRewardDetail.js
+ │			└─ useRewardList.js
  ├─ api/                   # API 호출 계층
+ │    ├─ api.js
  │    ├─ userApi.js
  │    ├─ boardApi.js
+ │    ├─ categoryApi.js
  │    └─ authApi.js
  │
  ├─ router/
  │    └─ index.js
  │
  ├─ store/                      # Pinia 전역 상태
- │    └─ userStore.js
+ │    └─ authStore.js
  │
  ├─ utils/                      # 공통 유틸 함수
  │    └─ format.js
  │
  ├─ styles/                     # 전역 스타일 & Element Plus 커스터마이징
- │    ├─ variables.scss
- │    └─ overrides.scss
+ │    └─ css
  │
  └─ assets/                     # 이미지 / 폰트 / 정적 리소스
 ```
 </details>
 <br/><br/>
 
-<!-- SECTION: 화면 설계서 --> <h1 id="figma">🎨 4. 화면 설계서 (Figma)</h1>
-
-📌 Figma 화면 기획 보러가기
-
-<details> <summary><b>미리보기</b></summary> <img src="<!-- Figma 스크린샷 URL -->" width="90%"/> </details>
+  <h1 id="figma">🎨 4. 화면 설계서 (Figma)</h1>
+  <a href="https://www.figma.com/site/FoNABcZyvI0sTu51OpBgaq/ad-hell-design?node-id=3-3&p=f" target="_blank" style="text-decoration: none; color: inherit;">
+	  <p>📌 화면설계서 바로가기</p>
+  </a>
 
 <br/><br/>
 
 <!-- SECTION: API --> <h1 id="api">🔗 5. API 명세서</h1>
 
-📌 API 문서 바로가기
-
+  <a href="https://docs.google.com/spreadsheets/d/16O4Hz9qNTF_cdzcfYx0W3bYIvBDRBE045Gb6kjDid9Q/edit?gid=0#gid=0" target="_blank" style="text-decoration: none; color: inherit;">
+	  <p>📌 API 문서 바로가기 </p>
+  </a>
 <br/><br/>
 
 <!-- SECTION: 테스트 결과 --> <h1 id="test">🧪 6. 기능 테스트 결과</h1>
