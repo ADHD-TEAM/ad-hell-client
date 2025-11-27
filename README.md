@@ -226,11 +226,25 @@ src/
 
 아래는 실제 서비스 기능을 검증한 시연 영상입니다.
 
-<details> <summary><b>🔐 로그인 / 인증</b></summary> <img src="<!-- gif url -->" width="80%"/> </details> 
+<details> 
+	<summary><b>🔐 로그인 / 인증</b></summary> 
+	<h4>로그인(회원)</h4>
+	<img src="./ad-hell-client/product/gif/userLogin.gif" width="80%"/> 
+	<br>
+	<h4>아이디 찾기</h4>
+	<img src="./ad-hell-client/product/gif/FindId.gif" width="80%"/> 
+
+</details> 
 <details> 
 	<summary><b>👤 회원 관리</b></summary> 
 	<h4>포인트 이력</h4>
 	<img src="./ad-hell-client/product/gif/pointHistory.gif" width="80%"/> 
+	<br>
+	<h4>내 정보 수정</h4>
+	<img src="./ad-hell-client/product/gif/myinfoUpdate.gif" width="80%"/> 
+	<br>
+	<h4>비밀번호 수정</h4>
+	<img src="./ad-hell-client/product/gif/passwordUpdate.gif" width="80%"/> 
 </details> 
 
 <details> 
@@ -446,7 +460,14 @@ src/
 		  다만 시간에 쫓겨 초기 기획했던 기능을 모두 담지 못한 점은 아쉽지만, 이번 경험을 바탕으로 다음 프로젝트에서는 더 능숙하게 임할 수 있을 것이라 생각한다.
 	  </td>
   </tr>
-  <tr><td>정혜인</td><td></td></tr>
+  <tr>
+	  <td>정혜인</td>
+	  <td>
+		  피그마로 화면을 설계하고 프론트엔드와 백엔드를 직접 연결하며 전체 흐름을 경험했다. 구현 과정에서 두 영역의 관점 차이를 실감했고, 
+		  사용자 흐름과 화면 구조를 함께 고려하는 시야를 갖게 되었다. Vue 개발을 통해 폴더 구조와 컴포넌트 관계를 이해하게 되었으며, 
+		  재사용성과 JavaScript 기본기의 중요성도 느꼈다. 권한 관리나 Pinia를 적용하지 못한 아쉬움은 있지만, 다음 프로젝트에서는 반드시 활용해보고 싶다.
+	  </td>
+  </tr>
   <tr>
     <td>강성현</td>
     <td>백엔드보다 프론트–백엔드 통합 과정에서 협업의 중요성과, 프론트엔드는 협업 능력·경험이 곧 실력이라는 걸 깨달았다.
