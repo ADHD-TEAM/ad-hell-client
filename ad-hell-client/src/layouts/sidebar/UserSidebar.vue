@@ -14,12 +14,12 @@ const menus = [
   { id: 'favorite', label: '즐겨찾기한 광고', path: '/favorites', iconId: 'favorite' },
 
   { id: 'category-section', label: '카테고리', header: true },
-  { id: 'music', label: '음악', path: '/categories?type=music', iconId: 'music' },
-  { id: 'movie', label: '영화', path: '/categories?type=movie', iconId: 'movie' },
-  { id: 'shopping', label: '쇼핑', path: '/categories?type=shopping', iconId: 'shopping' },
-  { id: 'game', label: '게임', path: '/categories?type=game', iconId: 'game' },
-  { id: 'sports', label: '스포츠', path: '/categories?type=sports', iconId: 'sports' },
-  { id: 'learning', label: '학습', path: '/categories?type=learning', iconId: 'learning' },
+  { id: 'music', label: '음악', path: '/music', iconId: 'music' },
+  { id: 'movie', label: '영화', path: '/movie', iconId: 'movie' },
+  { id: 'shopping', label: '쇼핑', path: '/shopping', iconId: 'shopping' },
+  { id: 'game', label: '게임', path: '/game', iconId: 'game' },
+  { id: 'sports', label: '스포츠', path: '/sport', iconId: 'sports' },
+  { id: 'learning', label: '학습', path: '/education', iconId: 'learning' },
 
   { id: 'board-section', label: '문의/공지사항/게시판', header: true },
   { id: 'announcement', label: '공지사항', path: '/announcements', iconId: 'notice' },

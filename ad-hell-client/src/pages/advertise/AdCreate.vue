@@ -1,36 +1,48 @@
 <!-- src/pages/advertise/AdCreate.vue -->
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref,onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import PageTitle from '@/pages/advertise/PageTitle.vue'
 import CategorySettingModal from '@/pages/advertise/CategorySettingModal.vue'
 import CommonButton from '@/components/common/CommonButton.vue'
+import api from '@/api/api.js'
 
 const router = useRouter()
 
+/** ---------------- 카테고리 타입 ---------------- */
+
+// 백엔드 카테고리 DTO (응답에 맞춰서)
+interface CategoryDto {
+  id: number
+  name: string
+  description: string
+  status: string
+  parentId: number | null
+  children: CategoryDto[]
+}
+
+// 모달/화면에서 쓸 옵션 타입
+interface CategoryOption {
+  value: number
+  label: string
+}
+
 /* ---------------- 카테고리 설정 ---------------- */
 
-const selectedCategory = ref<string | null>(null)
+const categoryOptions = ref<CategoryOption[]>([])
+const selectedCategoryId = ref<number | null>(null)
+
+// 모달 보이기 여부
 const isCategoryModalOpen = ref(false)
 
-const categoryOptions = [
-  { value: 'FOOD', label: '음식' },
-  { value: 'SERVICE', label: '서비스' },
-  { value: 'SHOPPING', label: '쇼핑' },
-  { value: 'ETC', label: '기타' },
-]
-
+// 라벨: 선택된 카테고리의 이름 (없으면 "카테고리 설정")
 const categoryLabel = computed(() => {
-  if (!selectedCategory.value) return '카테고리 설정'
+  if (!selectedCategoryId.value) return '카테고리 설정'
 
-  let label = '카테고리 설정'
-  for (let i = 0; i < categoryOptions.length; i++) {
-    if (categoryOptions[i].value === selectedCategory.value) {
-      label = categoryOptions[i].label
-      break
-    }
-  }
-  return label
+  const found = categoryOptions.value.find(
+      (opt) => opt.value === selectedCategoryId.value
+  )
+  return found ? found.label : '카테고리 설정'
 })
 
 const openCategoryModal = () => {
@@ -39,9 +51,29 @@ const openCategoryModal = () => {
 const closeCategoryModal = () => {
   isCategoryModalOpen.value = false
 }
-const handleCategorySave = (category: string) => {
-  selectedCategory.value = category
+const handleCategorySave = (categoryId: number) => {
+  selectedCategoryId.value = categoryId
   isCategoryModalOpen.value = false
+}
+
+const loadCategories = async () => {
+  try {
+    const res = await api.get('/categories')
+
+    // 응답 구조: { success, data: CategoryDto[], ... }
+    const list: CategoryDto[] = res.data.data
+
+    console.log('카테고리 raw:', list)
+
+    categoryOptions.value = list.map((c) => ({
+      value: c.id,
+      label: c.name,
+    }))
+
+    console.log('categoryOptions:', categoryOptions.value)
+  } catch (e) {
+    console.error('카테고리 조회 실패:', e)
+  }
 }
 
 /* ---------------- 폼 상태 ---------------- */
@@ -80,28 +112,67 @@ const preventDefault = (e: DragEvent) => {
 
 /* ---------------- 버튼 핸들러 ---------------- */
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!title.value.trim()) {
     alert('제목을 입력해주세요.')
     return
   }
 
-  // TODO: 실제 API 요청용 payload 만들기
-  // 예시로만 로그 출력
-  console.log('제출', {
+  if (!selectedCategoryId.value) {
+    alert('카테고리를 선택해주세요.')
+    return
+  }
+
+  if (files.value.length === 0) {
+    const ok = confirm('파일이 없습니다. 파일 없이 등록하시겠습니까?')
+    if (!ok) return
+  }
+
+  // 순수 JS 객체로만 만들기 (ref 금지)
+  const adInfo = {
+    categoryId: Number(selectedCategoryId.value),
     title: title.value,
-    content: content.value,
-    category: selectedCategory.value,
-    files: files.value,
+    // content: content.value  // 이걸 보내고 싶으면 DTO에도 필드 추가해야 함
+  }
+
+  const formData = new FormData()
+
+  // adInfo -> JSON + Blob
+  formData.append(
+      'adInfo',
+      new Blob([JSON.stringify(adInfo)], { type: 'application/json' })
+  )
+
+  // 백엔드가 videoFiles 로 받으니까 키 이름 맞춰주기
+  files.value.forEach((file) => {
+    formData.append('videoFiles', file)
   })
 
-  // 등록 후 이동 처리
-  // router.push('/admanageview')
+  try {
+    const res = await api.post('/ads', formData, {
+      // 이 헤더는 사실 안 써도 됨. axios가 자동으로 boundary 포함해서 넣어줌.
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+
+    console.log('광고 등록 성공:', res.data)
+    alert('광고가 등록되었습니다.')
+    router.back()
+  } catch (e) {
+    console.error('광고 등록 실패:', e)
+    alert('광고 등록에 실패했습니다.')
+  }
 }
 
 const handleCancel = () => {
   router.back()
 }
+
+// 페이지 진입 시 카테고리 먼저 로딩
+onMounted(() => {
+  loadCategories()
+})
 </script>
 
 <template>
@@ -177,7 +248,8 @@ const handleCancel = () => {
     <!-- 카테고리 설정 모달 -->
     <CategorySettingModal
         :visible="isCategoryModalOpen"
-        :selected-category="selectedCategory"
+        :selected-category-id="selectedCategoryId"
+        :category-options="categoryOptions"
         @close="closeCategoryModal"
         @save="handleCategorySave"
     />

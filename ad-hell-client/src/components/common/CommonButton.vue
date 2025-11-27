@@ -25,6 +25,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['click'])
+
 // 버튼 라벨
 const labels = {
   search: '검색',
@@ -69,6 +71,7 @@ const sizeStyle = computed(() => ({
       :class="[`common-btn--${variant}`, { 'is-active': active }]"
       :style="sizeStyle"
       :disabled="disabled"
+      @click="emit('click', $event)"
   >
     {{ label }}
   </button>
