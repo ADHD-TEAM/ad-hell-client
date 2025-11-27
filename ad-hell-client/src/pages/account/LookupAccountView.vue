@@ -33,7 +33,7 @@ const goLoginPage = () => {
       <span>회원님이 가입하신 아이디는 아래와 같습니다.</span>
 
       <div class="lookup-id-div">
-        ad***111
+        te***23
       </div>
     </div>
 
