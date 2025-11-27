@@ -19,6 +19,17 @@
           </div>
         </div>
 
+        <!-- 1-1. 발송 대상 선택 -->
+        <div class="form-row">
+          <div class="field-label">대상</div>
+          <div class="field-main">
+            <el-radio-group v-model="targetStatus" class="inline-radios">
+              <el-radio label="ALL">전체</el-radio>
+              <el-radio label="PUSH_ENABLED">push on 대상</el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+
         <!-- 2. 예약 시간 / 즉시 · 예약 -->
         <div class="form-row">
           <div class="field-label">예약 시간</div>
@@ -145,6 +156,7 @@ const router = useRouter()
 // ===== 상태 =====
 const sendMode = ref('TEMPLATE')          // 'TEMPLATE' | 'EVENT'
 const scheduleMode = ref('IMMEDIATE')     // 'IMMEDIATE' | 'RESERVE'
+const targetStatus = ref('ALL')
 
 const reservedAt = ref(null)              // 예약 일시 (YYYY-MM-DDTHH:mm:ss)
 
@@ -240,7 +252,7 @@ const handleSubmit = async () => {
     }
 
     const baseSendReq = {
-      targetStatus: 'ALL',     // 전체 발송
+      targetStatus: targetStatus.value,     // 전체 발송
       targetMemberIds: null,
       variables: {},           // 템플릿 치환 변수 사용 시 채우기
     }
@@ -256,7 +268,7 @@ const handleSubmit = async () => {
       } else {
         const reserveReq = {
           scheduledAt: reservedAt.value,
-          targetStatus: 'ALL',
+          targetStatus: targetStatus.value,
           targetMemberIds: null,
           variables: {},
         }
@@ -293,7 +305,7 @@ const handleSubmit = async () => {
     const templateId = newTemplate.templateId
 
     const baseSendReq = {
-      targetStatus: 'ALL',
+      targetStatus: targetStatus.value,
       targetMemberIds: null,
       variables: {},
     }
@@ -306,7 +318,7 @@ const handleSubmit = async () => {
     } else {
       const reserveReq = {
         scheduledAt: reservedAt.value,
-        targetStatus: 'ALL',
+        targetStatus: targetStatus.value,
         targetMemberIds: null,
         variables: {},
       }
