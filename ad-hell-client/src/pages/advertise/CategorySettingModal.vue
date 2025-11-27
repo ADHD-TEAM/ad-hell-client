@@ -23,17 +23,25 @@ const emit = defineEmits<{
 // 현재 선택 값 (카테고리 ID)
 const current = ref<number | null>(null)
 
+// visible + selectedCategoryId + categoryOptions 동시에 감시
 watch(
-    () => props.selectedCategoryId,
-    (v) => {
-      if (v != null) {
-        current.value = v
-      } else if (props.categoryOptions.length > 0) {
-        // 초기값: 목록 중 첫 번째
-        current.value = props.categoryOptions[0].value
+    () => [props.visible, props.selectedCategoryId, props.categoryOptions],
+    ([visible, selectedId, options]) => {
+      if (!visible) return  // 모달 닫혀 있으면 신경 안 씀
+
+      if (selectedId != null) {
+        // 부모에서 이미 선택한 카테고리가 있으면 그걸로 세팅
+        current.value = selectedId
+      } else if (options.length > 0) {
+        // 없으면 목록의 첫 번째를 기본값으로
+        current.value = options[0].value
+      } else {
+        current.value = null
       }
+
+      console.log('[Modal] watch 초기화, current = ', current.value)
     },
-    { immediate: true }
+    { immediate: true, deep: true }
 )
 
 const handleClose = () => {
@@ -41,12 +49,17 @@ const handleClose = () => {
 }
 
 const handleSave = () => {
-  if (current.value == null) return
-  console.log('[Modal] 저장 버튼 클릭, current = ', current.value)
-  emit('save', current.value)
+  console.log('[Modal] handleSave 호출, current = ', current.value, typeof current.value)
+
+  if (current.value == null) {
+    alert('카테고리를 선택해주세요.')
+    return
+  }
+
+  // 라디오에서 문자열이 들어올 수 있으니 숫자로 캐스팅
+  emit('save', Number(current.value))
 }
 </script>
-
 
 <template>
   <!-- visible 이 true일 때만 모달 표시 -->
@@ -81,7 +94,6 @@ const handleSave = () => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .modal-backdrop {

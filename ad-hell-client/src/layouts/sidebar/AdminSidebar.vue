@@ -34,7 +34,7 @@ const menus = [
 
   // 광고/경품 관리
   { id: 'ad-reward-section', label: '광고/ 경품 관리', header: true },
-  { id: 'ad-manage', label: '광고관리', path: '/admin/ads', iconId: 'ad' },
+  { id: 'ad-manage', label: '광고관리', path: '/admin/admanageview', iconId: 'ad' },
   { id: 'reward-manage', label: '경품관리', path: '/admin/rewards', iconId: 'reward' },
 ]
 

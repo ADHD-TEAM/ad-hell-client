@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import AdSlot from '@/pages/advertise/AdSlot.vue';
 import api from '@/api/api.js'; // axios 인스턴스
+
+// ✅ 부모(메인 페이지)에서 카테고리 ID 내려받기
+const props = defineProps<{
+  categoryId: number | null;
+}>();
 
 interface AdFileDto {
   fileId: number;
@@ -55,8 +60,8 @@ interface AdItem {
 const ads = ref<AdItem[]>([]);
 
 // 페이지네이션 상태
-const page = ref(1);      // 현재 페이지 (0부터 시작)
-const size = 6;           // 한 번에 몇 개씩 가져올지
+const page = ref(1);      // 서버 규칙에 맞게 0/1 중 하나로 맞춰줘
+const size = 6;
 const isLoading = ref(false);
 const isLastPage = ref(false);
 
@@ -64,14 +69,31 @@ const isLastPage = ref(false);
 const sentinel = ref<HTMLElement | null>(null);
 let observer: IntersectionObserver | null = null;
 
+/** 실제로 광고 로드 */
 const loadAds = async () => {
   if (isLoading.value || isLastPage.value) return;
 
   isLoading.value = true;
+  const categorySnapshot = props.categoryId;
+
   try {
+    const params: Record<string, any> = {
+      page: page.value,
+      size
+    };
+
+    if (categorySnapshot !== null) {
+      params.categoryId = categorySnapshot;
+    }
+
     const res = await api.get<ApiResponse<AdListResponse>>('/ads', {
-      params: { page: page.value, size }
+      params
     });
+
+    // 요청 보내는 동안 카테고리가 바뀌었으면 무시
+    if (categorySnapshot !== props.categoryId) {
+      return;
+    }
 
     const listResponse = res.data?.data;
     if (!listResponse) {
@@ -96,7 +118,6 @@ const loadAds = async () => {
 
     ads.value.push(...mapped);
 
-    // 👉 pagination 쓰면 더 좋지만, 일단 content 기준으로 유지
     if (content.length < size) {
       isLastPage.value = true;
     } else {
@@ -109,12 +130,15 @@ const loadAds = async () => {
   }
 };
 
-// 🔥 onMounted를 async로 바꾼다
-onMounted(async () => {
-  // 1) 첫 페이지를 다 불러오고
-  await loadAds();
+/** IntersectionObserver를 생성/재설정하는 함수 */
+const setupObserver = () => {
+  if (!sentinel.value) return;
 
-  // 2) 그 다음에 Observer를 단다
+  // 기존 observer 있으면 끊고 새로
+  if (observer) {
+    observer.disconnect();
+  }
+
   observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
@@ -129,14 +153,42 @@ onMounted(async () => {
       }
   );
 
-  if (sentinel.value && observer) {
-    observer.observe(sentinel.value);
-  }
+  observer.observe(sentinel.value);
+};
+
+// 카테고리 변경 시 리스트 리셋 + 첫 페이지부터 다시 호출
+watch(
+    () => props.categoryId,
+    async () => {
+      ads.value = [];
+      page.value = 1;
+      isLastPage.value = false;
+      await loadAds();
+      // 리스트가 바뀌면 sentinel 위치도 바뀌니까, observer도 다시 세팅
+      setupObserver();
+    }
+);
+
+// sentinel DOM이 실제로 생기는 순간을 감지해서 observer 붙이기
+watch(
+    sentinel,
+    (el) => {
+      if (el) {
+        setupObserver();
+      }
+    },
+    { flush: 'post' } // DOM 업데이트 이후에 실행
+);
+
+// 처음 진입 시 첫 페이지 로드만 담당
+onMounted(async () => {
+  await loadAds();
+  // observer는 위의 watch(sentinel)에서 처리
 });
 
 onBeforeUnmount(() => {
-  if (observer && sentinel.value) {
-    observer.unobserve(sentinel.value);
+  if (observer) {
+    observer.disconnect();
   }
   observer = null;
 });

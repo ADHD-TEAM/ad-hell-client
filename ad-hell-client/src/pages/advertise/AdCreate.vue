@@ -11,11 +11,14 @@ const router = useRouter()
 
 /** ---------------- 카테고리 타입 ---------------- */
 
-// 백엔드 카테고리 DTO (백엔드 필드명에 맞게 수정)
+// 백엔드 카테고리 DTO (응답에 맞춰서)
 interface CategoryDto {
-  categoryId: number
+  id: number
   name: string
-  // 필요하면 code, description 등 추가
+  description: string
+  status: string
+  parentId: number | null
+  children: CategoryDto[]
 }
 
 // 모달/화면에서 쓸 옵션 타입
@@ -26,10 +29,7 @@ interface CategoryOption {
 
 /* ---------------- 카테고리 설정 ---------------- */
 
-// 서버에서 가져온 카테고리 옵션
 const categoryOptions = ref<CategoryOption[]>([])
-
-// 선택된 카테고리 ID
 const selectedCategoryId = ref<number | null>(null)
 
 // 모달 보이기 여부
@@ -58,17 +58,19 @@ const handleCategorySave = (categoryId: number) => {
 
 const loadCategories = async () => {
   try {
-    // 예시: GET /categories → ApiResponse<CategoryDto[]>
     const res = await api.get('/categories')
 
-    // 실제 응답 구조에 맞게 경로 조정 필요
-    // ex) ApiResponse<{ categories: CategoryDto[] }> 라면 res.data.data.categories
-    const categories: CategoryDto[] = res.data.data
+    // 응답 구조: { success, data: CategoryDto[], ... }
+    const list: CategoryDto[] = res.data.data
 
-    categoryOptions.value = categories.map((c) => ({
-      value: c.categoryId,
+    console.log('카테고리 raw:', list)
+
+    categoryOptions.value = list.map((c) => ({
+      value: c.id,
       label: c.name,
     }))
+
+    console.log('categoryOptions:', categoryOptions.value)
   } catch (e) {
     console.error('카테고리 조회 실패:', e)
   }
@@ -116,7 +118,7 @@ const handleSubmit = async () => {
     return
   }
 
-  if (!selectedCategory.value) {
+  if (!selectedCategoryId.value) {
     alert('카테고리를 선택해주세요.')
     return
   }
@@ -126,22 +128,29 @@ const handleSubmit = async () => {
     if (!ok) return
   }
 
-  // ✅ multipart/form-data 생성
-  const formData = new FormData()
-  formData.append('title', title.value)
-  formData.append('content', content.value)
-  formData.append('category', String(selectedCategory.value))
-  // 백엔드가 categoryId(number)를 받으면 String(selectedCategoryId)로 맞춰줘야 함
+  // 순수 JS 객체로만 만들기 (ref 금지)
+  const adInfo = {
+    categoryId: Number(selectedCategoryId.value),
+    title: title.value,
+    // content: content.value  // 이걸 보내고 싶으면 DTO에도 필드 추가해야 함
+  }
 
-  // 파일 여러 개 전송 (백엔드에서 List<MultipartFile> files 같은 형태로 받는 경우)
+  const formData = new FormData()
+
+  // adInfo -> JSON + Blob
+  formData.append(
+      'adInfo',
+      new Blob([JSON.stringify(adInfo)], { type: 'application/json' })
+  )
+
+  // 백엔드가 videoFiles 로 받으니까 키 이름 맞춰주기
   files.value.forEach((file) => {
-    formData.append('files', file) // 필드명은 백엔드에 맞게: "files", "adFiles" 등
+    formData.append('videoFiles', file)
   })
 
   try {
-    // baseURL: http://localhost:8000/api 라고 가정하면 실제 요청은
-    // POST http://localhost:8000/api/ads
     const res = await api.post('/ads', formData, {
+      // 이 헤더는 사실 안 써도 됨. axios가 자동으로 boundary 포함해서 넣어줌.
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -149,9 +158,6 @@ const handleSubmit = async () => {
 
     console.log('광고 등록 성공:', res.data)
     alert('광고가 등록되었습니다.')
-
-    // 등록 후 이동 (원래 주석 달아둔 곳)
-    // router.push('/admanageview')
     router.back()
   } catch (e) {
     console.error('광고 등록 실패:', e)
