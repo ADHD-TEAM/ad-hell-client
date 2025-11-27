@@ -56,6 +56,11 @@ const routes = [
                 component: () => import('@/pages/inquiry/user/InquiryDetail.vue'),
                 props: true,
             },
+            {
+                path: 'inquiries/create',
+                name: 'UserInquiryCreate',
+                component: () => import('@/pages/inquiry/user/InquiryCreate.vue'),
+            },
 
             //  공지사항
             {
@@ -102,7 +107,8 @@ const routes = [
                         path: 'boards',
                         name: 'MyBoardList',
                         component: () => import('@/pages/mypage/MyBoardList.vue'),
-                    }
+                    },
+
                 ]
             },
 

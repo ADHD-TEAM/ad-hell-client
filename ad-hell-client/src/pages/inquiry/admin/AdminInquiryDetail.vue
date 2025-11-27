@@ -3,47 +3,59 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import CommonButton from '@/components/common/CommonButton.vue'
-import { useInquiryStore } from '@/stores/inquiryStore.js'
+import {
+  fetchAdminInquiryDetail,
+  answerInquiry,
+} from '@/api/inquiryApi.js'
 
 const route = useRoute()
 const router = useRouter()
-const inquiryStore = useInquiryStore()
-
 const inquiryId = Number(route.params.id)
 
 const loading = ref(false)
 
+// 문의 + 답변 데이터
 const inquiry = ref({
   id: inquiryId,
+  userId: null,
   title: '',
-  memberName: '',
   createdAt: '',
   answeredAt: '',
   content: '',
+  response: '',
 })
 
+// textarea 바인딩용
 const answerText = ref('')
 
+// 상세 조회
 const loadDetail = async () => {
   loading.value = true
   try {
-    const data = await inquiryStore.fetchAdminInquiryDetail(inquiryId)
+    const res = await fetchAdminInquiryDetail(inquiryId)
+    const data = res.data // InquiryDetailResponse
 
     inquiry.value = {
       id: data.id,
+      userId: data.userId,
       title: data.title,
-      memberName: data.memberName,
       createdAt: data.createdAt,
       answeredAt: data.answeredAt,
       content: data.content,
+      response: data.response,
     }
 
-    answerText.value = data.answer || ''
+    // 이미 등록된 답변이 있으면 textarea에 채워 놓기
+    answerText.value = data.response || ''
+  } catch (e) {
+    console.error('fetchAdminInquiryDetail error:', e)
+    router.push('/admin/inquiries')
   } finally {
     loading.value = false
   }
 }
 
+// 답변 등록/수정
 const saveAnswer = async () => {
   if (!answerText.value.trim()) {
     alert('답변 내용을 입력하세요.')
@@ -52,15 +64,22 @@ const saveAnswer = async () => {
 
   loading.value = true
   try {
-    await inquiryStore.updateAdminInquiryAnswer(inquiryId, {
-      answer: answerText.value,
-    })
+    // DTO: InquiryAnswerRequest { response }
+    await answerInquiry(inquiryId, { response: answerText.value })
 
     alert('답변이 등록되었습니다.')
     router.push('/admin/inquiries')
+  } catch (e) {
+    console.error('answerInquiry error:', e)
+    alert('답변 등록 중 오류가 발생했습니다.')
   } finally {
     loading.value = false
   }
+}
+
+// 취소 → 목록으로
+const cancel = () => {
+  router.push('/admin/inquiries')
 }
 
 onMounted(loadDetail)
@@ -68,14 +87,17 @@ onMounted(loadDetail)
 
 <template>
   <section class="inquiry-detail-page" v-loading="loading">
-    <h2 class="page-title">문의 답변 등록</h2>
+    <!-- 상단 제목 -->
+    <h2 class="page-title">문의</h2>
 
+    <!-- 문의 제목 -->
     <h3 class="inquiry-title">{{ inquiry.title }}</h3>
 
+    <!-- 작성자 / 작성일 / 답변일 -->
     <div class="meta-row">
       <div class="meta-item">
-        <span class="meta-label">작성자:</span>
-        <span class="meta-value">{{ inquiry.memberName }}</span>
+        <span class="meta-label">회원:</span>
+        <span class="meta-value">{{ inquiry.userId }}</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">작성일:</span>
@@ -89,6 +111,7 @@ onMounted(loadDetail)
 
     <div class="divider"></div>
 
+    <!-- 문의 내용 -->
     <div class="content-box">
       <div class="box-label">문의 내용</div>
       <div class="box-body">
@@ -98,6 +121,7 @@ onMounted(loadDetail)
       </div>
     </div>
 
+    <!-- 답변 내용 (등록/수정용 textarea) -->
     <div class="content-box answer-box">
       <div class="box-label">답변 내용</div>
       <div class="box-body">
@@ -111,8 +135,10 @@ onMounted(loadDetail)
       </div>
     </div>
 
+    <!-- 하단 버튼: 등록 / 취소 -->
     <div class="bottom-actions">
       <CommonButton type="register" @click="saveAnswer" />
+      <CommonButton type="cancel" @click="cancel" />
     </div>
   </section>
 </template>
@@ -122,18 +148,21 @@ onMounted(loadDetail)
   padding: 24px 32px 40px;
 }
 
+/* 상단 제목 */
 .page-title {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 16px;
 }
 
+/* 문의 제목 */
 .inquiry-title {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 8px;
 }
 
+/* 메타 정보 */
 .meta-row {
   display: flex;
   gap: 40px;
@@ -154,6 +183,7 @@ onMounted(loadDetail)
   color: #ff0000;
 }
 
+/* 구분선 */
 .divider {
   width: 100%;
   height: 1px;
@@ -161,6 +191,7 @@ onMounted(loadDetail)
   margin: 8px 0 16px;
 }
 
+/* 공통 박스 */
 .content-box {
   border: 1px solid #efefef;
   border-radius: 10px;
@@ -185,19 +216,23 @@ onMounted(loadDetail)
   line-height: 1.6;
 }
 
+/* 답변 textarea 스타일 */
 .answer-input {
   width: 100%;
-  :deep(.el-textarea__inner) {
-    border: none;
-    box-shadow: none;
-    resize: none;
-    min-height: 180px;
-  }
 }
 
+.answer-input :deep(.el-textarea__inner) {
+  border: none;
+  box-shadow: none;
+  resize: none;
+  min-height: 180px;
+}
+
+/* 하단 버튼 정렬 */
 .bottom-actions {
   margin-top: 12px;
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
 }
 </style>
