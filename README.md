@@ -264,6 +264,11 @@ src/
 	<br>
 </details> 
 <details> <summary><b>📺 광고 관리</b></summary> <img src="<!-- gif url -->" width="80%"/> </details>
+<details> 
+	<summary><b>🔔 알림</b></summary> 
+	<h4>알림 템플릿 목록 조회</h4>
+</details>
+
 
 <br/><br/>
 
