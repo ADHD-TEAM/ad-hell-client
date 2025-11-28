@@ -326,12 +326,13 @@ src/
 <details> 
 	<summary><b> 📃 게시판 </b></summary> 
 	<h4>게시판 </h4>
+	<img src="./ad-hell-client/product/gif/Board.gif" width="80%"/>
+	<br> 
+	<h4> 공지사항 </h4>
+	 <img src="./ad-hell-client/product/gif/Announcement.gif" width="80%"/>
 	<br>
-	<h4>카테고리 수정</h4>
-	<img src="./ad-hell-client/product/gif/categoryEdit.gif" width="80%"/> 
-	<br>
-	<h4>카테고리 삭제</h4>
-	<img src="./ad-hell-client/product/gif/categoryDelte.gif" width="80%"/> 
+	<h4> 문의 </h4>
+	<img src="./ad-hell-client/product/gif/Inquiry.gif" width="80%"/> 
 	<br>
 </details> 
 
