@@ -323,6 +323,18 @@ src/
     
 </details>
 
+<details> 
+	<summary><b> 📃 게시판 </b></summary> 
+	<h4>게시판 </h4>
+	<br>
+	<h4>카테고리 수정</h4>
+	<img src="./ad-hell-client/product/gif/categoryEdit.gif" width="80%"/> 
+	<br>
+	<h4>카테고리 삭제</h4>
+	<img src="./ad-hell-client/product/gif/categoryDelte.gif" width="80%"/> 
+	<br>
+</details> 
+
 <br/><br/>
 
 <!-- SECTION: 트러블슈팅 --> <h1 id="trouble">⚡ 7. 트러블슈팅</h1>
