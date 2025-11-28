@@ -1,7 +1,6 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
-import AdMain from '@/pages/advertise/AdMain.vue'
 import {useAuthStore} from "@/stores/authStore.js";
 
 
@@ -23,72 +22,7 @@ const routes = [
             {
                 path: '',
                 name: 'MainPage',
-                component: AdMain,
-                meta: {
-                    title: '메인',
-                    iconKey: 'home',     // 아이콘 키
-                    categoryId: null      // 전체
-                }
-            },
-            {
-                path: '/music',
-                name: 'MusicPage',
-                component: AdMain,
-                meta: {
-                    title: '음악 광고',
-                    iconKey: 'music',     // 아이콘 키
-                    categoryId: 1     // 전체
-                }
-            },
-            {
-                path: '/movie',
-                name: 'MoviePage',
-                component: AdMain,
-                meta: {
-                    title: '영화 광고',
-                    iconKey: 'movie',     // 아이콘 키
-                    categoryId: 2    // 전체
-                }
-            },
-            {
-                path: '/shopping',
-                name: 'ShoppingPage',
-                component: AdMain,
-                meta: {
-                    title: '쇼핑 광고',
-                    iconKey: 'shopping',     // 아이콘 키
-                    categoryId: 3   // 전체
-                }
-            },
-            {
-                path: '/game',
-                name: 'GamePage',
-                component: AdMain,
-                meta: {
-                    title: '게임 광고',
-                    iconKey: 'game',     // 아이콘 키
-                    categoryId: 4    // 전체
-                }
-            },
-            {
-                path: '/sport',
-                name: 'SportPage',
-                component: AdMain,
-                meta: {
-                    title: '운동 광고',
-                    iconKey: 'sport',     // 아이콘 키
-                    categoryId: 5  // 전체
-                }
-            },
-            {
-                path: '/education',
-                name: 'EducationPage',
-                component: AdMain,
-                meta: {
-                    title: '학습 광고',
-                    iconKey: 'education',     // 아이콘 키
-                    categoryId: 6 // 전체
-                }
+                component: () => import('@/pages/MainPage.vue'),
             },
 
             // 게시판
@@ -121,11 +55,6 @@ const routes = [
                 name: 'InquiryDetail',
                 component: () => import('@/pages/inquiry/user/InquiryDetail.vue'),
                 props: true,
-            },
-            {
-                path: 'inquiries/create',
-                name: 'UserInquiryCreate',
-                component: () => import('@/pages/inquiry/user/InquiryCreate.vue'),
             },
 
             //  공지사항
@@ -173,13 +102,7 @@ const routes = [
                         path: 'boards',
                         name: 'MyBoardList',
                         component: () => import('@/pages/mypage/MyBoardList.vue'),
-                    },
-                    {
-                      path: '/mypage/points',
-                      name: 'MyPointHistory',
-                      component: () => import('@/pages/mypage/MyPointHistory.vue'),
-                    },
-
+                    }
                 ]
             },
 
@@ -198,12 +121,12 @@ const routes = [
 
             // 광고 페이지
             {
-                path: 'admin/admanageView',
+                path: 'adManageView',
                 name: 'AdManageView',
                 component: () => import('@/pages/advertise/AdManageView.vue'),
             },
             {
-                path: 'adcreate',
+                path: 'adCreate',
                 name: 'AdCreate',
                 component: () => import('@/pages/advertise/AdCreate.vue'),
             },
@@ -212,6 +135,12 @@ const routes = [
                 name: 'AdDetail',
                 component: () => import('@/pages/advertise/AdDetail.vue'),
             },
+            {
+                path: 'adMain/:id',
+                name: 'AdMain',
+                component: () => import('@/pages/advertise/AdMain.vue'),
+            },
+
             {
                 path: 'admin/home',
                 name: 'AdminHome',
