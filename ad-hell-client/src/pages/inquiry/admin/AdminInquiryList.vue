@@ -6,15 +6,15 @@ import { useRouter } from 'vue-router'
 import SearchForm from '@/components/common/SearchForm.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import DataTable from '@/components/common/DataTable.vue'
+import { fetchAdminInquiries } from '@/api/inquiryApi.js'
 
 const router = useRouter()
 
-// 목록 데이터
 const inquiries = ref([])
 const page = ref(1)
 const totalPages = ref(1)
 
-// 검색 폼 (타이틀 / 작성자 / 기간)
+// 검색 폼 (지금은 UI만, API 쿼리 연동은 나중에)
 const searchForm = reactive({
   title: '',
   writer: '',
@@ -22,29 +22,31 @@ const searchForm = reactive({
   toDate: null,
 })
 
-//  목록 조회 (TODO: 나중에 API 연동)
+// 관리자 문의 목록 조회
 const loadInquiries = async () => {
-  // 지금은 더미 데이터
-  inquiries.value = [
-    {
-      id: 101,
-      memberName: 'adhell',
-      title: '포인트 미지급 문의 입니다',
-      answeredAt: '2025-11-17',
-      status: '답변 완료',
-    },
-    {
-      id: 102,
-      memberName: 'tester',
-      title: '광고가 노출되지 않습니다',
-      answeredAt: '-',
-      status: '답변 대기',
-    },
-  ]
-  totalPages.value = 5
+  try {
+    // page, size만 우선 사용
+    const res = await fetchAdminInquiries({ page: page.value, size: 10 })
+    const data = res.data // InquiryListResponse
+
+    // 백엔드 DTO에 맞춰 프론트에서 필요한 필드로 매핑
+    inquiries.value = (data.inquiries || []).map((item) => ({
+      id: item.id,
+      memberName: item.userId, // 지금 DTO에 닉네임이 없어서 userId 사용
+      title: item.title,
+      answeredAt: item.answeredAt,
+      status: item.answered === 'Y' ? '답변 완료' : '답변 대기',
+    }))
+
+    totalPages.value = data.pagination?.totalPages || 1
+  } catch (e) {
+    console.error('loadInquiries error:', e)
+    inquiries.value = []
+    totalPages.value = 1
+  }
 }
 
-// 검색
+// 검색 버튼
 const onSearch = async () => {
   page.value = 1
   await loadInquiries()
@@ -56,7 +58,7 @@ const changePage = async (newPage) => {
   await loadInquiries()
 }
 
-// 상세 이동
+// 행 클릭 시 상세 이동
 const goDetail = (id) => {
   router.push({ name: 'AdminInquiryDetail', params: { id } })
 }
