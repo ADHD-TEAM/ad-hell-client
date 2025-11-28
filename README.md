@@ -325,16 +325,45 @@ src/
 
 <details> 
 	<summary><b> 📃 게시판 </b></summary> 
-	<h4>게시판 </h4>
-	<img src="./ad-hell-client/product/gif/Board.gif" width="80%"/>
-	<br> 
-	<h4> 공지사항 </h4>
-	 <img src="./ad-hell-client/product/gif/Announcement.gif" width="80%"/>
+	<h4> 게시글 등록 </h4>
+	<img src="./ad-hell-client/product/gif/boardCreate.gif" width="80%"/>
 	<br>
-	<h4> 문의 </h4>
-	<img src="./ad-hell-client/product/gif/Inquiry.gif" width="80%"/> 
+	<h4>게시글 상세조회 및 수정 </h4>
+	<img src="./ad-hell-client/product/gif/boardDetail_Edit.gif" width="80%"/>
+	<br>	
+	<h4>게시글 삭제 </h4>
+	<img src="./ad-hell-client/product/gif/boardDelete.gif" width="80%"/>
+
+</details>
+<details> 
+	<summary><b> ❓ 문의 </b></summary> 
+	<h4>문의 등록 </h4>
+	<img src="./ad-hell-client/product/gif/inquiryCreate.gif" width="80%"/>
 	<br>
+	<h4>문의 상세조회 </h4>
+	<img src="./ad-hell-client/product/gif/inquiryDetail.gif" width="80%"/>
+	<br>	
+	<h4>문의 답변(관리자) </h4>
+	<img src="./ad-hell-client/product/gif/inquiryAdminAnswer.gif" width="80%"/>
+	<br>	
+	<h4>내 문의 답변 조회 </h4>
+	<img src="./ad-hell-client/product/gif/myInquiryDetail.gif" width="80%"/>
+</details>
+
+<details> 
+	<summary><b>  🔨공지사항 </b></summary> 
+	<h4>공지사항 등록 </h4>
+	<img src="./ad-hell-client/product/gif/ammouncementCreate.gif" width="80%"/>
+	<br>
+	<h4>공지사항 상세조회 </h4>
+	<img src="./ad-hell-client/product/gif/ammouncementDetail_Edit.gif" width="80%"/>
+	<br>	
+	<h4>공지사항 삭제 </h4>
+	<img src="./ad-hell-client/product/gif/announcementDelete.gif" width="80%"/>
+	
 </details> 
+
+
 
 <br/><br/>
 
