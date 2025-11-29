@@ -7,7 +7,6 @@ export async function fetchBoardComments({ boardId, page = 1, size = 20, keyword
         params: { boardId, page, size, keyword },
     })
 
-    // ✅ 공통 패턴: { success, data: {...} } 또는 그냥 data
     const data = res.data?.data || res.data
     return data
 }
