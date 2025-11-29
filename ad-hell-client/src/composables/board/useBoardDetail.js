@@ -155,10 +155,9 @@ export function useBoardDetail(boardId) {
         }
 
         try {
-            // ★ 서버 삭제
+
             await deleteBoardComment(comment.id, writerId)
 
-            // ★ 목록에서 바로 제거
             comments.value = comments.value.filter((c) => c.id !== comment.id)
         } catch (e) {
             console.error(e)
