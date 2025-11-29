@@ -2,10 +2,14 @@
 import api from './api'
 
 // 댓글 목록 조회
-export async function fetchBoardComments(params = {}) {
-    const res = await api.get('/board_comments', { params })
-    // 백엔드: ApiResponse<List<BoardCommentQueryResponse>> 기준
-    return res.data.data
+export async function fetchBoardComments({ boardId, page = 1, size = 20, keyword = '' } = {}) {
+    const res = await api.get('/board_comments', {
+        params: { boardId, page, size, keyword },
+    })
+
+    // ✅ 공통 패턴: { success, data: {...} } 또는 그냥 data
+    const data = res.data?.data || res.data
+    return data
 }
 
 // 내 댓글 목록 조회

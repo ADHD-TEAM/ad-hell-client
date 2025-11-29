@@ -7,9 +7,7 @@ import {
     updateBoardComment,
     deleteBoardComment,
 } from '@/api/boardCommentApi'
-
-// TODO: 나중에 authStore.getUserId() 등으로 교체
-const loginUserId = 1
+import { useAuthStore } from '@/stores/authStore.js'
 
 export function useBoardDetail(boardId) {
     // 게시글 기본 값
@@ -28,7 +26,9 @@ export function useBoardDetail(boardId) {
     const loading = ref(false)
     const error = ref(null)
 
-    // 게시글 + 댓글 조회
+    const authStore = useAuthStore()
+
+    // 게시글 + 댓글 조회 (초기/새로고침용)
     const loadDetail = async () => {
         loading.value = true
         error.value = null
@@ -53,16 +53,13 @@ export function useBoardDetail(boardId) {
                 size: 50,
             })
 
-            // 응답이 배열이면 그대로, 객체면 comments/items 속성에서 추출
             let list = []
             if (Array.isArray(commentRes)) {
                 list = commentRes
-            } else if (commentRes) {
-                list =
-                    commentRes.comments ||
-                    commentRes.items ||
-                    commentRes.data ||
-                    []
+            } else if (Array.isArray(commentRes.comments)) {
+                list = commentRes.comments
+            } else if (Array.isArray(commentRes.content)) {
+                list = commentRes.content
             }
 
             comments.value = list
@@ -80,14 +77,30 @@ export function useBoardDetail(boardId) {
         const content = newComment.value.trim()
         if (!content) return
 
+        const writerId = authStore.user?.userId
+        if (!writerId) {
+            alert('로그인이 필요합니다.')
+            return
+        }
+
         try {
-            await createBoardComment({
+            // ★ 서버에 등록
+            const created = await createBoardComment({
                 boardId,
-                writerId: loginUserId,
+                writerId,
                 content,
             })
+
+            // ★ 목록에 바로 반영
+            if (created && created.id) {
+                // 최신 댓글을 위에 보이게 하고 싶으면 unshift
+                comments.value = [created, ...comments.value]
+            } else {
+                // 혹시 created 구조 모르면 안전하게 전체 재조회
+                await loadDetail()
+            }
+
             newComment.value = ''
-            await loadDetail()
         } catch (e) {
             console.error(e)
             alert('댓글 등록 중 오류가 발생했습니다.')
@@ -96,18 +109,35 @@ export function useBoardDetail(boardId) {
 
     // 댓글 수정
     const editComment = async (comment) => {
-        const updated = prompt('댓글 내용을 수정하세요.', comment.content)
-        if (updated == null) return
+        const updatedText = prompt('댓글 내용을 수정하세요.', comment.content)
+        if (updatedText == null) return
 
-        const trimmed = updated.trim()
+        const trimmed = updatedText.trim()
         if (!trimmed) return
 
+        const writerId = authStore.user?.userId
+        if (!writerId) {
+            alert('로그인이 필요합니다.')
+            return
+        }
+
         try {
-            await updateBoardComment(comment.id, {
-                writerId: loginUserId,
+            // ★ 서버에 수정 요청
+            const updated = await updateBoardComment(comment.id, {
+                writerId,
                 content: trimmed,
             })
-            await loadDetail()
+
+            // ★ 목록에 바로 반영
+            if (updated && updated.id) {
+                const idx = comments.value.findIndex((c) => c.id === updated.id)
+                if (idx !== -1) {
+                    comments.value[idx] = updated
+                }
+            } else {
+                // 응답 구조 모르면 전체 재조회
+                await loadDetail()
+            }
         } catch (e) {
             console.error(e)
             alert('댓글 수정 중 오류가 발생했습니다.')
@@ -118,9 +148,18 @@ export function useBoardDetail(boardId) {
     const removeComment = async (comment) => {
         if (!confirm('댓글을 삭제하시겠습니까?')) return
 
+        const writerId = authStore.user?.userId
+        if (!writerId) {
+            alert('로그인이 필요합니다.')
+            return
+        }
+
         try {
-            await deleteBoardComment(comment.id, loginUserId)
-            await loadDetail()
+            // ★ 서버 삭제
+            await deleteBoardComment(comment.id, writerId)
+
+            // ★ 목록에서 바로 제거
+            comments.value = comments.value.filter((c) => c.id !== comment.id)
         } catch (e) {
             console.error(e)
             alert('댓글 삭제 중 오류가 발생했습니다.')
